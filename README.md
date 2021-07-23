@@ -13,6 +13,7 @@
 ## Command line stuff
 -	[Set up SSH key](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent). 
 -	Clone dotfiles (this repo!)  
+-	Import iTerm profile
 -	`bash symlinks.sh`   
 -	`brew install zsh`  
 -	add `/usr/local/bin/zsh` to `/etc/shells`  
