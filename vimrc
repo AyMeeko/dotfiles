@@ -163,7 +163,7 @@ set hidden 	       	    " Be able to close/hide buffers without saving them
 set noshowmode  	      " Hide the default mode text (e.g. -- INSERT -- below the statusline)
 set laststatus=2        " Always display the statusline in all windows
 set title
-set shell=/usr/local/bin/zsh
+set shell=$ZSH_PATH
 filetype plugin indent on
 filetype plugin on
 set updatetime=250
