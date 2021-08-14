@@ -116,6 +116,7 @@ export HOMEBREW_EDITOR=$VISUAL
 export TERM="xterm-256color"
 export PATH=$HOME/src/brew/bin:$PATH
 export BREW_DIR=$HOME/src/brew
+export ZSH_PATH=/Users/$(whoami)/src/brew/bin/zsh
 
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
 ZSH_HIGHLIGHT_PATTERNS+=('rm -rf *' 'fg=white,bold,bg=red')
@@ -132,5 +133,7 @@ if type brew &>/dev/null; then
         compinit
 fi
 [[ $TMUX = "" ]] && export TERM="xterm-256color"
+
+eval "$(rbenv init -)"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
