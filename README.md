@@ -25,4 +25,5 @@
 -	`brew install macvim`  
 -	[oh-my-zsh](https://ohmyz.sh)  
 -	`brew install fzf`  
+-	`brew install rg`  
 
