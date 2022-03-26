@@ -117,6 +117,8 @@ export TERM="xterm-256color"
 export PATH=$HOME/src/brew/bin:$PATH
 export BREW_DIR=$HOME/src/brew
 export ZSH_PATH=/Users/$(whoami)/src/brew/bin/zsh
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
 
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
 ZSH_HIGHLIGHT_PATTERNS+=('rm -rf *' 'fg=white,bold,bg=red')
@@ -133,6 +135,10 @@ if type brew &>/dev/null; then
         compinit
 fi
 [[ $TMUX = "" ]] && export TERM="xterm-256color"
+
+eval "$(pyenv init -)"
+eval "$(pyenv init --path)"
+if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 
 eval "$(rbenv init -)"
 
