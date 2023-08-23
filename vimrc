@@ -9,12 +9,7 @@ autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
   \| PlugInstall --sync | source $MYVIMRC
 \| endif
 
-"autocmd VimEnter * colorscheme apprentice "| AirlineRefresh
 autocmd VimEnter * hi Normal ctermbg=NONE
-"autocmd VimEnter * colorscheme pyte | AirlineTheme solarized " | hi Normal ctermbg=NONE | AirlineRefresh
-"
-" Run Black on save
-" autocmd BufWritePre *.py execute ':Black'
 
 function! StatusLine(current, width)
   let l:s = ''
@@ -26,7 +21,7 @@ function! StatusLine(current, width)
   endif
   let l:s .= ' %f%h%w%m%r '
   if a:current
-    let l:s .= crystalline#right_sep('', 'Fill') . ' %{fugitive#head()}'
+    let l:s .= crystalline#right_sep('', 'Fill') . ' %{FugitiveHead()}'
   endif
 
   let l:s .= '%='
@@ -58,33 +53,24 @@ set guioptions-=e
 set laststatus=2
 
 call plug#begin('~/.vim/plugged')
-Plug 'wojciechkepka/vim-github-dark'
-Plug 'scrooloose/vim-slumlord'
-Plug 'aklt/plantuml-syntax'
-Plug 'dense-analysis/ale'
-"Plug 'ludovicchabant/vim-gutentags'
+Plug  'dstein64/vim-startuptime', { 'on': 'StartupTime' }
+" Sequence Diagramming Tool
+"Plug 'scrooloose/vim-slumlord'
+"Plug 'aklt/plantuml-syntax'
+" LSP + Linting
+Plug 'dense-analysis/ale', { 'on': '<Plug>(ale_go_to_definition)' }
 " status/tabline for vim
-"Plug 'vim-airline/vim-airline'
-"Plug 'vim-airline/vim-airline-themes'
 Plug 'rbong/vim-crystalline'
-" list, select, delete, and switch between buffers
-Plug 'jeetsukumaran/vim-buffergator'
-" CamelCase motion through words
-"Plug 'bkad/CamelCaseMotion'
-" highlight colors in css files
-"Plug 'ap/vim-css-color'
 " Fuzzy file, buffer, mru, tag, etc finder
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'FelikZ/ctrlp-py-matcher'
+"Plug 'ctrlpvim/ctrlp.vim'
+"Plug 'FelikZ/ctrlp-py-matcher'
 " ack.vim alternative
-Plug 'dyng/ctrlsf.vim'
-" Easy movement
-Plug 'easymotion/vim-easymotion'
+Plug 'dyng/ctrlsf.vim', { 'on': '<Plug>CtrlSFPrompt' }
 " git wrapper
 Plug 'tpope/vim-fugitive'
 " git diff in gutter
 Plug 'airblade/vim-gitgutter'
-Plug 'terryma/vim-multiple-cursors'
+Plug 'mg979/vim-visual-multi'
 " Fast commenting
 Plug 'scrooloose/nerdcommenter'
 " Tree explorer
@@ -96,10 +82,12 @@ Plug 'vim-scripts/indentpython.vim'
 Plug 'luochen1990/rainbow', { 'on': 'RainbowToggle' }
 " Enable repeating supported plugin maps
 Plug 'tpope/vim-repeat'
-" <Tab> for insertion completion
-"Plug 'ervandew/supertab'
 " Easily add/delete/change 'surroundings'
 Plug 'tpope/vim-surround'
+" Run pytest in tmux pane
+Plug 'vim-test/vim-test', { 'on': ['TestNearest', 'TestFile'] }
+" Allow vim to send commands to tmux
+Plug 'preservim/vimux', { 'on': ['TestNearest', 'TestFile'] }
 Plug 'tpope/vim-unimpaired'
 " Pipe cursor in insert mode, block in normal mode
 Plug 'sjl/vitality.vim'
@@ -108,21 +96,14 @@ Plug 'itspriddle/ZoomWin', { 'on': 'ZoomWin' }
 
 " Vim, iterm, and tmux colors
 Plug 'edkolev/tmuxline.vim', { 'on': ['Tmuxline', 'TmuxlineSnapshot'] }
-"Plug 'kourge/plumage'
 Plug 'romainl/Apprentice'
-"Plug 'powerline/fonts'
-" Light color scheme for demos
-Plug 'vim-scripts/pyte'
 " Python
 Plug 'Konfekt/FastFold'
-"Plug 'tmhedberg/SimpylFold'
-Plug 'vim-scripts/indentpython.vim'
-"Plug 'nvie/vim-flake8'
+Plug 'Einenlum/yaml-revealer'
+Plug 'stephpy/vim-yaml'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 call plug#end()
-
-"let g:fastfold_savehook = 0
-"let g:fastfold_fold_command_suffixes = []
-"let g:fastfold_minlines = 1000
 
 " ================================================================================================
 "                                       GENERIC VIM SETTINGS
@@ -150,11 +131,11 @@ vnoremap <space> zf
 ""
 "au BufWritePost *.c,*.cpp,*.h silent! !ctags -R &
 colorscheme apprentice
-" colorscheme ghdark
 set termguicolors
 let mapleader = ","    	" Set leader to , instead of \
 set nocompatible       	" Use vim, no vi defaults
 set number             	" Show line numbers
+set number relativenumber
 set ruler              	" Show line and column number
 syntax enable          	" Turn on syntax highlighting allowing local overrides
 set encoding=utf-8     	" Set default encoding to UTF-8
@@ -190,6 +171,11 @@ function ToggleFoldMethod()
   endif
 endfunction
 nmap <Leader><Tab> :call ToggleFoldMethod()<CR>
+
+function CopyLine()
+  normal ^v$h"*y
+endfunction
+nmap <Leader>cy :call CopyLine()<CR>
 
 " Fix yank and paste in tmux
 if $TMUX == ''
@@ -233,6 +219,7 @@ set hlsearch    " highlight matches
 set incsearch   " incremental searching
 set ignorecase  " searches are case insensitive...
 set smartcase   " ... unless they contain at least one capital letter
+
 
 
 " ================================================================================================
@@ -306,6 +293,9 @@ noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 highlight nonascii guibg=Red ctermbg=1 term=standout
 au BufReadPost * syntax match nonascii "[^\u0000-\u007F]"
 
+" Format JSON
+nmap <silent> <leader>fj :%!python -m json.tool<CR>
+
 " ================================================================================================
 "                                       STOLEN FROM JANUS
 " ================================================================================================
@@ -351,21 +341,21 @@ if ! has('gui_running')
 endif
 
 " ================================== ALE =====================================================
-let g:ale_linters = {'python': ['flake8', 'pylint', 'pyls'], 'zsh': ['shell']}
-"let g:ale_linters = {'python': ['flake8', 'pylint'], 'zsh': ['shell']}
-"let g:ale_linters = {'python': ['pyls'], 'zsh': ['shell']}
+let g:ale_linters = {'python': ['flake8', 'pylint', 'pylsp'], 'zsh': ['shell']}
 let g:ale_fixers = {'*': ['remove_trailing_lines', 'trim_whitespace']}
 let g:ale_fix_on_save = 1
 let g:ale_completion_enabled = 1
 let g:ale_default_navigation = 'tab'
 nmap <C-F>d <Plug>(ale_go_to_definition)
 nmap <C-F>r <Plug>(ale_find_references)
-let g:ale_python_pyls_config = {
-      \ 'pyls': {
-      \   'plugins': {
-      \     'flake8': {'enabled': v:false},
-      \     'pycodestyle': {'enabled': v:false}
-      \ }}}
+"let g:ale_python_pylsp_config = {
+      "\ 'pylsp': {
+      "\   'configurationSources': ['flake8'],
+      "\   'plugins': {
+      "\     'pylint': {'enabled': v:false},
+      "\     'flake8': {'enabled': v:false},
+      "\     'pycodestyle': {'enabled': v:false}
+      "\ }}}
 inoremap <silent><expr> <Tab>
       \ pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <silent><expr> <S-Tab>
@@ -374,31 +364,29 @@ inoremap <silent><expr> <S-Tab>
 " ================================== Better Whitespace ===========================================
 hi ExtraWhitespace ctermbg=237
 
-" ================================== Buffergator =================================================
-let g:buffergator_viewport_split_policy='B'
-let g:buffergator_hplit_size=10
-let g:buffergator_split_size=10
-let g:buffergator_sort_regime='mru'
-
 " ================================== CtrlP =======================================================
-let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
-" Use ripgrep for initial file load
-let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip
-nmap <Leader>sb :CtrlPBuffer<CR>
-let g:ctrlp_show_hidden = 1
-let g:ctrlp_map = '<C-p>'
-let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-  \ 'file': '\.pyc$\|\.pyo$\|\.rbc$|\.rbo$\|\.class$\|\.o$\|\~$\',
-  \ }
+"let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+"" Use ripgrep for initial file load
+"let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
+"set wildignore+=*/tmp/*,*.so,*.swp,*.zip
+"nmap <Leader>b :CtrlPBuffer<CR>
+"let g:ctrlp_show_hidden = 1
+"let g:ctrlp_map = '<C-p>'
+"let g:ctrlp_custom_ignore = {
+"  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+"  \ 'file': '\.pyc$\|\.pyo$\|\.rbc$|\.rbo$\|\.class$\|\.o$\|\~$\',
+"  \ }
+
+" ================================== Fzf =======================================================
+nmap <C-p> :Files<CR>
+nmap <leader>b :Buffer<CR>
 
 " ================================== CtrlSF =======================================================
 let g:ctrlsf_position = 'bottom'
 let g:ctrlsf_winsize = '25%'
 let g:ctrlsf_case_sensitive = 'smart'
 let g:ctrlsf_default_root = 'project'
-let g:ctrlsf_ackprg = '/usr/local/bin/rg'
+let g:ctrlsf_ackprg = '/opt/homebrew/bin/rg'
 nmap     <C-F>f <Plug>CtrlSFPrompt
 vmap     <C-F>f <Plug>CtrlSFVwordPath
 vmap     <C-F>F <Plug>CtrlSFVwordExec
@@ -409,24 +397,15 @@ nnoremap <C-F>t :CtrlSFToggle<CR>
 inoremap <C-F>t <Esc>:CtrlSFToggle<CR>
 
 " ================================== Fugitive ====================================================
-nmap <Leader>gb :Gblame<CR>
-nmap <Leader>gs :Gstatus<CR>
-nmap <Leader>gd :Gdiff<CR>
-nmap <Leader>gl :Glog<CR>
-nmap <Leader>gc :Gcommit<CR>
-nmap <Leader>gp :Git push<CR>
-vmap <Leader>co :diffget<CR>
+nmap <Leader>gb :Git blame<CR>
+nmap <Leader>gs :Git<CR>
+nmap <Leader>gd :Gvdiffsplit<CR>
 
 " ================================== Gitgutter ===================================================
 nnoremap <Leader>gg :GitGutterLineHighlightsToggle<CR>
 nmap <Leader>ha <Plug>(GitGutterStageHunk)
 nmap <Leader>hu <Plug>(GitGutterRevertHunk)
 nmap <Leader>hp <Plug>(GitGutterPreviewHunk)
-"
-" ================================== Multiple Cursors ============================================
-let g:multi_cursor_exit_from_visual_mode=0
-let g:multi_cursor_exit_from_insert_mode=0
-let g:multi_cursor_normal_maps = { 'd':1, 'c':1, 'y':1, 'Y':1, 'zf':1 }
 
 " ================================== NERDTree ====================================================
 " toggle NERDTree in every tab
@@ -519,3 +498,9 @@ map <Leader>zw :ZoomWin<CR>
 " tags
 packloadall
 silent! helptags ALL
+
+" ================================== Vim-Test =====================================================
+let test#strategy = "vimux"
+let test#python#pytest#executable = 'pytest'
+nmap <silent> <Leader>rt :TestNearest<CR>
+nmap <silent> <Leader>rf :TestFile<CR>
