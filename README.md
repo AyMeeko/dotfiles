@@ -26,6 +26,10 @@
 -	[oh-my-zsh](https://ohmyz.sh)
 -	`brew install fzf`
 -	`brew install rg`
+-   [nerd-fonts](https://github.com/ryanoasis/nerd-fonts#option-4-homebrew-fonts)
 
 ## Install Python
 - `brew install pyenv pyenv-virtualenv`
+
+## Fix italics in iTerm
+- `tic fix_iterm_italics` and restart iTerm

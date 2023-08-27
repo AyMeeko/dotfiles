@@ -114,11 +114,18 @@ export VISUAL="vim"
 export GIT_EDITOR=$EDITOR
 export HOMEBREW_EDITOR=$VISUAL
 export TERM="xterm-256color"
-export PATH=$HOME/src/brew/bin:$PATH
-export BREW_DIR=$HOME/src/brew
-export ZSH_PATH=/Users/$(whoami)/src/brew/bin/zsh
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
+if [[ $(uname -m) == 'arm64' ]]; then
+  export BREW_DIR=$(brew --prefix)
+  export PATH=$BREW_DIR/bin:$PATH
+  export ZSH_PATH=$BREW_DIR/bin/zsh
+else
+  export PATH=$HOME/src/brew/bin:$PATH
+  export BREW_DIR=$HOME/src/brew
+  export ZSH_PATH=/Users/$(whoami)/src/brew/bin/zsh
+
+fi
 
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
 ZSH_HIGHLIGHT_PATTERNS+=('rm -rf *' 'fg=white,bold,bg=red')
