@@ -1,5 +1,4 @@
 vim.g.mapleader = ","
-vim.keymap.set("n", "<leader>n", vim.cmd.Ex)
 
 -- Ctrl h and l to change buffers
 vim.keymap.set("n", "<C-l>", vim.cmd.tabn)
