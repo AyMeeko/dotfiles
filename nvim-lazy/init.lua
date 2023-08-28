@@ -81,7 +81,7 @@ require("lazy").setup({
   {
     'hrsh7th/nvim-cmp',
     config = function ()
-      require('config.cmp')
+      require('cmp')
     end,
     dependencies = {"L3MON4D3/LuaSnip"}
   },
@@ -91,7 +91,10 @@ require("lazy").setup({
     version = "2.*",
     build = "make install_jsregexp",
     config = function()
-      require("config.snippets")
+      require("luasnip").config.set_config({
+        history = true
+      })
+      require("luasnip.loaders.from_vscode").lazy_load()
     end,
     dependencies = {"rafamadriz/friendly-snippets"},
   },
@@ -629,7 +632,6 @@ require("nvim-treesitter.configs").setup {
 }
 
 ---- SNIPPETS ---
-require("luasnip.loaders.from_vscode").lazy_load()
 local luasnip = require("luasnip")
 cmp.setup({
   sources = {
