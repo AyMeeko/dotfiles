@@ -175,6 +175,7 @@ require("legendary").setup({
     {"<space>", description = "Toggle Fold"},
 
     -- Plugin keymaps --
+    {"<leader>fk", ":Legendary<CR>", description = "Open Legendary"},
     {"<C-f>f", ":CtrlSF ", description = "Launch CtrlSF"},
     {"<leader>gs", vim.cmd.Git, description = "[Git] [G]it [S]tatus"},
     {"<leader>gd", vim.cmd.Gvdiffsplit, description = "[Git] [G]it [D]iff"},
