@@ -105,8 +105,10 @@ alias gsl='git stash list'
 alias gsp='git stash pop'
 alias gss='git stash save'
 alias localdictionary='vim ~/Library/Spelling/LocalDictionary'
-alias vim='mvim -v'
+#alias vim='mvim -v'
 alias fzf-tmux="TERM=screen-256color fzf-tmux"
+alias real_vim="mvim -v"
+alias vim="nvim"
 
 export LESS="-F -X -R"
 export EDITOR="vim"
