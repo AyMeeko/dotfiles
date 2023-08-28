@@ -386,7 +386,7 @@ let g:ctrlsf_position = 'bottom'
 let g:ctrlsf_winsize = '25%'
 let g:ctrlsf_case_sensitive = 'smart'
 let g:ctrlsf_default_root = 'project'
-let g:ctrlsf_ackprg = '/opt/homebrew/bin/rg'
+let g:ctrlsf_ackprg = "$BREW_BIN/rg"
 nmap     <C-F>f <Plug>CtrlSFPrompt
 vmap     <C-F>f <Plug>CtrlSFVwordPath
 vmap     <C-F>F <Plug>CtrlSFVwordExec

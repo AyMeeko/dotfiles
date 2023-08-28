@@ -124,6 +124,7 @@ else
   export PATH=$HOME/src/brew/bin:$PATH
   export BREW_DIR=$HOME/src/brew
   export ZSH_PATH=/Users/$(whoami)/src/brew/bin/zsh
+  export BREW_BIN=$BREW_DIR/bin/brew
 fi
 export PYTHON3_HOST_PROG=$(pyenv which python3)
 export PATH="$HOME/src/brew/bin/mosh-server:$PATH"
