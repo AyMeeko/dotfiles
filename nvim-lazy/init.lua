@@ -1,5 +1,5 @@
-vim.g.mapleader = ','
-vim.g.maplocalleader = ','
+vim.g.mapleader = ","
+vim.g.maplocalleader = ","
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -15,6 +15,19 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+  {
+    "mrjones2014/legendary.nvim",
+    version = "v2.1.0",
+    -- since legendary.nvim handles all your keymaps/commands,
+    -- its recommended to load legendary.nvim before other plugins
+    priority = 10000,
+    lazy = false,
+    -- sqlite is only needed if you want to use frecency sorting
+    dependencies = { "kkharji/sqlite.lua" }
+  },
+
+  {"stevearc/dressing.nvim", opts = {}},
+
   -- color scheme
   {
     "navarasu/onedark.nvim",
@@ -43,40 +56,40 @@ require("lazy").setup({
 
   -- fuzzy finder
   {
-    'nvim-telescope/telescope.nvim', tag = '0.1.2',
+    "nvim-telescope/telescope.nvim", tag = "0.1.2",
     dependencies = {
-      {'nvim-lua/plenary.nvim'},
-      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+      {"nvim-lua/plenary.nvim"},
+      {"nvim-telescope/telescope-fzf-native.nvim", build = "make"},
     }
   },
 
   -- syntax help
   {
-    'nvim-treesitter/nvim-treesitter',
+    "nvim-treesitter/nvim-treesitter",
     dependencies = {
-      'nvim-treesitter/nvim-treesitter-context',
-      'nvim-treesitter/nvim-treesitter-textobjects',
+      "nvim-treesitter/nvim-treesitter-context",
+      "nvim-treesitter/nvim-treesitter-textobjects",
     },
-    build = ':TSUpdate',
+    build = ":TSUpdate",
   },
 
   -- git signs in the gutter
-  {'lewis6991/gitsigns.nvim'},
+  {"lewis6991/gitsigns.nvim"},
 
   -- lsp :)
   {
-    'VonHeikemen/lsp-zero.nvim',
-    branch = 'v2.x',
+    "VonHeikemen/lsp-zero.nvim",
+    branch = "v2.x",
     dependencies = {
       -- LSP Support
-      {'neovim/nvim-lspconfig'},
-      {'williamboman/mason.nvim'},
-      {'williamboman/mason-lspconfig.nvim'},
+      {"neovim/nvim-lspconfig"},
+      {"williamboman/mason.nvim"},
+      {"williamboman/mason-lspconfig.nvim"},
 
       -- Autocompletion
-      {'hrsh7th/nvim-cmp'},
-      {'hrsh7th/cmp-nvim-lsp'},
-      {'L3MON4D3/LuaSnip'},
+      {"hrsh7th/nvim-cmp"},
+      {"hrsh7th/cmp-nvim-lsp"},
+      {"L3MON4D3/LuaSnip"},
     }
   },
 
@@ -84,19 +97,19 @@ require("lazy").setup({
   {"rafcamlet/tabline-framework.nvim", dependencies = "nvim-tree/nvim-web-devicons"},
 
   -- better status line
-  {'nvim-lualine/lualine.nvim', dependencies = 'nvim-tree/nvim-web-devicons'},
+  {"nvim-lualine/lualine.nvim", dependencies = "nvim-tree/nvim-web-devicons"},
 
   ---- Run pytest in tmux pane
-  {'vim-test/vim-test'},
+  {"vim-test/vim-test"},
 
   ---- Allow vim to send commands to tmux
-  {'preservim/vimux'},
+  {"preservim/vimux"},
 
   -- window zoom
   {"anuvyklack/windows.nvim", dependencies = "anuvyklack/middleclass"},
 
   -- bubble text
-  {'fedepujol/move.nvim'},
+  {"fedepujol/move.nvim"},
 
   -- easily add/delete/change "surroundings"
   {
@@ -104,30 +117,268 @@ require("lazy").setup({
     version = "*", -- Use for stability; omit to use `main` branch for the latest features
     event = "VeryLazy",
     config = function()
-      require("nvim-surround").setup({
-        -- Configuration here, or leave empty to use defaults
-      })
+      require("nvim-surround").setup({})
     end
   },
 
   -- easy commenting/uncommenting
-  {'scrooloose/nerdcommenter'},
+  {"scrooloose/nerdcommenter"},
 
   -- multiple cursors
-  {'mg979/vim-visual-multi'},
+  {"mg979/vim-visual-multi"},
 
   -- git integration
-  {'tpope/vim-fugitive'},
+  {"tpope/vim-fugitive"},
 
   -- repeat motions
-  {'tpope/vim-repeat'},
+  {"tpope/vim-repeat"},
 
-  {'norcalli/nvim-colorizer.lua'},
+  {"norcalli/nvim-colorizer.lua"},
 
   -- grep
-  {'dyng/ctrlsf.vim'},
+  {"dyng/ctrlsf.vim"},
 
+  -- better python identation
+  {"Vimjas/vim-python-pep8-indent"},
 })
+
+-- Muscle memory things
+-- <C-p> => find files
+-- <leader>t => opening tree
+-- <leader>f<space> => find file in tree
+
+-- <C-f>f => ctrlsf
+
+-- New mappings
+-- <leader>bl => buffer list
+-- <leader>fh => find help
+-- <leader>rt => run test
+-- <leader>rt => run file
+-- <leader>hb => git blame
+-- <leader>fj => format json
+-- [d => previous diagnostic
+-- ]d => next diagnostic
+-- <leader>fd => find definition
+-- <leader>fr => find references
+-- <leader>vd => view diagnostic
+-- <leader>rs => rename symbol
+-- <leader>hi => hover information
+
+require("legendary").setup({
+  keymaps = {
+    -- General vim keymaps --
+    {"<C-l>", vim.cmd.tabn, description = "Tab next"},
+    {"<C-h>", vim.cmd.tabp, description = "Tab previous"},
+    {"<leader>/", vim.cmd.nohlsearch, description = "Clear last search"},
+    {"<leader><tab>", vim.cmd.bprev, description = "Switch to previous buffer"},
+    {"<leader>fj", description = "Format Json"},
+    {"<space>", description = "Toggle Fold"},
+
+    -- Plugin keymaps --
+    {"<C-f>f", ":CtrlSF ", description = "Launch CtrlSF"},
+    {"<leader>gs", vim.cmd.Git, description = "[Git] [G]it [S]tatus"},
+    {"<leader>gd", vim.cmd.Gvdiffsplit, description = "[Git] [G]it [D]iff"},
+    {
+      "<leader>gb", function()
+        vim.cmd.Git("blame")
+      end,
+      description = "[Git] [G]it [B]lame"},
+
+    ---- MOVE ----
+    {
+      "<C-j>",
+      { n = ":MoveLine(1)<CR>", v = ":MoveBlock(1)<CR>"},
+      description = "Bubble Text Down",
+      opts = {noremap = true, silent = true}
+    },
+    {
+      "<C-k>",
+      { n = ":MoveLine(-1)<CR>", v = ":MoveBlock(-1)<CR>"},
+      description = "Bubble Text Up",
+      opts = {noremap = true, silent = true}
+    },
+
+    ---- TELESCOPE ----
+    {
+      "<C-p>", function()
+        require("telescope.builtin").git_files()
+      end,
+      description = "Fuzzy search git files"
+    },
+    {
+      "<leader>bl", function()
+        require("telescope.builtin").buffers()
+      end,
+      description = "Open [b]uffer [l]ist"
+    },
+    {
+      "<leader>fh", function()
+        require("telescope.builtin").help_tags()
+      end,
+      description = "[F]ind [H]elp tags"
+    },
+
+    ---- VIM-TEST ----
+    {
+      "<leader>rt", function()
+        vim.cmd.TestNearest()
+      end,
+      description = "[Test] [R]un [T]est"
+    },
+    {
+      "<leader>rf", function()
+        vim.cmd.TestFile()
+      end,
+      description = "[Test] [R]un [F]ile"
+    },
+
+    ---- NVIM TREE ----
+    {
+      "<leader>t", function()
+        vim.cmd.NvimTreeToggle()
+      end,
+      description = "Toggle Nvim Tree"
+    },
+    {
+      "<leader>f<space>", function()
+        vim.cmd.NvimTreeFindFile()
+      end,
+      description = "Find Current File in Nvim Tree"
+    },
+
+    ---- ZOOM WINDOW ----
+    {
+      "<leader>zw", function()
+        require('windows').setup()
+        vim.cmd.WindowsMaximize()
+      end,
+      description = "[Z]oom into [W]indow"
+    },
+
+    ---- LSP ----
+    {
+      "]d", function()
+        vim.diagnostic.goto_next()
+      end,
+      description = "[LSP] Next Diagnostic"
+    },
+    {
+      "[d", function()
+        vim.diagnostic.goto_prev()
+      end,
+      description = "[LSP] Previous Diagnostic"
+    },
+    {
+      "<leader>fd", function()
+        vim.lsp.buf.definition()
+      end,
+      description = "[LSP] [F]ind [D]efinition"
+    },
+    {
+      "<leader>fr", function()
+        vim.lsp.buf.references()
+      end,
+      description = "[LSP] [F]ind [R]eferences"
+    },
+    {
+      "<leader>vd", function()
+        vim.diagnostic.open_float()
+      end,
+      description = "[LSP] [V]iew [D]iagnostic"
+    },
+    {
+      "<leader>rs", function()
+        vim.lsp.buf.rename()
+      end,
+      description = "[LSP] [R]ename [S]ymbol"
+    },
+    {
+      "<leader>hi", function()
+        vim.lsp.buf.hover()
+      end,
+      description = "[LSP] [H]over [I]nformation"
+    },
+
+    ---- GIT SIGNS -----
+    {
+      "<leader>ga", function()
+        vim.cmd.Gitsigns("stage_hunk")
+      end,
+      mode = { "n", "v" },
+      description = "[Git signs] [G]it [A]dd"
+    },
+    {
+      "<leader>gp", function()
+        vim.cmd.Gitsigns("preview_hunk")
+      end,
+      description = "[Git signs] [G]it [P]review"
+    },
+    {"]c", description = "Next hunk"},
+    {"[c", description = "Previous hunk"},
+  }
+})
+
+---- ADDITIONAL KEYMAPS (on_attach and autocmds----
+---- NVIM TREE ----
+-- if nvim open without args, open Tree view
+-- if nvim open with file, open Tree view, move it to the left-most tab, refocus opened file
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    if vim.fn.argv(0) == "" then
+      vim.cmd("NvimTreeToggle")
+      vim.cmd("wincmd l")
+      vim.cmd("q")
+      vim.cmd("bdelete 1")
+    else
+      vim.cmd("tabnew ~/.nvim_tree")
+      vim.cmd("tabm 0")
+      vim.cmd("NvimTreeToggle")
+      vim.cmd("bdelete 3")
+      vim.cmd("tabn")
+    end
+  end,
+})
+
+---- GIT SIGNS ----
+require("gitsigns").setup {
+  on_attach = function(bufnr)
+    local function map(mode, lhs, rhs, opts)
+        opts = vim.tbl_extend("force", {noremap = true, silent = true}, opts or {})
+        vim.api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
+    end
+
+    -- Navigation
+    map("n", "]c", "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", { expr = true })
+    map("n", "[c", "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", { expr = true })
+  end
+}
+
+-- Makes cursor not jump 'over' a line if it's wrapped to.a second line
+vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+
+-- make command line work with emacs style editing
+vim.keymap.set("c", "<C-a>", "<Home>")
+vim.keymap.set("c", "<C-e>", "<End>")
+vim.keymap.set("c", "<M-f>", "<S-Right>")
+vim.keymap.set("c", "<M-b>", "<S-Left>")
+
+-- Allow variations of wq and qa
+vim.api.nvim_create_user_command("WQ", "wq", {})
+vim.api.nvim_create_user_command("Wq", "wq", {})
+vim.api.nvim_create_user_command("W", "w", {})
+vim.api.nvim_create_user_command("Qa", "qa", {})
+vim.api.nvim_create_user_command("Q", "q", {})
+
+-- Put Y back for yanking
+vim.keymap.set("n", "Y", "yy", { noremap = true })
+
+-- Format JSON
+vim.api.nvim_create_user_command("FormatJson", "%!jq .", {})
+vim.keymap.set("n", "<leader>fj", vim.cmd.FormatJson)
+
+-- Map za to <space> for folding/unfolding
+vim.keymap.set("n", "<space>", "za")
 
 -- Disable netrw
 vim.g.loaded_netrw = 1
@@ -170,13 +421,13 @@ vim.opt.foldlevel = 99
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
-local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
-vim.api.nvim_create_autocmd('TextYankPost', {
+local highlight_group = vim.api.nvim_create_augroup("YankHighlight", {clear = true})
+vim.api.nvim_create_autocmd("TextYankPost", {
   callback = function()
     vim.highlight.on_yank()
   end,
   group = highlight_group,
-  pattern = '*',
+  pattern = "*",
 })
 
 vim.g.python3_host_prog = vim.fn.expand("$PYTHON3_HOST_PROG") -- Set python 3 provider
@@ -189,42 +440,7 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 
 -- Show trailing whitespace as a dot
 vim.opt.list = true
-vim.opt.listchars = {trail = '.'}
-
----- REMAPPINGS ----
--- Ctrl h and l to change buffers
-vim.keymap.set("n", "<C-l>", vim.cmd.tabn)
-vim.keymap.set("n", "<C-h>", vim.cmd.tabp)
-
--- Makes cursor not jump 'over' a line if it's wrapped to.a second line
-vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
-
--- Clear last search
-vim.keymap.set("n", "<leader>/", vim.cmd.nohlsearch)
-
--- make command line work with emacs style editing
-vim.keymap.set("c", "<C-a>", "<Home>")
-vim.keymap.set("c", "<C-e>", "<End>")
-vim.keymap.set("c", "<M-f>", "<S-Right>")
-vim.keymap.set("c", "<M-b>", "<S-Left>")
-
--- Allow variations of wq and qa
-vim.api.nvim_create_user_command("WQ", "wq", {})
-vim.api.nvim_create_user_command("Wq", "wq", {})
-vim.api.nvim_create_user_command("W", "w", {})
-vim.api.nvim_create_user_command("Qa", "qa", {})
-vim.api.nvim_create_user_command("Q", "q", {})
-
--- Format JSON
-vim.api.nvim_create_user_command("FormatJson", "%!jq .", {})
-vim.keymap.set("n", "<leader>fj", vim.cmd.FormatJson)
-
--- Map za to <space> for folding/unfolding
-vim.keymap.set("n", "<space>", "za")
-
--- Switch to previous buffer
-vim.keymap.set("n", "<space><tab>", vim.cmd.bprev)
+vim.opt.listchars = {trail = "."}
 
 ---- COLORS ----
 vim.opt.termguicolors = true
@@ -240,66 +456,18 @@ function SetColor(color)
 end
 
 -- must be set after vim.opt.termguicolors
-require('colorizer').setup()
+require("colorizer").setup()
 SetColor() -- run at startup
 
-
 ---- CTRLSF ----
-vim.g.ctrlsf_position = 'bottom'
-vim.g.ctrlsf_winsize = '25%'
-vim.g.ctrlsf_case_sensitive = 'smart'
-vim.g.ctrlsf_default_root = 'project'
-vim.g.ctrlsf_ackprg = '/opt/homebrew/bin/rg'
-
-vim.keymap.set("n", "<C-f>f", ":CtrlSF ")
-
----- GIT ----
-vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
-vim.keymap.set("n", "<leader>gd", vim.cmd.Gvdiffsplit)
-
-local Core_Fugitive = vim.api.nvim_create_augroup("Core_Fugitive", {})
-
-local autocmd = vim.api.nvim_create_autocmd
-autocmd("BufWinEnter", {
-    group = Core_Fugitive,
-    pattern = "*",
-    callback = function()
-        if vim.bo.ft ~= "fugitive" then
-            return
-        end
-
-        local bufnr = vim.api.nvim_get_current_buf()
-        local opts = {buffer = bufnr, remap = false}
-        vim.keymap.set("n", "<leader>gb", function()
-            vim.cmd.Git('blame')
-        end, opts)
-    end,
-})
-
-require("gitsigns").setup {
-  on_attach = function(bufnr)
-    local function map(mode, lhs, rhs, opts)
-        opts = vim.tbl_extend('force', {noremap = true, silent = true}, opts or {})
-        vim.api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
-    end
-
-    -- Navigation
-    map('n', ']c', "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", {expr=true})
-    map('n', '[c', "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", {expr=true})
-
-    -- Actions
-    map('n', '<leader>ha', ':Gitsigns stage_hunk<CR>')
-    map('v', '<leader>ha', ':Gitsigns stage_hunk<CR>')
-
-    map('n', '<leader>hp', '<cmd>Gitsigns preview_hunk<CR>')
-    map('n', '<leader>hb', '<cmd>lua require"gitsigns".blame_line{full=true}<CR>')
-  end
-}
+vim.g.ctrlsf_position = "bottom"
+vim.g.ctrlsf_winsize = "25%"
+vim.g.ctrlsf_case_sensitive = "smart"
+vim.g.ctrlsf_default_root = "project"
+vim.g.ctrlsf_ackprg = "/opt/homebrew/bin/rg"
 
 ---- LSP ----
-local lsp = require("lsp-zero")
-
-lsp.preset("recommended")
+local lsp = require("lsp-zero").preset("recommended")
 
 -- Fix Undefined global 'vim'
 lsp.nvim_workspace()
@@ -307,64 +475,35 @@ lsp.nvim_workspace()
 local cmp = require('cmp')
 local cmp_select = {behavior = cmp.SelectBehavior.Select}
 local cmp_mappings = lsp.defaults.cmp_mappings({
-  ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-  ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-  ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+  ["<C-p>"] = cmp.mapping.select_prev_item(cmp_select),
+  ["<C-n>"] = cmp.mapping.select_next_item(cmp_select),
+  ["<C-y>"] = cmp.mapping.confirm({ select = true }),
   ["<C-Space>"] = cmp.mapping.complete(),
 })
 
-cmp_mappings['<Tab>'] = nil
-cmp_mappings['<S-Tab>'] = nil
+cmp_mappings["<Tab>"] = nil
+cmp_mappings["<S-Tab>"] = nil
 
-lsp.setup_nvim_cmp({
-  mapping = cmp_mappings
-})
+lsp.setup_nvim_cmp({mapping = cmp_mappings})
 
 lsp.set_preferences({
     suggest_lsp_servers = false,
     sign_icons = {
-        error = 'E',
-        warn = 'W',
-        hint = 'H',
-        info = 'I'
+        error = "E",
+        warn = "W",
+        hint = "H",
+        info = "I"
     }
 })
 
-lsp.on_attach(function(client, bufnr)
-  local opts = {buffer = bufnr, remap = false}
-
-  vim.keymap.set("n", "<leader>fd", function() vim.lsp.buf.definition() end, opts)
-  vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
-  vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
-  vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
-  vim.keymap.set("n", "]d", function() vim.diagnostic.goto_next() end, opts)
-  vim.keymap.set("n", "[d", function() vim.diagnostic.goto_prev() end, opts)
-  vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, opts)
-  vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
-  vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
-  vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
-end)
-
 lsp.setup()
-
-vim.diagnostic.config({
-    virtual_text = true
-})
-
----- MOVE ----
-local opts = { noremap = true, silent = true }
-
-vim.keymap.set('n', '<C-j>', ':MoveLine(1)<CR>', opts)
-vim.keymap.set('n', '<C-k>', ':MoveLine(-1)<CR>', opts)
-
-vim.keymap.set('v', '<C-j>', ':MoveBlock(1)<CR>', opts)
-vim.keymap.set('v', '<C-k>', ':MoveBlock(-1)<CR>', opts)
+vim.diagnostic.config({virtual_text = true})
 
 ---- STATUS LINE ----
-require('lualine').setup {
+require("lualine").setup {
   options = {
     icons_enabled = true,
-    theme = 'onedark'
+    theme = "onedark"
   },
   sections = {
     lualine_a = {"mode"},
@@ -385,28 +524,28 @@ vim.o.showmode = false -- hide status bar so there aren't two
 
 ---- TAB LINE ----
 local colors = {
-  black = '#000000',
-  tabs_text = '#c677dd',
-  normal_mode = '#98c379',
-  tab_bg = '#31353f',
-  unselected_tab_bg = '#3e4452',
-  unselected_tab_text = '#abb2bf',
+  black = "#000000",
+  tabs_text = "#c677dd",
+  normal_mode = "#98c379",
+  tab_bg = "#31353f",
+  unselected_tab_bg = "#3e4452",
+  unselected_tab_text = "#abb2bf",
 }
 
 -- TABS > file name[+]
 local render = function(f)
-  f.add({' TABS ', fg = colors.black, bg = colors.tabs_text})
+  f.add({" TABS ", fg = colors.black, bg = colors.tabs_text})
 
   f.make_tabs(function(info)
     if info.index == 1 then
-      f.add({' ', fg = colors.tabs_text, bg = info.current and colors.normal_mode or colors.unselected_tab_bg})
+      f.add({" ", fg = colors.tabs_text, bg = info.current and colors.normal_mode or colors.unselected_tab_bg})
     elseif info.index > 1 then
       if info.current then
-        f.add({' ', fg = colors.unselected_tab_bg, bg = colors.normal_mode})
+        f.add({" ", fg = colors.unselected_tab_bg, bg = colors.normal_mode})
       elseif info.after_current then
-        f.add({' ', fg = colors.normal_mode, bg = colors.unselected_tab_bg})
+        f.add({" ", fg = colors.normal_mode, bg = colors.unselected_tab_bg})
       else
-        f.add({' ', fg = colors.unselected_tab_text, bg = colors.unselected_tab_bg})
+        f.add({" ", fg = colors.unselected_tab_text, bg = colors.unselected_tab_bg})
       end
     end
 
@@ -423,17 +562,17 @@ local render = function(f)
         f.add({fn, fg = colors.unselected_tab_text, bg = colors.unselected_tab_bg})
       end
       if info.current then
-        f.add({info.modified and '[+]', fg = colors.black, bg = colors.normal_mode})
+        f.add({info.modified and "[+]", fg = colors.black, bg = colors.normal_mode})
       else
-        f.add({info.modified and '[+]', fg = colors.unselected_tab_text, bg = colors.unselected_tab_bg})
+        f.add({info.modified and "[+]", fg = colors.unselected_tab_text, bg = colors.unselected_tab_bg})
       end
       f.add({' ', bg = info.current and colors.normal_mode or colors.unselected_tab_bg})
     else
-      f.add(info.modified and '[+]' or '[-]')
+      f.add(info.modified and "[+]" or "[-]")
     end
 
     if info.last then
-      f.add({'', fg = info.current and colors.normal_mode or colors.unselected_tab_bg, bg = colors.tab_bg})
+      f.add({"", fg = info.current and colors.normal_mode or colors.unselected_tab_bg, bg = colors.tab_bg})
     end
 
   end)
@@ -441,16 +580,10 @@ local render = function(f)
   f.add_spacer()
 end
 
-require('tabline_framework').setup { render = render }
+require("tabline_framework").setup { render = render }
 
 ---- TELESCOPE ----
-require('telescope').load_extension('fzf')
-
-local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<C-p>', builtin.git_files, {})
---vim.keymap.set('n', '<C-f>f', builtin.live_grep, {})
-vim.keymap.set('n', '<leader>bl', builtin.buffers, {})
-vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+require("telescope").load_extension("fzf")
 
 -- Close telescope window with one Esc hit
 local actions = require("telescope.actions")
@@ -466,11 +599,8 @@ require("telescope").setup({
 })
 
 ---- TEST ----
-vim.g['test#strategy'] = 'vimux'
-vim.g['test#python#pytest#executable'] = 'pytest'
-
-vim.keymap.set('n', '<leader>rt', vim.cmd.TestNearest, {})
-vim.keymap.set('n', '<leader>rf', vim.cmd.TestFile, {})
+vim.g["test#strategy"] = "vimux"
+vim.g["test#python#pytest#executable"] = "pytest"
 
 ---- TREE ----
 require("nvim-tree").setup({
@@ -479,46 +609,11 @@ require("nvim-tree").setup({
   }
 })
 
-vim.keymap.set("n", "<leader>n", vim.cmd.NvimTreeToggle)
-vim.keymap.set("n", "<leader>f<space>", vim.cmd.NvimTreeFindFile)
-
--- if nvim open without args, open Tree view
--- if nvim open with file, open Tree view, move it to the left-most tab, refocus opened file
-vim.api.nvim_create_autocmd("VimEnter", {
-  callback = function()
-    if vim.fn.argv(0) == "" then
-      vim.cmd('NvimTreeToggle')
-      vim.cmd('wincmd l')
-      vim.cmd('q')
-      vim.cmd('bdelete 1')
-    else
-      vim.cmd('tabnew ~/.nvim_tree')
-      vim.cmd('tabm 0')
-      vim.cmd('NvimTreeToggle')
-      vim.cmd('bdelete 3')
-      vim.cmd('tabn')
-    end
-  end,
-})
-
 ---- TREESITTER ----
-require'nvim-treesitter.configs'.setup {
-  -- A list of parser names, or "all" (the five listed parsers should always be installed)
+require("nvim-treesitter.configs").setup {
   ensure_installed = { "python", "javascript", "typescript", "c", "lua", "vim", "vimdoc", "query" },
-
-  -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,
-
-  -- Automatically install missing parsers when entering buffer
-  -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
   auto_install = true,
-
-  -- List of parsers to ignore installing (for "all")
-  ignore_install = { },
-
-  ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
-  -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
-
   highlight = {
     enable = true,
 
@@ -529,10 +624,3 @@ require'nvim-treesitter.configs'.setup {
     additional_vim_regex_highlighting = false,
   },
 }
-
----- ZOOM WINDOW ----
-local function cmd(command)
-   return table.concat({ '<Cmd>', command, '<CR>' })
-end
-
-vim.keymap.set('n', '<leader>zw', cmd 'WindowsMaximize')
