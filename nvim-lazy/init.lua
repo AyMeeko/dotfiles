@@ -587,11 +587,12 @@ require("telescope").load_extension("fzf")
 require('telescope').load_extension("luasnip")
 
 -- Close telescope window with one Esc hit
---local actions = require("telescope.actions")
+local actions = require("telescope.actions")
 require("telescope").setup({
   defaults = {
     mappings = {
       i = {["<C-d>"] = "delete_buffer"},
+      n = {["dd"] = "delete_buffer", ["q"] = actions.close},
       --i = { ["<esc>"] = actions.close }
     },
     preview = {
