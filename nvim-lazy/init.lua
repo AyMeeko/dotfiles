@@ -60,6 +60,7 @@ require("lazy").setup({
     dependencies = {
       {"nvim-lua/plenary.nvim"},
       {"nvim-telescope/telescope-fzf-native.nvim", build = "make"},
+      {"benfowler/telescope-luasnip.nvim"},
     }
   },
 
@@ -75,6 +76,25 @@ require("lazy").setup({
 
   -- git signs in the gutter
   {"lewis6991/gitsigns.nvim"},
+
+  -- snippets
+  {
+    'hrsh7th/nvim-cmp',
+    config = function ()
+      require('config.cmp')
+    end,
+    dependencies = {"L3MON4D3/LuaSnip"}
+  },
+  {'saadparwaiz1/cmp_luasnip'},
+  {
+    "L3MON4D3/LuaSnip",
+    version = "2.*",
+    build = "make install_jsregexp",
+    config = function()
+      require("config.snippets")
+    end,
+    dependencies = {"rafamadriz/friendly-snippets"},
+  },
 
   -- lsp :)
   {
@@ -142,28 +162,6 @@ require("lazy").setup({
   {"Vimjas/vim-python-pep8-indent"},
 })
 
--- Muscle memory things
--- <C-p> => find files
--- <leader>t => opening tree
--- <leader>f<space> => find file in tree
-
--- <C-f>f => ctrlsf
-
--- New mappings
--- <leader>bl => buffer list
--- <leader>fh => find help
--- <leader>rt => run test
--- <leader>rt => run file
--- <leader>hb => git blame
--- <leader>fj => format json
--- [d => previous diagnostic
--- ]d => next diagnostic
--- <leader>fd => find definition
--- <leader>fr => find references
--- <leader>vd => view diagnostic
--- <leader>rs => rename symbol
--- <leader>hi => hover information
-
 require("legendary").setup({
   keymaps = {
     -- General vim keymaps --
@@ -177,6 +175,7 @@ require("legendary").setup({
     -- Plugin keymaps --
     {"<leader>fk", ":Legendary<CR>", description = "Open Legendary"},
     {"<C-f>f", ":CtrlSF ", description = "Launch CtrlSF"},
+    {"<leader>fs", ":Telescope luasnip<CR>", description = "[F]ind [S]nippet"},
     {"<leader>gs", vim.cmd.Git, description = "[Git] [G]it [S]tatus"},
     {"<leader>gd", vim.cmd.Gvdiffsplit, description = "[Git] [G]it [D]iff"},
     {
@@ -585,6 +584,7 @@ require("tabline_framework").setup { render = render }
 
 ---- TELESCOPE ----
 require("telescope").load_extension("fzf")
+require('telescope').load_extension("luasnip")
 
 -- Close telescope window with one Esc hit
 local actions = require("telescope.actions")
@@ -625,3 +625,42 @@ require("nvim-treesitter.configs").setup {
     additional_vim_regex_highlighting = false,
   },
 }
+
+---- SNIPPETS ---
+require("luasnip.loaders.from_vscode").lazy_load()
+local luasnip = require("luasnip")
+cmp.setup({
+  sources = {
+    {name="luasnip"},
+  },
+  mapping = {
+    ["<C-y>"] = cmp.mapping.confirm { select = true },
+    ["<C-n>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      elseif luasnip.has_words_before() then
+        cmp.complete()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+
+    ["<C-p>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+  },
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },
+})
+
