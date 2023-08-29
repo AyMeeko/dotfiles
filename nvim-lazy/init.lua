@@ -113,7 +113,7 @@ require("lazy").setup({
       {"hrsh7th/nvim-cmp"},
       {"hrsh7th/cmp-nvim-lsp"},
       {"L3MON4D3/LuaSnip"},
-    }
+    },
   },
 
   -- better tab line
@@ -398,7 +398,6 @@ vim.o.tabstop = 2
 vim.o.shiftwidth = 2
 
 vim.wo.number = true -- Make line numbers default
-vim.wo.relativenumber = true -- Relative line numbers
 vim.o.mouse = 'a' -- Enable mouse mode
 vim.o.undofile = true -- Save undo history
 
@@ -498,6 +497,10 @@ lsp.set_preferences({
         info = "I"
     }
 })
+
+lsp.on_attach(function(client, bufnr)
+  require("callbacks")
+end)
 
 lsp.setup()
 vim.diagnostic.config({virtual_text = true})
@@ -667,4 +670,3 @@ cmp.setup({
     end,
   },
 })
-
