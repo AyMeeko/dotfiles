@@ -135,7 +135,6 @@ set termguicolors
 let mapleader = ","    	" Set leader to , instead of \
 set nocompatible       	" Use vim, no vi defaults
 set number             	" Show line numbers
-set number relativenumber
 set ruler              	" Show line and column number
 syntax enable          	" Turn on syntax highlighting allowing local overrides
 set encoding=utf-8     	" Set default encoding to UTF-8
@@ -386,7 +385,7 @@ let g:ctrlsf_position = 'bottom'
 let g:ctrlsf_winsize = '25%'
 let g:ctrlsf_case_sensitive = 'smart'
 let g:ctrlsf_default_root = 'project'
-let g:ctrlsf_ackprg = "$BREW_BIN/rg"
+let g:ctrlsf_ackprg = $RG_PATH
 nmap     <C-F>f <Plug>CtrlSFPrompt
 vmap     <C-F>f <Plug>CtrlSFVwordPath
 vmap     <C-F>F <Plug>CtrlSFVwordExec

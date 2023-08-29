@@ -122,6 +122,7 @@ if [[ $(uname -m) == 'arm64' ]]; then
   export BREW_DIR=$(brew --prefix)
   export PATH=$BREW_DIR/bin:$PATH
   export ZSH_PATH=$BREW_DIR/bin/zsh
+  export BREW_BIN=$BREW_DIR/bin/
 else
   export PATH=$HOME/src/brew/bin:$PATH
   export BREW_DIR=$HOME/src/brew
