@@ -163,6 +163,9 @@ require("lazy").setup({
 
   -- better python identation
   {"Vimjas/vim-python-pep8-indent"},
+
+  -- open current file in GHE
+  {"almo7aya/openingh.nvim"}
 })
 
 require("legendary").setup({
