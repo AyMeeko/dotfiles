@@ -212,6 +212,12 @@ require("legendary").setup({
       description = "Fuzzy search git files"
     },
     {
+      "<leader>ff", function()
+        require("telescope.builtin").find_files()
+      end,
+      description = "Fuzzy search [f]ind [f]iles"
+    },
+    {
       "<leader>bl", function()
         require("telescope.builtin").buffers()
       end,
@@ -504,6 +510,22 @@ lsp.set_preferences({
 lsp.on_attach(function(client, bufnr)
   require("callbacks")
 end)
+
+require("lspconfig").pylsp.setup({
+  settings = {
+      pylsp = {
+      configurationSources = {"pylint", "flake8"},
+      plugins = {
+        pylint = { enabled = true },
+        flake8 = { enabled = true },
+        isort = { enabled = true },
+        pycodestyle = { enabled = false },
+        mccabe = { enabled = false},
+        pyflakes = { enabled = true },
+      }
+    }
+  }
+})
 
 lsp.setup()
 vim.diagnostic.config({virtual_text = true})
