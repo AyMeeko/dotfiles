@@ -118,8 +118,6 @@ export VISUAL="vim"
 export GIT_EDITOR=$EDITOR
 export HOMEBREW_EDITOR=$VISUAL
 export TERM="xterm-256color"
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
 if [[ $(uname -m) == 'arm64' ]]; then
   export BREW_DIR=$(brew --prefix)
   export PATH=$BREW_DIR/bin:$PATH
@@ -150,10 +148,34 @@ if type brew &>/dev/null; then
 fi
 [[ $TMUX = "" ]] && export TERM="xterm-256color"
 
-eval "$(pyenv init -)"
-eval "$(pyenv init --path)"
-if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+PYENV_ROOT="${HOME}/.pyenv"
+if [[ -d "$PYENV_ROOT}" ]]; then
+  pyenv () {
+    if ! (($path[(Ie)${PYENV_ROOT}/bin])); then
+      path[1,0]="${PYENV_ROOT}/bin"
+    fi
+    eval "$(command pyenv init -)"
+    eval "$(command pyenv init --path)"
+    if which pyenv-virtualenv-init > /dev/null; then eval "$(command pyenv virtualenv-init -)"; fi
+    pyenv "$@"
+    unfunction pyenv
+  }
+else
+  unset PYENV_ROOT
+fi
 
-eval "$(rbenv init -)"
+RBENV_ROOT="${HOME}/.rbenv"
+if [[ -d "$RBENV_ROOT}" ]]; then
+  rbenv () {
+    if ! (($path[(Ie)${RBENV_ROOT}/bin])); then
+      path[1,0]="${RBENV_ROOT}/bin"
+    fi
+    eval "$(command rbenv init -)"
+    rbenv "$@"
+    unfunction rbenv
+  }
+else
+  unset RBENV_ROOT
+fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
