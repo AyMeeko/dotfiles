@@ -165,7 +165,10 @@ require("lazy").setup({
   {"Vimjas/vim-python-pep8-indent"},
 
   -- open current file in GHE
-  {"almo7aya/openingh.nvim"}
+  {"almo7aya/openingh.nvim"},
+
+   -- better quickfix?
+   {'kevinhwang91/nvim-bqf', ft = 'qf'},
 })
 
 require("legendary").setup({
@@ -177,6 +180,12 @@ require("legendary").setup({
     {"<leader><tab>", vim.cmd.bprev, description = "Switch to previous buffer"},
     {"<leader>fj", description = "Format Json"},
     {"<space>", description = "Toggle Fold"},
+    {"<leader>yp", function()
+      vim.cmd("let @+ = expand('%')")
+    end, description = "[Y]ank current file [p]ath to system clipboard"},
+    {"<leader>sp", function()
+      vim.cmd("echo expand('%')")
+    end, description = "[S]how current file [p]ath"},
 
     -- Plugin keymaps --
     {"<leader>fk", ":Legendary<CR>", description = "Open Legendary"},
@@ -188,7 +197,10 @@ require("legendary").setup({
       "<leader>gb", function()
         vim.cmd.Git("blame")
       end,
-      description = "[Git] [G]it [B]lame"},
+      description = "[Git] [G]it [B]lame"
+    },
+    {"<leader>gl", vim.cmd.OpenInGHFileLines, description = "Open [g]ithub file at [l]ine"},
+    {"<leader>gf", vim.cmd.OpenInGHFile, description = "Open [g]ithub [f]ile"},
 
     ---- MOVE ----
     {
