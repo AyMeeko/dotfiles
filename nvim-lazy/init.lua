@@ -169,6 +169,8 @@ require("lazy").setup({
 
    -- better quickfix?
    {'kevinhwang91/nvim-bqf', ft = 'qf'},
+
+   {"max397574/better-escape.nvim"},
 })
 
 require("legendary").setup({
@@ -680,10 +682,12 @@ local cmp = require('cmp')
 local luasnip = require("luasnip")
 
 cmp.setup({
-  sources = cmp.config.sources({
+  sources = cmp.config.sources(
+  {
     { name = 'nvim_lsp' },
-     { name = 'luasnip' },
-  }, {
+    { name = 'luasnip' },
+  },
+  {
     { name = 'buffer' },
   }),
   mapping = {
@@ -716,3 +720,8 @@ cmp.setup({
     end,
   },
 })
+
+---- BETTER ESCAPE ----
+require("better_escape").setup {
+    mapping = {"jk", "jj", "kj"}
+}
