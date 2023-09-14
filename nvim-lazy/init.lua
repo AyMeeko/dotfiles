@@ -67,6 +67,7 @@ require("lazy").setup({
   -- syntax help
   {
     "nvim-treesitter/nvim-treesitter",
+    version = "*",
     dependencies = {
       "nvim-treesitter/nvim-treesitter-context",
       "nvim-treesitter/nvim-treesitter-textobjects",
