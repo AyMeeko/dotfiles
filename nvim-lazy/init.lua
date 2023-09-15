@@ -189,6 +189,8 @@ require("legendary").setup({
     {"<leader>sp", function()
       vim.cmd("echo expand('%')")
     end, description = "[S]how current file [p]ath"},
+    {"<leader>sc", description = "Open a scratch buffer" },
+    {"<leader>bb", description = "Switch back to window after using scratch" },
 
     -- Plugin keymaps --
     {"<leader>fk", ":Legendary<CR>", description = "Open Legendary"},
@@ -734,3 +736,42 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufNew", "BufWinEnter"  }, {
   group = vim.api.nvim_create_augroup("ts_fold_workaround", { clear = true }),
   command = "set foldexpr=nvim_treesitter#foldexpr()",
 })
+
+---- SCRATCH BUFFER ----
+
+local function find_buffer_by_name(name)
+  local working_dir = vim.fn.getcwd()
+  local full_name = working_dir .. "/" .. name
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    local buf_name = vim.api.nvim_buf_get_name(buf)
+    if buf_name == full_name then
+      return buf
+    end
+  end
+  return -1
+end
+
+local function scratch()
+  vim.g.scratch_return_window = vim.fn.tabpagenr()
+  if find_buffer_by_name('scratch') == -1 then
+    local buf = vim.api.nvim_create_buf(true, true)
+    vim.api.nvim_buf_set_name(buf, 'scratch')
+    vim.cmd("0tabnew")
+    vim.api.nvim_win_set_buf(0, buf)
+  else
+    vim.cmd("tabfirst")
+  end
+end
+
+local function return_from_scratch()
+  local return_window = vim.g.scratch_return_window
+  if return_window then
+    vim.cmd(return_window .. "tabn")
+    vim.g.scratch_return_window = nil
+  else
+    vim.cmd("echo 'No return window set.'")
+  end
+end
+
+vim.keymap.set("n", "<leader>sc", scratch, { desc = "Open a scratch buffer" })
+vim.keymap.set("n", "<leader>bb", return_from_scratch, { desc = "Switch back to window after using scratch" })
