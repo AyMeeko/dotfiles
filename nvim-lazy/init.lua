@@ -423,6 +423,7 @@ vim.o.tabstop = 2
 vim.o.shiftwidth = 2
 
 vim.wo.number = true -- Make line numbers default
+vim.wo.relativenumber = true -- Relative line numbers again, I guess
 vim.o.mouse = 'a' -- Enable mouse mode
 vim.o.undofile = true -- Save undo history
 
@@ -726,3 +727,10 @@ cmp.setup({
 require("better_escape").setup {
     mapping = {"jk", "jj", "kj"}
 }
+
+---- FIX TELESCOPE / TREESITTER FOLDING ISSUE ---
+-- https://github.com/nvim-telescope/telescope.nvim/issues/699
+vim.api.nvim_create_autocmd({ "BufEnter", "BufNew", "BufWinEnter"  }, {
+  group = vim.api.nvim_create_augroup("ts_fold_workaround", { clear = true }),
+  command = "set foldexpr=nvim_treesitter#foldexpr()",
+})
