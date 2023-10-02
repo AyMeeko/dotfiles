@@ -149,34 +149,12 @@ if type brew &>/dev/null; then
 fi
 [[ $TMUX = "" ]] && export TERM="xterm-256color"
 
-PYENV_ROOT="${HOME}/.pyenv"
-if [[ -d "$PYENV_ROOT}" ]]; then
-  pyenv () {
-    if ! (($path[(Ie)${PYENV_ROOT}/bin])); then
-      path[1,0]="${PYENV_ROOT}/bin"
-    fi
-    eval "$(command pyenv init -)"
-    eval "$(command pyenv init --path)"
-    if which pyenv-virtualenv-init > /dev/null; then eval "$(command pyenv virtualenv-init -)"; fi
-    pyenv "$@"
-    unfunction pyenv
-  }
-else
-  unset PYENV_ROOT
-fi
+# Install pyenv for Python support
+PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
 
-RBENV_ROOT="${HOME}/.rbenv"
-if [[ -d "$RBENV_ROOT}" ]]; then
-  rbenv () {
-    if ! (($path[(Ie)${RBENV_ROOT}/bin])); then
-      path[1,0]="${RBENV_ROOT}/bin"
-    fi
-    eval "$(command rbenv init -)"
-    rbenv "$@"
-    unfunction rbenv
-  }
-else
-  unset RBENV_ROOT
-fi
+# Install rbenv for Ruby support
+eval "$(rbenv init - zsh)"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
