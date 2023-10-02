@@ -758,7 +758,7 @@ local function find_buffer_by_name(name)
   return -1
 end
 
-local function scratch()
+local function Scratch()
   vim.g.scratch_return_window = vim.fn.tabpagenr()
   if find_buffer_by_name('scratch') == -1 then
     local buf = vim.api.nvim_create_buf(true, true)
@@ -770,7 +770,7 @@ local function scratch()
   end
 end
 
-local function return_from_scratch()
+local function ReturnFromScratch()
   local return_window = vim.g.scratch_return_window
   if return_window then
     vim.cmd(return_window .. "tabn")
@@ -780,8 +780,8 @@ local function return_from_scratch()
   end
 end
 
-vim.keymap.set("n", "<leader>sc", scratch, { desc = "Open a scratch buffer" })
-vim.keymap.set("n", "<leader>bb", return_from_scratch, { desc = "Switch back to window after using scratch" })
+vim.keymap.set("n", "<leader>sc", Scratch, { desc = "Open a scratch buffer" })
+vim.keymap.set("n", "<leader>bb", ReturnFromScratch, { desc = "Switch back to window after using scratch" })
 
 ---- Rainbow INDENT BLANKLINE ----
 require("ibl").setup { enabled = false }
