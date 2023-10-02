@@ -172,6 +172,12 @@ require("lazy").setup({
    {'kevinhwang91/nvim-bqf', ft = 'qf'},
 
    {"max397574/better-escape.nvim"},
+
+   {
+     "lukas-reineke/indent-blankline.nvim",
+     main = "ibl",
+     opts = {}
+   },
 })
 
 require("legendary").setup({
@@ -196,6 +202,7 @@ require("legendary").setup({
     {"<leader>fk", ":Legendary<CR>", description = "Open Legendary"},
     {"<C-f>f", ":CtrlSF ", description = "Launch CtrlSF"},
     {"<leader>fs", ":Telescope luasnip<CR>", description = "[F]ind [S]nippet"},
+    {"<leader>ti", description = "[T]oggle Rainbow [I]ndent Lines" },
     {"<leader>gs", vim.cmd.Git, description = "[Git] [G]it [S]tatus"},
     {"<leader>gd", vim.cmd.Gvdiffsplit, description = "[Git] [G]it [D]iff"},
     {
@@ -775,3 +782,41 @@ end
 
 vim.keymap.set("n", "<leader>sc", scratch, { desc = "Open a scratch buffer" })
 vim.keymap.set("n", "<leader>bb", return_from_scratch, { desc = "Switch back to window after using scratch" })
+
+---- Rainbow INDENT BLANKLINE ----
+require("ibl").setup { enabled = false }
+
+local function ToggleRainbowIndentLine()
+  if vim.g.rainbow_indent_line_enabled == true then
+    vim.g.rainbow_indent_line_enabled = false
+    require("ibl").setup { enabled = false }
+  else
+    local highlight = {
+        "RainbowRed",
+        "RainbowYellow",
+        "RainbowBlue",
+        "RainbowOrange",
+        "RainbowGreen",
+        "RainbowViolet",
+        "RainbowCyan",
+    }
+
+    local hooks = require "ibl.hooks"
+    -- create the highlight groups in the highlight setup hook, so they are reset
+    -- every time the colorscheme changes
+    hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
+        vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
+        vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#E5C07B" })
+        vim.api.nvim_set_hl(0, "RainbowBlue", { fg = "#61AFEF" })
+        vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#D19A66" })
+        vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#98C379" })
+        vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#C678DD" })
+        vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
+    end)
+
+
+    require("ibl").setup { indent = { highlight = highlight } }
+    vim.g.rainbow_indent_line_enabled = true
+  end
+end
+vim.keymap.set("n", "<leader>ti", ToggleRainbowIndentLine, { desc = "[T]oggle Rainbow [I]ndent Lines" })
