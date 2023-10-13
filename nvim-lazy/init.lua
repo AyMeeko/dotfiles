@@ -544,7 +544,7 @@ require("lualine").setup {
   sections = {
     lualine_a = {"mode"},
     lualine_b = {"branch", "diff"},
-    lualine_c = {"filename"},
+    lualine_c = {{"filename", path=1}},
     lualine_x = {
       {"diagnostics", sources = {"nvim_lsp"}},
       "encoding",
@@ -555,7 +555,7 @@ require("lualine").setup {
     lualine_z = {"location"}
   }
 }
-
+--lualine_c = {{'filename', path = 1}}
 vim.o.showmode = false -- hide status bar so there aren't two
 
 ---- TAB LINE ----
