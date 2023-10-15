@@ -41,3 +41,5 @@
 - Ensure `dox_words.txt` contains denylisted words, one per line
 - Ensure `dont_dox_myself.sh` is executable with `chmod +x dont_dox_myself.sh`
 - Symlink script into hooks dir with `mkdir .git/hooks; cd .git/hooks; ln -s ../../dont_dox_myself.sh pre-commit`
+
+test
