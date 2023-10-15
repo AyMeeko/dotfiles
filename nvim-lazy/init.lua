@@ -178,6 +178,8 @@ require("lazy").setup({
      main = "ibl",
      opts = {}
    },
+
+   {'towolf/vim-helm'},
 })
 
 require("legendary").setup({
