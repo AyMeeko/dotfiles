@@ -37,10 +37,12 @@
   "telescope.nvim": { "branch": "master", "commit": "776b509f80dd49d8205b9b0d94485568236d1192" },
   "vim-fugitive": { "branch": "master", "commit": "99db68d9b3304580bd383da7aaee05c7a954a344" },
   "vim-helm": { "branch": "master", "commit": "c2e7b85711d410e1d73e64eb5df7b70b1c4c10eb" },
+  "vim-mustache-handlebars": { "branch": "master", "commit": "0153fe03a919add2d6cf2d41b2d5b6e1188bc0e0" },
   "vim-python-pep8-indent": { "branch": "master", "commit": "60ba5e11a61618c0344e2db190210145083c91f8" },
   "vim-repeat": { "branch": "master", "commit": "24afe922e6a05891756ecf331f39a1f6743d3d5a" },
   "vim-test": { "branch": "master", "commit": "53c6c72f3a0c6a24a74e659eaa769d7057ef2ecd" },
   "vim-visual-multi": { "branch": "master", "commit": "724bd53adfbaf32e129b001658b45d4c5c29ca1a" },
   "vimux": { "branch": "master", "commit": "616fcb4799674a7a809b14ca2dc155bb6ba25788" },
+  "vimwiki": { "branch": "dev", "commit": "5d86b625f52e80476cb73c0a14ac62d51e7eb36f" },
   "windows.nvim": { "branch": "main", "commit": "c7492552b23d0ab30325e90b56066ec51242adc8" }
 }

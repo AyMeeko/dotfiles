@@ -171,15 +171,32 @@ require("lazy").setup({
    -- better quickfix?
    {'kevinhwang91/nvim-bqf', ft = 'qf'},
 
-   {"max397574/better-escape.nvim"},
-
    {
      "lukas-reineke/indent-blankline.nvim",
      main = "ibl",
      opts = {}
    },
 
+   -- syntax highlighting for helm
    {'towolf/vim-helm'},
+
+   -- syntax highlighting for mustache/handlebars
+   {"mustache/vim-mustache-handlebars"},
+
+   -- note taking
+   {
+     "vimwiki/vimwiki",
+     init = function()
+       vim.g.vimwiki_folding = ""
+       vim.g.vimwiki_list = {
+         {
+           path = "~/notes",
+           syntax = "markdown",
+           ext = ".md",
+         },
+       }
+     end,
+   },
 })
 
 require("legendary").setup({
@@ -469,7 +486,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   pattern = "*",
 })
 
-vim.g.python3_host_prog = vim.fn.expand("$PYTHON3_HOST_PROG") -- Set python 3 provider
+--vim.g.python3_host_prog = vim.fn.expand("$PYTHON3_HOST_PROG") -- Set python 3 provider
 
 -- Remove trailing whitespace
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
@@ -734,11 +751,6 @@ cmp.setup({
   },
 })
 
----- BETTER ESCAPE ----
-require("better_escape").setup {
-    mapping = {"jk", "jj", "kj"}
-}
-
 ---- FIX TELESCOPE / TREESITTER FOLDING ISSUE ---
 -- https://github.com/nvim-telescope/telescope.nvim/issues/699
 vim.api.nvim_create_autocmd({ "BufEnter", "BufNew", "BufWinEnter"  }, {
@@ -747,28 +759,15 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufNew", "BufWinEnter"  }, {
 })
 
 ---- SCRATCH BUFFER ----
-
-local function find_buffer_by_name(name)
-  local working_dir = vim.fn.getcwd()
-  local full_name = working_dir .. "/" .. name
-  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-    local buf_name = vim.api.nvim_buf_get_name(buf)
-    if buf_name == full_name then
-      return buf
-    end
-  end
-  return -1
-end
-
 local function Scratch()
-  vim.g.scratch_return_window = vim.fn.tabpagenr()
-  if find_buffer_by_name('scratch') == -1 then
-    local buf = vim.api.nvim_create_buf(true, true)
-    vim.api.nvim_buf_set_name(buf, 'scratch')
-    vim.cmd("0tabnew")
-    vim.api.nvim_win_set_buf(0, buf)
-  else
+  if vim.g.created_notepad then
+    vim.g.scratch_return_window = vim.fn.tabpagenr()
     vim.cmd("tabfirst")
+  else
+    vim.g.scratch_return_window = vim.fn.tabpagenr() + 1
+    vim.cmd("0tabnew")
+    vim.cmd("VimwikiMakeDiaryNote")
+    vim.g.created_notepad = true
   end
 end
 
@@ -782,7 +781,7 @@ local function ReturnFromScratch()
   end
 end
 
-vim.keymap.set("n", "<leader>sc", Scratch, { desc = "Open a scratch buffer" })
+vim.keymap.set("n", "<leader>sc", Scratch, { desc = "Open today's scratch buffer" })
 vim.keymap.set("n", "<leader>bb", ReturnFromScratch, { desc = "Switch back to window after using scratch" })
 
 ---- Rainbow INDENT BLANKLINE ----
@@ -822,3 +821,10 @@ local function ToggleRainbowIndentLine()
   end
 end
 vim.keymap.set("n", "<leader>ti", ToggleRainbowIndentLine, { desc = "[T]oggle Rainbow [I]ndent Lines" })
+
+---- VIMWIKI ----
+--vim.g.vimwiki_filetypes = { "markdown" }
+--vim.g.vimwiki_ext2syntax = {['.md'] = 'markdown', ['.markdown'] = 'markdown', ['.mdown'] = 'markdown'}
+--vim.g.vimwiki_global_ext = 0
+
+
