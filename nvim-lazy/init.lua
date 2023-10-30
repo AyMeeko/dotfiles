@@ -156,8 +156,6 @@ require("lazy").setup({
   -- repeat motions
   {"tpope/vim-repeat"},
 
-  {"norcalli/nvim-colorizer.lua"},
-
   -- grep
   {"dyng/ctrlsf.vim"},
 
@@ -191,11 +189,24 @@ require("lazy").setup({
          {
            path = "~/notes",
            syntax = "markdown",
-           ext = ".md",
+           ext = "md",
          },
        }
+       vim.g.vimwiki_ext2syntax = {
+         ['.md'] = 'markdown',
+         ['.markdown'] = 'markdown',
+         ['.mdown'] = 'markdown'
+       }
+       vim.g.vimwiki_global_ext = 0
      end,
    },
+   {
+     'lukas-reineke/headlines.nvim',
+     dependencies = "nvim-treesitter/nvim-treesitter",
+     config = true, -- or `opts = {}`
+   },
+
+   --{"norcalli/nvim-colorizer.lua"},
 })
 
 require("legendary").setup({
@@ -205,7 +216,7 @@ require("legendary").setup({
     {"<C-h>", vim.cmd.tabp, description = "Tab previous"},
     {"<leader>/", vim.cmd.nohlsearch, description = "Clear last search"},
     {"<leader><tab>", vim.cmd.bprev, description = "Switch to previous buffer"},
-    {"<leader>fj", description = "Format Json"},
+    {"<leader>fj", description = "[F]ormat [J]son"},
     {"<space>", description = "Toggle Fold"},
     {"<leader>yp", function()
       vim.cmd("let @+ = expand('%')")
@@ -255,7 +266,8 @@ require("legendary").setup({
     },
     {
       "<leader>ff", function()
-        require("telescope.builtin").find_files()
+        local utils = require("telescope.utils")
+        require("telescope.builtin").find_files({ cwd = utils.buffer_dir() })
       end,
       description = "Fuzzy search [f]ind [f]iles"
     },
@@ -270,6 +282,18 @@ require("legendary").setup({
         require("telescope.builtin").help_tags()
       end,
       description = "[F]ind [H]elp tags"
+    },
+    {
+      "<leader>fn", function()
+        require("telescope.builtin").find_files({ cwd = "~/notes" })
+      end,
+      description = "[F]ind in [N]otes"
+    },
+    {
+      "<leader>ft", function()
+        require('telescope.builtin').live_grep()
+      end,
+      description = "[F]ind [T]ext"
     },
 
     ---- VIM-TEST ----
@@ -395,7 +419,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
 })
 
 ---- GIT SIGNS ----
-require("gitsigns").setup {
+require("gitsigns").setup({
   on_attach = function(bufnr)
     local function map(mode, lhs, rhs, opts)
         opts = vim.tbl_extend("force", {noremap = true, silent = true}, opts or {})
@@ -406,7 +430,7 @@ require("gitsigns").setup {
     map("n", "]c", "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", { expr = true })
     map("n", "[c", "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", { expr = true })
   end
-}
+})
 
 -- Makes cursor not jump 'over' a line if it's wrapped to.a second line
 vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
@@ -428,7 +452,7 @@ vim.api.nvim_create_user_command("Q", "q", {})
 -- Put Y back for yanking
 vim.keymap.set("n", "Y", "yy", { noremap = true })
 
--- Format JSON
+-- Format JSON*
 vim.api.nvim_create_user_command("FormatJson", "%!jq .", {})
 vim.keymap.set("n", "<leader>fj", vim.cmd.FormatJson)
 
@@ -487,10 +511,13 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 
 --vim.g.python3_host_prog = vim.fn.expand("$PYTHON3_HOST_PROG") -- Set python 3 provider
 
+local generalSettingsGroup = vim.api.nvim_create_augroup('General settings', { clear = true })
+
 -- Remove trailing whitespace
-vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+vim.api.nvim_create_autocmd({"BufWritePre"}, {
   pattern = { "*" },
   command = [[%s/\s\+$//e]],
+  group = generalSettingsGroup,
 })
 
 -- Show trailing whitespace as a dot
@@ -507,11 +534,9 @@ function SetColor(color)
     vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
     vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
     vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
-    --vim.api.nvim_set_hl(0, "DiagnosticVirtualTextWarn", { bg = "none" })
 end
 
--- must be set after vim.opt.termguicolors
-require("colorizer").setup()
+--require("colorizer").setup()
 SetColor() -- run at startup
 
 ---- CTRLSF ----
@@ -520,6 +545,7 @@ vim.g.ctrlsf_winsize = "25%"
 vim.g.ctrlsf_case_sensitive = "smart"
 vim.g.ctrlsf_default_root = "project"
 vim.g.ctrlsf_ackprg = "/opt/homebrew/bin/rg"
+vim.g.ctrlsf_search_mode = "async"
 
 ---- LSP ----
 local lsp = require("lsp-zero").preset("recommended")
@@ -580,7 +606,6 @@ require("lualine").setup {
     lualine_z = {"location"}
   }
 }
---lualine_c = {{'filename', path = 1}}
 vim.o.showmode = false -- hide status bar so there aren't two
 
 ---- TAB LINE ----
@@ -647,7 +672,6 @@ require("tabline_framework").setup { render = render }
 require("telescope").load_extension("fzf")
 require('telescope').load_extension("luasnip")
 
--- Close telescope window with one Esc hit
 local actions = require("telescope.actions")
 require("telescope").setup({
   defaults = {
@@ -740,7 +764,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufNew", "BufWinEnter"  }, {
   command = "set foldexpr=nvim_treesitter#foldexpr()",
 })
 
----- SCRATCH BUFFER ----
+---- SCRATCH BUFFER* ----
 local function Scratch()
   if vim.g.created_notepad then
     vim.g.scratch_return_window = vim.fn.tabpagenr()
@@ -766,7 +790,7 @@ end
 vim.keymap.set("n", "<leader>sc", Scratch, { desc = "Open today's scratch buffer" })
 vim.keymap.set("n", "<leader>bb", ReturnFromScratch, { desc = "Switch back to window after using scratch" })
 
----- Rainbow INDENT BLANKLINE ----
+---- Rainbow INDENT BLANKLINE* ----
 require("ibl").setup { enabled = false }
 
 local function ToggleRainbowIndentLine()
@@ -804,9 +828,53 @@ local function ToggleRainbowIndentLine()
 end
 vim.keymap.set("n", "<leader>ti", ToggleRainbowIndentLine, { desc = "[T]oggle Rainbow [I]ndent Lines" })
 
----- VIMWIKI ----
---vim.g.vimwiki_filetypes = { "markdown" }
---vim.g.vimwiki_ext2syntax = {['.md'] = 'markdown', ['.markdown'] = 'markdown', ['.mdown'] = 'markdown'}
---vim.g.vimwiki_global_ext = 0
+---- HEADLINES ----
+require("headlines").setup({
+  vimwiki = {
+      query = vim.treesitter.query.parse(
+          "markdown",
+          [[
+              (atx_heading [
+                  (atx_h1_marker)
+                  (atx_h2_marker)
+                  (atx_h3_marker)
+                  (atx_h4_marker)
+                  (atx_h5_marker)
+                  (atx_h6_marker)
+              ] @headline)
 
+              (thematic_break) @dash
 
+              (fenced_code_block) @codeblock
+
+              (block_quote_marker) @quote
+              (block_quote (paragraph (inline (block_continuation) @quote)))
+          ]]
+      ),
+      headline_highlights = {
+        "Headline1",
+        "Headline2",
+        "Headline3",
+        "Headline4",
+        "Headline5",
+        "Headline6",
+      },
+      codeblock_highlight = "CodeBlock",
+      dash_highlight = "Dash",
+      dash_string = "-",
+      quote_highlight = "Quote",
+      quote_string = "┃",
+      fat_headlines = true,
+      fat_headline_upper_string = "▃",
+      fat_headline_lower_string = "",
+      treesitter_language = "markdown",
+  }
+})
+
+vim.api.nvim_set_hl(0, 'Headline1', { fg = '#cb7676', bg = '#402626', italic = false })
+vim.api.nvim_set_hl(0, 'Headline2', { fg = '#c99076', bg = '#66493c', italic = false })
+vim.api.nvim_set_hl(0, 'Headline3', { fg = '#80a665', bg = '#3d4f2f', italic = false })
+vim.api.nvim_set_hl(0, 'Headline4', { fg = '#4c9a91', bg = '#224541', italic = false })
+vim.api.nvim_set_hl(0, 'Headline5', { fg = '#6893bf', bg = '#2b3d4f', italic = false })
+vim.api.nvim_set_hl(0, 'Headline6', { fg = '#d3869b', bg = '#6b454f', italic = false })
+vim.api.nvim_set_hl(0, 'CodeBlock', { bg = '#31353f' })
