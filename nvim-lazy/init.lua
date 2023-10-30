@@ -828,7 +828,10 @@ local function ToggleRainbowIndentLine()
 end
 vim.keymap.set("n", "<leader>ti", ToggleRainbowIndentLine, { desc = "[T]oggle Rainbow [I]ndent Lines" })
 
----- HEADLINES ----
+-- better syntax highlighting in markdown vimwiki files
+-- use 'markdown' parser in vimwiki filetype files
+vim.treesitter.language.register('markdown', 'vimwiki')
+
 require("headlines").setup({
   vimwiki = {
       query = vim.treesitter.query.parse(
