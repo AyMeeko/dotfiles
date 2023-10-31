@@ -214,6 +214,7 @@ require("lazy").setup({
    },
 
    --{"norcalli/nvim-colorizer.lua"},
+   {"dstein64/vim-startuptime"},
 })
 
 require("legendary").setup({
