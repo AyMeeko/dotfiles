@@ -191,6 +191,11 @@ require("lazy").setup({
            syntax = "markdown",
            ext = "md",
          },
+         {
+           path = "~/private_notes",
+           syntax = "markdown",
+           ext = "md",
+         },
        }
        vim.g.vimwiki_ext2syntax = {
          ['.md'] = 'markdown',
@@ -198,6 +203,8 @@ require("lazy").setup({
          ['.mdown'] = 'markdown'
        }
        vim.g.vimwiki_global_ext = 0
+       vim.g.vimwiki_url_maxsave = 0
+       vim.g.vimwiki_table_mappings = 0
      end,
    },
    {
@@ -224,8 +231,6 @@ require("legendary").setup({
     {"<leader>sp", function()
       vim.cmd("echo expand('%')")
     end, description = "[S]how current file [p]ath"},
-    {"<leader>sc", description = "[Vimwiki] Open a scratch buffer" },
-    {"<leader>bb", description = "[Vimwiki] Switch back to window after using scratch" },
 
     -- Plugin keymaps --
     {"<leader>fk", ":Legendary<CR>", description = "Open Legendary"},
@@ -242,6 +247,34 @@ require("legendary").setup({
     },
     {"<leader>gl", vim.cmd.OpenInGHFileLines, description = "Open [g]ithub file at [l]ine"},
     {"<leader>gf", vim.cmd.OpenInGHFile, description = "Open [g]ithub [f]ile"},
+
+    ---- VIMWIKI ----
+    {
+      "<leader>sc", function()
+        if vim.g.created_notepad then
+          vim.g.scratch_return_window = vim.fn.tabpagenr()
+          vim.cmd("tabfirst")
+        else
+          vim.g.scratch_return_window = vim.fn.tabpagenr() + 1
+          vim.cmd("0tabnew")
+          vim.cmd("VimwikiMakeDiaryNote")
+          vim.g.created_notepad = true
+        end
+      end,
+      description = "[Vimwiki] Open today's [sc]ratch buffer"
+    },
+    {
+      "<leader>bb", function()
+        local return_window = vim.g.scratch_return_window
+        if return_window then
+          vim.cmd(return_window .. "tabn")
+          vim.g.scratch_return_window = nil
+        else
+          vim.cmd("echo 'No return window set.'")
+        end
+      end,
+      description = "[Vimwiki] Switch [b]ack to [b]uffer after using scratch"
+    },
     {
       "<leader>ui", function()
         vim.cmd("VimwikiRebuildTags")
@@ -250,7 +283,22 @@ require("legendary").setup({
       end,
       description = "[Vimwiki] [U]pdate [I]ndex"
     },
-    {"<leader>cn", description = "[Vimwiki] [C]reate [N]ote"},
+    {
+      "<leader>cn", function()
+        local filename = os.date("%Y-%m-%dT%H%M%S") .. ".md"
+        vim.cmd("tabnew ~/notes/" .. filename)
+      end,
+      description = "[Vimwiki] [C]reate [N]ote"
+    },
+    {
+      "<leader>pn", function()
+        local filename = os.date("%Y-%m-%dT%H%M%S") .. ".md"
+        vim.cmd("tabnew ~/private_notes/" .. filename)
+      end,
+      description = "[Vimwiki] [P]rivate [N]ote"
+    },
+    {"<leader>gd", vim.cmd.VimwikiTabnewLink, description = "[Vimwiki] [G]o to [D]efintion of file in new tab"},
+    {"<leader>=", "<Plug>VimwikiAddHeaderLevel", description = "[Vimwiki] Add header level" },
 
     ---- MOVE ----
     {
@@ -281,6 +329,12 @@ require("legendary").setup({
       description = "Fuzzy search [f]ind [f]iles"
     },
     {
+      "<leader>st", function()
+        require('telescope.builtin').live_grep()
+      end,
+      description = "[S]earch [T]ext (grep in project)"
+    },
+    {
       "<leader>bl", function()
         require("telescope.builtin").buffers()
       end,
@@ -293,16 +347,10 @@ require("legendary").setup({
       description = "[F]ind [H]elp tags"
     },
     {
-      "<leader>fn", function()
-        require("telescope.builtin").find_files({ cwd = "~/notes" })
+      "<leader>ss", function()
+        require('telescope.builtin').live_grep({ cwd = "~/scratch" })
       end,
-      description = "[F]ind in [N]otes"
-    },
-    {
-      "<leader>ft", function()
-        require('telescope.builtin').live_grep()
-      end,
-      description = "[F]ind [T]ext"
+      description = "[S]earch for text in [S]cratch (grep in ~/scratch)"
     },
 
     ---- VIM-TEST ----
@@ -743,7 +791,7 @@ luasnip.add_snippets(nil, {
       },
       {
         text({"---", "tags: :"}), insert(1, "tag"),
-        text({":", "---"}),
+        text({":", "---", ""}),
         insert(0)
       }),
     },
@@ -795,32 +843,6 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufNew", "BufWinEnter"  }, {
   group = vim.api.nvim_create_augroup("ts_fold_workaround", { clear = true }),
   command = "set foldexpr=nvim_treesitter#foldexpr()",
 })
-
----- SCRATCH BUFFER* ----
-local function Scratch()
-  if vim.g.created_notepad then
-    vim.g.scratch_return_window = vim.fn.tabpagenr()
-    vim.cmd("tabfirst")
-  else
-    vim.g.scratch_return_window = vim.fn.tabpagenr() + 1
-    vim.cmd("0tabnew")
-    vim.cmd("VimwikiMakeDiaryNote")
-    vim.g.created_notepad = true
-  end
-end
-
-local function ReturnFromScratch()
-  local return_window = vim.g.scratch_return_window
-  if return_window then
-    vim.cmd(return_window .. "tabn")
-    vim.g.scratch_return_window = nil
-  else
-    vim.cmd("echo 'No return window set.'")
-  end
-end
-
-vim.keymap.set("n", "<leader>sc", Scratch, { desc = "Open today's scratch buffer" })
-vim.keymap.set("n", "<leader>bb", ReturnFromScratch, { desc = "Switch back to window after using scratch" })
 
 ---- Rainbow INDENT BLANKLINE* ----
 require("ibl").setup { enabled = false }
@@ -913,10 +935,3 @@ vim.api.nvim_set_hl(0, 'Headline4', { fg = '#4c9a91', bg = '#224541', italic = f
 vim.api.nvim_set_hl(0, 'Headline5', { fg = '#6893bf', bg = '#2b3d4f', italic = false })
 vim.api.nvim_set_hl(0, 'Headline6', { fg = '#d3869b', bg = '#6b454f', italic = false })
 vim.api.nvim_set_hl(0, 'CodeBlock', { bg = '#31353f' })
-
----- NEW NOTE ----
-local function CreateNewVimWikiNote()
-  local filename = os.date("%Y-%m-%dT%H%M%S") .. ".md"
-  vim.cmd("tabnew " .. filename)
-end
-vim.keymap.set("n", "<leader>cn", CreateNewVimWikiNote, { desc = "[C]reate [N]ote" })
