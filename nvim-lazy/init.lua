@@ -224,8 +224,8 @@ require("legendary").setup({
     {"<leader>sp", function()
       vim.cmd("echo expand('%')")
     end, description = "[S]how current file [p]ath"},
-    {"<leader>sc", description = "Open a scratch buffer" },
-    {"<leader>bb", description = "Switch back to window after using scratch" },
+    {"<leader>sc", description = "[Vimwiki] Open a scratch buffer" },
+    {"<leader>bb", description = "[Vimwiki] Switch back to window after using scratch" },
 
     -- Plugin keymaps --
     {"<leader>fk", ":Legendary<CR>", description = "Open Legendary"},
@@ -242,6 +242,15 @@ require("legendary").setup({
     },
     {"<leader>gl", vim.cmd.OpenInGHFileLines, description = "Open [g]ithub file at [l]ine"},
     {"<leader>gf", vim.cmd.OpenInGHFile, description = "Open [g]ithub [f]ile"},
+    {
+      "<leader>ui", function()
+        vim.cmd("VimwikiRebuildTags")
+        vim.cmd("VimwikiGenerateTagLinks")
+        vim.cmd("w")
+      end,
+      description = "[Vimwiki] [U]pdate [I]ndex"
+    },
+    {"<leader>cn", description = "[Vimwiki] [C]reate [N]ote"},
 
     ---- MOVE ----
     {
@@ -716,6 +725,29 @@ require("nvim-treesitter.configs").setup {
 ---- SNIPPETS AND LSP AUTOCOMPLETE ---
 local cmp = require('cmp')
 local luasnip = require("luasnip")
+local snip = luasnip.snippet
+local node = luasnip.snippet_node
+local text = luasnip.text_node
+local insert = luasnip.insert_node
+local func = luasnip.function_node
+local choice = luasnip.choice_node
+local dynamicn = luasnip.dynamic_node
+
+-- https://sbulav.github.io/vim/neovim-setting-up-luasnip/
+luasnip.add_snippets(nil, {
+    vimwiki = {
+      snip({
+        trig = "meta",
+        namr = "Metadata",
+        dscr = "Yaml metadata format for markdown"
+      },
+      {
+        text({"---", "tags: :"}), insert(1, "tag"),
+        text({":", "---"}),
+        insert(0)
+      }),
+    },
+})
 
 cmp.setup({
   sources = cmp.config.sources(
@@ -830,7 +862,7 @@ vim.keymap.set("n", "<leader>ti", ToggleRainbowIndentLine, { desc = "[T]oggle Ra
 
 -- better syntax highlighting in markdown vimwiki files
 -- use 'markdown' parser in vimwiki filetype files
-vim.treesitter.language.register('markdown', 'vimwiki')
+--vim.treesitter.language.register('markdown', 'vimwiki')
 
 require("headlines").setup({
   vimwiki = {
@@ -881,3 +913,10 @@ vim.api.nvim_set_hl(0, 'Headline4', { fg = '#4c9a91', bg = '#224541', italic = f
 vim.api.nvim_set_hl(0, 'Headline5', { fg = '#6893bf', bg = '#2b3d4f', italic = false })
 vim.api.nvim_set_hl(0, 'Headline6', { fg = '#d3869b', bg = '#6b454f', italic = false })
 vim.api.nvim_set_hl(0, 'CodeBlock', { bg = '#31353f' })
+
+---- NEW NOTE ----
+local function CreateNewVimWikiNote()
+  local filename = os.date("%Y-%m-%dT%H%M%S") .. ".md"
+  vim.cmd("tabnew " .. filename)
+end
+vim.keymap.set("n", "<leader>cn", CreateNewVimWikiNote, { desc = "[C]reate [N]ote" })
