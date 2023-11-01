@@ -23,7 +23,7 @@ require("lazy").setup({
     priority = 10000,
     lazy = false,
     -- sqlite is only needed if you want to use frecency sorting
-    dependencies = { "kkharji/sqlite.lua" }
+    dependencies = { "kkharji/sqlite.lua" },
   },
 
   {"stevearc/dressing.nvim", opts = {}},
@@ -50,7 +50,7 @@ require("lazy").setup({
       "nvim-tree/nvim-web-devicons",
     },
     config = function()
-      require("nvim-tree").setup {}
+      require("nvim-tree").setup({})
     end,
   },
 
@@ -61,7 +61,8 @@ require("lazy").setup({
       {"nvim-lua/plenary.nvim"},
       {"nvim-telescope/telescope-fzf-native.nvim", build = "make"},
       {"benfowler/telescope-luasnip.nvim"},
-    }
+    },
+    lazy = true,
   },
 
   -- syntax help
