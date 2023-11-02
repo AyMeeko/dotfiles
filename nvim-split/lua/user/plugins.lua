@@ -30,6 +30,7 @@ end
 
 lazy.path = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 lazy.opts = {
+  change_detection = {enabled = false},
   performance = {
     rtp = {
       disabled_plugins = {

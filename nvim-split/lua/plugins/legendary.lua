@@ -41,6 +41,7 @@ return {
         {"<leader>gf", vim.cmd.OpenInGHFile, description = "Open [g]ithub [f]ile"},
 
         ---- VIMWIKI ----
+        {"<leader>ww", vim.cmd.VimwikiIndex, description = "Load Vimwiki"},
         {
           "<leader>sc", function()
             if vim.g.created_notepad then
@@ -160,24 +161,24 @@ return {
         },
 
         ---- NVIM TREE ----
-        {
-          "<leader>t", function()
-            require("telescope").extensions.file_browser.file_browser()
-          end,
-          description = "Toggle file [T]ree"
-        },
         --{
           --"<leader>t", function()
-            --vim.cmd.NvimTreeToggle()
+            --require("telescope").extensions.file_browser.file_browser()
           --end,
-          --description = "Toggle Nvim Tree"
+          --description = "Toggle file [T]ree"
         --},
-        --{
-          --"<leader>f<space>", function()
-            --vim.cmd.NvimTreeFindFile()
-          --end,
-          --description = "Find Current File in Nvim Tree"
-        --},
+        {
+          "<leader>t", function()
+            vim.cmd.NvimTreeToggle()
+          end,
+          description = "Toggle Nvim Tree"
+        },
+        {
+          "<leader>f<space>", function()
+            vim.cmd.NvimTreeFindFile()
+          end,
+          description = "Find Current File in Nvim Tree"
+        },
 
         ---- ZOOM WINDOW ----
         {

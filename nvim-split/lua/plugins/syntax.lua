@@ -5,9 +5,10 @@ return {
     "nvim-treesitter/nvim-treesitter-textobjects",
   },
   build = ":TSUpdate",
+  event = {"BufEnter"},
   config = function()
     require("nvim-treesitter.configs").setup({
-      ensure_installed = {"python", "javascript", "typescript", "c", "lua", "vim", "vimdoc", "query"},
+      ensure_installed = {"python", "json", "lua", "vim", "vimdoc", "query", "markdown"},
       sync_install = false,
       auto_install = true,
       highlight = {

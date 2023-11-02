@@ -1,6 +1,5 @@
 return {
-   {"dstein64/vim-startuptime"},
-
+  {"dstein64/vim-startuptime"},
    --{"norcalli/nvim-colorizer.lua"},
 
   -- better status line
@@ -34,18 +33,22 @@ return {
   ---- Run pytest in tmux pane
   {
     "vim-test/vim-test",
+    event = "VeryLazy",
     config = function()
       vim.g["test#strategy"] = "vimux"
       vim.g["test#python#pytest#executable"] = "pytest"
     end,
-    lazy = true,
   },
 
   ---- Allow vim to send commands to tmux
-  {"preservim/vimux", lazy = true},
+  {"preservim/vimux", event = "VeryLazy"},
 
   -- window zoom
-  {"anuvyklack/windows.nvim", dependencies = "anuvyklack/middleclass", lazy = true},
+  {
+    "anuvyklack/windows.nvim",
+    cmd = "WindowsMaximize",
+    dependencies = "anuvyklack/middleclass",
+  },
 
   -- bubble text
   {"fedepujol/move.nvim"},
@@ -53,18 +56,18 @@ return {
   -- easily add/delete/change "surroundings"
   {
     "kylechui/nvim-surround",
-    version = "*", -- Use for stability; omit to use `main` branch for the latest features
     event = "VeryLazy",
+    version = "*", -- Use for stability; omit to use `main` branch for the latest features
     config = function()
       require("nvim-surround").setup({})
     end
   },
 
   -- easy commenting/uncommenting
-  {"scrooloose/nerdcommenter", lazy = true},
+  {"scrooloose/nerdcommenter"},
 
   -- multiple cursors
-  {"mg979/vim-visual-multi", lazy = true},
+  {"mg979/vim-visual-multi", event = "VeryLazy"},
 
   -- git integration
   {"tpope/vim-fugitive"},
@@ -75,6 +78,7 @@ return {
   -- grep
   {
     "dyng/ctrlsf.vim",
+    event = "VeryLazy",
     config = function()
       vim.g.ctrlsf_position = "bottom"
       vim.g.ctrlsf_winsize = "25%"
@@ -83,31 +87,30 @@ return {
       vim.g.ctrlsf_ackprg = "/opt/homebrew/bin/rg"
       vim.g.ctrlsf_search_mode = "async"
     end,
-    lazy = true,
   },
 
   -- better python identation
-  {"Vimjas/vim-python-pep8-indent"},
+  {"Vimjas/vim-python-pep8-indent", event = "VeryLazy"},
 
   -- open current file in GHE
-  {"almo7aya/openingh.nvim", lazy = true},
+  {"almo7aya/openingh.nvim", event = "VeryLazy"},
 
    -- better quickfix?
-   {'kevinhwang91/nvim-bqf', ft = 'qf'},
+   {"kevinhwang91/nvim-bqf", ft = "qf", event = "VeryLazy"},
 
    {
      "lukas-reineke/indent-blankline.nvim",
+     event = "VeryLazy",
      main = "ibl",
      opts = {},
      config = function()
        require("ibl").setup({enabled = false})
      end,
-     lazy = true
    },
 
    -- syntax highlighting for helm
-   {'towolf/vim-helm', lazy = true},
+   {'towolf/vim-helm'},
 
    -- syntax highlighting for mustache/handlebars
-   {"mustache/vim-mustache-handlebars", lazy = true},
+   {"mustache/vim-mustache-handlebars"},
 }
