@@ -1,6 +1,8 @@
 return {
   {
     "VonHeikemen/lsp-zero.nvim",
+    event = {'BufReadPre', 'BufNewFile'},
+    cmd = 'Mason',
     branch = "v2.x",
     dependencies = {
       -- LSP Support
