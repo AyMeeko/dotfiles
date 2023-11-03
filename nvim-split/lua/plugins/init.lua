@@ -1,6 +1,6 @@
 return {
-  {"dstein64/vim-startuptime"},
-   --{"norcalli/nvim-colorizer.lua"},
+  --{"dstein64/vim-startuptime"},
+  {"norcalli/nvim-colorizer.lua"},
 
   -- better status line
   {

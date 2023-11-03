@@ -123,7 +123,13 @@ return {
         },
         {
           "<leader>st", function()
-            require('telescope.builtin').live_grep()
+            local utils = require("telescope.utils")
+            local opt = require('telescope.themes').get_ivy({
+              cwd = utils.buffer_dir(),
+              shorten_path = true,
+            })
+            require('telescope.builtin').live_grep(opt)
+            --require('telescope.builtin').live_grep()
           end,
           description = "[S]earch [T]ext (grep in project)"
         },
@@ -141,7 +147,12 @@ return {
         },
         {
           "<leader>ss", function()
-            require('telescope.builtin').live_grep({ cwd = "~/scratch" })
+            local opt = require('telescope.themes').get_ivy({
+              cwd = "~/scratch",
+              shorten_path = true
+            })
+            require('telescope.builtin').live_grep(opt)
+            --require('telescope.builtin').live_grep({ cwd = "~/scratch" })
           end,
           description = "[S]earch for text in [S]cratch (grep in ~/scratch)"
         },

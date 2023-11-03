@@ -54,4 +54,3 @@ vim.keymap.set("n", "<leader>fj", vim.cmd.FormatJson)
   --group = vim.api.nvim_create_augroup("ts_fold_workaround", { clear = true }),
   --command = "set foldexpr=nvim_treesitter#foldexpr()",
 --})
-
