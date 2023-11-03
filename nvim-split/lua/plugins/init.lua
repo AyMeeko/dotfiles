@@ -67,7 +67,7 @@ return {
   {"scrooloose/nerdcommenter"},
 
   -- multiple cursors
-  {"mg979/vim-visual-multi", event = "VeryLazy"},
+  {"mg979/vim-visual-multi"},
 
   -- git integration
   {"tpope/vim-fugitive"},

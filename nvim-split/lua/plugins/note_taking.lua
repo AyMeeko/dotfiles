@@ -110,12 +110,27 @@ return {
             treesitter_language = "markdown",
         }
       })
-      vim.api.nvim_set_hl(0, 'Headline1', {bg = '#cb7676', fg = '#ffffff', italic = false})
-      vim.api.nvim_set_hl(0, 'Headline2', {bg = '#c99076', fg = '#ffffff', italic = false})
-      vim.api.nvim_set_hl(0, 'Headline3', {bg = '#80a665', fg = '#ffffff', italic = false})
-      vim.api.nvim_set_hl(0, 'Headline4', {bg = '#4c9a91', fg = '#ffffff', italic = false})
-      vim.api.nvim_set_hl(0, 'Headline5', {bg = '#6893bf', fg = '#ffffff', italic = false})
-      vim.api.nvim_set_hl(0, 'Headline6', {bg = '#d3869b', fg = '#ffffff', italic = false})
+      --vim.api.nvim_set_hl(0, 'Headline1', {bg = '#cb7676', fg = '#ffffff', italic = false})
+      --vim.api.nvim_set_hl(0, 'Headline2', {bg = '#c99076', fg = '#ffffff', italic = false})
+      --vim.api.nvim_set_hl(0, 'Headline3', {bg = '#80a665', fg = '#ffffff', italic = false})
+      --vim.api.nvim_set_hl(0, 'Headline4', {bg = '#4c9a91', fg = '#ffffff', italic = false})
+      --vim.api.nvim_set_hl(0, 'Headline5', {bg = '#6893bf', fg = '#ffffff', italic = false})
+      --vim.api.nvim_set_hl(0, 'Headline6', {bg = '#d3869b', fg = '#ffffff', italic = false})
+
+      vim.api.nvim_set_hl(0, 'Headline1', {fg = '#cb7676', bg = '#402626', italic = false})
+      vim.api.nvim_set_hl(0, 'Headline2', {fg = '#c99076', bg = '#66493c', italic = false})
+      vim.api.nvim_set_hl(0, 'Headline3', {fg = '#80a665', bg = '#3d4f2f', italic = false})
+      vim.api.nvim_set_hl(0, 'Headline4', {fg = '#4c9a91', bg = '#224541', italic = false})
+      vim.api.nvim_set_hl(0, 'Headline5', {fg = '#6893bf', bg = '#2b3d4f', italic = false})
+      vim.api.nvim_set_hl(0, 'Headline6', {fg = '#d3869b', bg = '#6b454f', italic = false})
+
+
+      --vim.api.nvim_set_hl(0, 'Headline1', {bg = '#aa6366', fg = '#ffffff', italic = false})
+      --vim.api.nvim_set_hl(0, 'Headline2', {bg = '#a67964', fg = '#ffffff', italic = false})
+      --vim.api.nvim_set_hl(0, 'Headline3', {bg = '#6a8955', fg = '#ffffff', italic = false})
+      --vim.api.nvim_set_hl(0, 'Headline4', {bg = '#3d807a', fg = '#ffffff', italic = false})
+      --vim.api.nvim_set_hl(0, 'Headline5', {bg = '#496689', fg = '#ffffff', italic = false})
+      --vim.api.nvim_set_hl(0, 'Headline6', {bg = '#986372', fg = '#ffffff', italic = false})
       vim.api.nvim_set_hl(0, 'CodeBlock', {bg = '#31353f'})
     end,
   },
