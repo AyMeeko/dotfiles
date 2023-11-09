@@ -1,9 +1,10 @@
 #!/bin/bash
 
 FILES=(
-	'tmux.conf'
-	'tmux-colors'
-	'vimrc'
+  'tmux.conf'
+  'tmux-cht-command'
+  'tmux-cht-languages'
+  'tmux-colors'
   'zshrc'
 )
 
@@ -11,10 +12,10 @@ cd ~
 
 for file in "${FILES[@]}"
 do
-	ln -s "$HOME/src/dotfiles/${file}" ".${file}"
+  ln -s "$HOME/src/dotfiles/${file}" ".${file}"
 done
 
-mkdir -p ~/.vim/colors
-ln -s "$HOME/src/dotfiles/apprentice.vim" "$HOME/.vim/colors/apprentice.vim"
-
 ln -s "$HOME/src/dotfiles/zsh-theme" "$HOME/.oh-my-zsh/themes/my.zsh-theme"
+
+mkdir -p $HOME/.config
+ln -s "$HOME/src/dotfiles/nvim-split" "$HOME/.config/nvim"
