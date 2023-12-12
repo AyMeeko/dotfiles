@@ -109,10 +109,16 @@ return {
 
         ---- TELESCOPE ----
         {
-          "<C-p>", function()
-            require("telescope.builtin").git_files()
+          "<leader>ft", function()
+            require("plugins.telescope.custom_pickers").vimwiki_tags()
           end,
-          description = "Fuzzy search git files"
+          description = "[F]ind [T]ags"
+        },
+        {
+          "<C-p>", function()
+            require("plugins.telescope.custom_pickers").project_files()
+          end,
+          description = "Fuzzy search files"
         },
         {
           "<leader>ff", function()
