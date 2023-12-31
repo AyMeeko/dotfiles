@@ -37,7 +37,7 @@ return {
           pylsp = {
             configurationSources = {"pylint", "flake8"},
             plugins = {
-              pylint = {enabled= true},
+              pylint = {enabled = true},
               flake8 = {enabled = true},
               isort = {enabled = true},
               pycodestyle = {enabled = false},

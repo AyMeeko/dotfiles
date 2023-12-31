@@ -15,7 +15,10 @@ do
   ln -s "$HOME/src/dotfiles/${file}" ".${file}"
 done
 
+ln -s "$HOME/.dotfiles" .
+
 ln -s "$HOME/src/dotfiles/zsh-theme" "$HOME/.oh-my-zsh/themes/my.zsh-theme"
 
 mkdir -p $HOME/.config
 ln -s "$HOME/src/dotfiles/nvim-split" "$HOME/.config/nvim"
+
