@@ -1,4 +1,8 @@
 return {
+  {
+    dir = "~/src/code-trace.nvim",
+    opts = {}
+  },
   --{"dstein64/vim-startuptime"},
   {"norcalli/nvim-colorizer.lua"},
 

@@ -10,6 +10,19 @@ return {
   config = function()
     require("legendary").setup({
       keymaps = {
+        -- stuff
+        {"<leader>ta", function()
+          require("code-trace").add_stop()
+        end, description = "Add Stop"},
+        {"<leader>ts", function()
+          require("code-trace").show_stops()
+        end, description = "Add Stop"},
+        {"<leader>tc", function()
+          require("code-trace").clear_stops()
+        end, description = "Clear stops"},
+        --{"<leader>td", function()
+          --require("code-trace").debug_stop()
+        --end, description = "Debug"},
         -- General vim keymaps --
         {"<C-l>", vim.cmd.tabn, description = "Tab next"},
         {"<C-h>", vim.cmd.tabp, description = "Tab previous"},
@@ -18,7 +31,7 @@ return {
         {"<leader>fj", description = "[F]ormat [J]son"},
         {"<space>", description = "Toggle Fold"},
         {"<leader>yp", function()
-          vim.cmd("let @+ = expand('%')")
+          vim.cmd("let @+ = expand('%p')")
         end, description = "[Y]ank current file [p]ath to system clipboard"},
         {"<leader>sp", function()
           vim.cmd("echo expand('%')")
