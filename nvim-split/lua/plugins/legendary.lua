@@ -10,19 +10,19 @@ return {
   config = function()
     require("legendary").setup({
       keymaps = {
-        -- stuff
-        {"<leader>ta", function()
+        -- code-trace
+        {"ta", function()
           require("code-trace").add_stop()
-        end, description = "Add Stop"},
-        {"<leader>ts", function()
+        end, description = "[T]race [a]dd"},
+        {"ts", function()
           require("code-trace").show_stops()
-        end, description = "Add Stop"},
-        {"<leader>tc", function()
+        end, description = "[T]race [s]how"},
+        {"tc", function()
           require("code-trace").clear_stops()
-        end, description = "Clear stops"},
-        --{"<leader>td", function()
-          --require("code-trace").debug_stop()
-        --end, description = "Debug"},
+        end, description = "[T]race [c]lear"},
+        {"tr", function()
+          require("code-trace").add_stop({ return_stop = true })
+        end, description = "[T]race [r]eturn"},
         -- General vim keymaps --
         {"<C-l>", vim.cmd.tabn, description = "Tab next"},
         {"<C-h>", vim.cmd.tabp, description = "Tab previous"},
