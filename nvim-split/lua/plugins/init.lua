@@ -113,4 +113,8 @@ return {
 
    -- syntax highlighting for mustache/handlebars
    {"mustache/vim-mustache-handlebars"},
+
+   -- UML diagrams
+   {"scrooloose/vim-slumlord", ft = "plantuml", event = "VeryLazy"},
+   {"aklt/plantuml-syntax", ft = "plantuml", event = "VeryLazy"},
 }
