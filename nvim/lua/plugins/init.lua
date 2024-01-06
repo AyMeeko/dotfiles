@@ -2,6 +2,7 @@ return {
   {
     "AyMeeko/stack-trace.nvim",
     event = "VeryLazy",
+    version = "v0.2.0",
     dependencies = "nvim-treesitter/nvim-treesitter",
   },
 
