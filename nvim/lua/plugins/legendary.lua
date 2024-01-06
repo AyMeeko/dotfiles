@@ -10,6 +10,24 @@ return {
   config = function()
     require("legendary").setup({
       keymaps = {
+        ---- stack-trace ----
+        {"ta", function()
+          require("stack-trace").add_stop()
+          vim.lsp.buf.definition()
+        end, description = "[T]race [a]dd"},
+        {"ts", function()
+          require("stack-trace").show_stops()
+        end, description = "[T]race [s]how"},
+        {"tc", function()
+          require("stack-trace").clear_stops()
+        end, description = "[T]race [c]lear"},
+        {"tr", function()
+          require("stack-trace").return_stop()
+          if (vim.fn.tabpagenr() > 1) then
+            vim.cmd.tabclose()
+          end
+        end, description = "[T]race [r]eturn"},
+
         -- General vim keymaps --
         {"<C-l>", vim.cmd.tabn, description = "Tab next"},
         {"<C-h>", vim.cmd.tabp, description = "Tab previous"},

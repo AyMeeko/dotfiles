@@ -1,4 +1,10 @@
 return {
+  {
+    "AyMeeko/stack-trace.nvim",
+    event = "VeryLazy",
+    dependencies = "nvim-treesitter/nvim-treesitter",
+  },
+
   --{"dstein64/vim-startuptime"},
   {"norcalli/nvim-colorizer.lua"},
 
