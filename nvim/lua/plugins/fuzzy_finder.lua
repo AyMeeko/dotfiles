@@ -47,18 +47,18 @@ return {
     })
 
     -- https://github.com/navarasu/onedark.nvim/blob/master/lua/onedark/palette.lua
-    local colors = require("onedark.palette")["dark"]
-    local background = "#1d1f21"
-    local telescope_background = colors.bg1
-    local selection_background = "#3d4347"
-    vim.api.nvim_set_hl(0, "TelescopePromptNormal", {fg = colors.white, bg = telescope_background})
-    vim.api.nvim_set_hl(0, "TelescopePromptBorder", {fg = telescope_background, bg = telescope_background})
-    vim.api.nvim_set_hl(0, "TelescopePromptTitle", {bg = colors.bg_blue})
+    --local colors = require("onedark.palette")["dark"]
+    --local background = "#1d1f21"
+    --local telescope_background = colors.bg1
+    --local selection_background = "#3d4347"
+    --vim.api.nvim_set_hl(0, "TelescopePromptNormal", {fg = colors.white, bg = telescope_background})
+    --vim.api.nvim_set_hl(0, "TelescopePromptBorder", {fg = telescope_background, bg = telescope_background})
+    --vim.api.nvim_set_hl(0, "TelescopePromptTitle", {bg = colors.bg_blue})
 
-    vim.api.nvim_set_hl(0, "TelescopeResultsTitle", {fg = background, bg = background})
-    vim.api.nvim_set_hl(0, "TelescopeNormal", {bg = background})
-    vim.api.nvim_set_hl(0, "TelescopeResultsBorder", {fg = background, bg = background})
+    --vim.api.nvim_set_hl(0, "TelescopeResultsTitle", {fg = background, bg = background})
+    --vim.api.nvim_set_hl(0, "TelescopeNormal", {bg = background})
+    --vim.api.nvim_set_hl(0, "TelescopeResultsBorder", {fg = background, bg = background})
 
-    vim.api.nvim_set_hl(0, "TelescopeSelection", {bg = selection_background})
+    --vim.api.nvim_set_hl(0, "TelescopeSelection", {bg = selection_background})
   end,
 }

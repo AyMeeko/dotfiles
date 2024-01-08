@@ -24,7 +24,8 @@ return {
       require("lualine").setup({
         options = {
           icons_enabled = true,
-          theme = "onedark"
+          --theme = "onedark"
+          theme = "catppuccin"
         },
         sections = {
           lualine_a = {"mode"},
