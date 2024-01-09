@@ -11,7 +11,8 @@ thm_whiter="#c6a0f6" # magenta
 
 thm_blue="#8aadf4"
 thm_dark_gray="#24273a" # datetime on the right
-thm_black="#1e2030"
+thm_black="#24273a" # bg
+thm_border_style="#343856"
 
 thm_cyan="#91d7e3"
 thm_gray="#363a4f"
@@ -40,11 +41,12 @@ set -g status "on"
 set -g status-left-style "none"
 set -g message-command-style "fg=${thm_white},bg=${thm_blue}"
 set -g status-right-style "none"
-set -g pane-active-border-style "fg=${thm_whiter}"
-set -g pane-border-style "fg=${thm_dark_gray}"
 set -g status-style "none,bg=${thm_bg}"
 set -g message-style "fg=${thm_white},bg=${thm_blue}"
-set -g pane-active-border-style fg="${thm_dark_gray}"
+#set -g pane-border-style "fg=${thm_dark_gray}"
+#set -g pane-active-border-style fg="${thm_dark_gray}"
+set -g pane-border-style "fg=${thm_border_style}"
+set -g pane-active-border-style fg="${thm_border_style}"
 set -g status-right-length "100"
 set -g status-left-length "100"
 setw -g window-status-activity-style "underscore,fg=${thm_fg},bg=${thm_bg}"
