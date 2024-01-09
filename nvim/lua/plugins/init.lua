@@ -6,6 +6,13 @@ return {
     dependencies = "nvim-treesitter/nvim-treesitter",
   },
 
+  {
+    "j-hui/fidget.nvim",
+    config = function()
+      require("fidget").setup({})
+    end,
+  },
+
   --{"dstein64/vim-startuptime"},
   {"norcalli/nvim-colorizer.lua"},
 
