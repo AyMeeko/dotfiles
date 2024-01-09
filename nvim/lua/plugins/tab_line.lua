@@ -4,19 +4,19 @@ return {
   config = function()
     local colors = {
       black = "#000000",
-      tabs_text = "#c677dd",
-      normal_mode = "#98c379",
-      tab_bg = "#31353f",
-      unselected_tab_bg = "#3e4452",
+      tabs_text_bg = "#c677dd",
+      normal_mode = "#8aadf4",
+      tab_bg = "#24273a",
+      unselected_tab_bg = "#1e2030",
       unselected_tab_text = "#abb2bf",
     }
     -- TABS > file name[+]
     local render = function(f)
-      f.add({" TABS ", fg = colors.black, bg = colors.tabs_text})
+      f.add({" TABS ", fg = colors.black, bg = colors.tabs_text_bg})
 
       f.make_tabs(function(info)
         if info.index == 1 then
-          f.add({" ", fg = colors.tabs_text, bg = info.current and colors.normal_mode or colors.unselected_tab_bg})
+          f.add({" ", fg = colors.tabs_text_bg, bg = info.current and colors.normal_mode or colors.unselected_tab_bg})
         elseif info.index > 1 then
           if info.current then
             f.add({" ", fg = colors.unselected_tab_bg, bg = colors.normal_mode})

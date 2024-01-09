@@ -23,6 +23,7 @@ return {
             colored_indent_levels = false,
           },
           headlines = true,
+          fidget = true,
         }
       })
       vim.cmd.colorscheme "catppuccin"
@@ -52,7 +53,7 @@ return {
       --vim.api.nvim_set_hl(0, 'Headline6', {fg = '#d3869b', bg = '#6b454f', italic = false})
       --vim.api.nvim_set_hl(0, 'CodeBlock', {bg = '#31353f'})
 
-      --require('colorizer').setup()
+      require('colorizer').setup()
     end
   }
 }
