@@ -4,29 +4,36 @@
 # --> Catppuccin (Macchiato)
 thm_bg="#24273a"
 thm_fg="#cad3f5"
-thm_cyan="#91d7e3"
+
+thm_white="#24273a" # font inside tab
+thm_mid_white="#c6a0f6" # background behind datetime
+thm_whiter="#c6a0f6" # magenta
+
+thm_blue="#8aadf4"
+thm_dark_gray="#24273a" # datetime on the right
 thm_black="#1e2030"
+
+thm_cyan="#91d7e3"
 thm_gray="#363a4f"
 thm_magenta="#c6a0f6"
 thm_pink="#f5bde6"
 thm_red="#ed8796"
 thm_green="#a6da95"
 thm_yellow="#eed49f"
-thm_blue="#8aadf4"
 thm_orange="#f5a97f"
 thm_black4="#5b6078"
 
 # --> OneDark
-thm_fg="colour250"
-thm_bg="colour234"
+#thm_fg="colour250"
+#thm_bg="colour234"
 
-thm_white="colour231"
-thm_mid_white="colour252"
-thm_whiter="colour254"
+#thm_white="colour231"
+#thm_mid_white="colour252"
+#thm_whiter="colour254"
 
-thm_blue="colour31"
-thm_dark_gray="colour235"
-thm_black="colour16"
+#thm_blue="colour31"
+#thm_dark_gray="colour235"
+#thm_black="colour16"
 
 set -g status-justify "left"
 set -g status "on"
