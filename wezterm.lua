@@ -10,7 +10,10 @@ end
 
 config.color_scheme = 'Catppuccin Macchiato'
 config.font_size = 13.0
-config.font = wezterm.font 'Fira Code'
+config.font = wezterm.font {
+  family = 'Fira Code',
+  harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' },
+}
 config.line_height = 1.2
 config.hide_tab_bar_if_only_one_tab = true
 config.term = "xterm-256color"
@@ -24,7 +27,6 @@ config.window_padding = {
 }
 config.initial_rows = 40
 config.initial_cols = 200
-config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }
 
 wezterm.on('gui-startup', function(cmd) -- set startup Window position
   local tab, pane, window = mux.spawn_window(cmd or
