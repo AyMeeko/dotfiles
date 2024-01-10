@@ -6,10 +6,10 @@ thm_bg="#24273a"
 thm_fg="#cad3f5"
 
 thm_white="#24273a" # font inside tab
-thm_mid_white="#c6a0f6" # background behind datetime
-thm_whiter="#c6a0f6" # magenta
+thm_mid_white="#cad3f5" # background behind datetime
+thm_whiter="#f5a97f" # background of tmux session name
 
-thm_blue="#8aadf4"
+thm_blue="#cad3f5" # background active tab
 thm_dark_gray="#24273a" # datetime on the right
 thm_black="#24273a" # bg
 thm_border_style="#343856"
