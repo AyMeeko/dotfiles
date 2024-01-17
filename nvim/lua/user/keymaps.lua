@@ -5,6 +5,10 @@ vim.g.maplocalleader = ","
 vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
+-- remap q to <leader>q
+vim.keymap.set("n", "<leader>q", "q", { silent = true, remap = false })
+vim.keymap.set("n", "q", "<Nop>", { silent = true, remap = false })
+
 -- make command line work with emacs style editing
 vim.keymap.set("c", "<C-a>", "<Home>")
 vim.keymap.set("c", "<C-e>", "<End>")
