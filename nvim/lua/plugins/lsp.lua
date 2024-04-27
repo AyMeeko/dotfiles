@@ -48,6 +48,20 @@ return {
         }
       })
 
+      require("lspconfig").gopls.setup({
+        cmd = {"gopls"},
+        filetypes = { "go", "gomod", "gowork", "gotmpl" },
+        settings = {
+          gopls = {
+            completeUnimported = true,
+            usePlaceholders = true,
+            analyses = {
+              unusedparams = true,
+            },
+          },
+        },
+      })
+
       lsp.setup()
       vim.diagnostic.config({virtual_text = true})
     end,
