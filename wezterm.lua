@@ -9,9 +9,10 @@ if wezterm.config_builder then
 end
 
 config.color_scheme = 'Catppuccin Macchiato'
-config.font_size = 13.0
+config.font_size = 15.0
 config.font = wezterm.font {
-  family = 'Fira Code',
+  --family = 'Cascadia Code',
+  family = 'Agave',
   harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' },
 }
 config.line_height = 1.2
