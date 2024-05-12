@@ -66,7 +66,7 @@ return {
   },
 
   -- bubble text
-  {"fedepujol/move.nvim"},
+  --{"fedepujol/move.nvim"},
 
   -- easily add/delete/change "surroundings"
   {

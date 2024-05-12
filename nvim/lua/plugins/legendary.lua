@@ -112,18 +112,18 @@ return {
         {"<leader>=", "<Plug>VimwikiAddHeaderLevel", description = "[Vimwiki] Add header level" },
 
         ---- MOVE ----
-        {
-          "<C-j>",
-          { n = ":MoveLine(1)<CR>", v = ":MoveBlock(1)<CR>"},
-          description = "Bubble Text Down",
-          opts = {noremap = true, silent = true}
-        },
-        {
-          "<C-k>",
-          { n = ":MoveLine(-1)<CR>", v = ":MoveBlock(-1)<CR>"},
-          description = "Bubble Text Up",
-          opts = {noremap = true, silent = true}
-        },
+        --{
+          --"<C-j>",
+          --{ n = ":MoveLine(1)<CR>", v = ":MoveBlock(1)<CR>"},
+          --description = "Bubble Text Down",
+          --opts = {noremap = true, silent = true}
+        --},
+        --{
+          --"<C-k>",
+          --{ n = ":MoveLine(-1)<CR>", v = ":MoveBlock(-1)<CR>"},
+          --description = "Bubble Text Up",
+          --opts = {noremap = true, silent = true}
+        --},
 
         ---- TELESCOPE ----
         {
