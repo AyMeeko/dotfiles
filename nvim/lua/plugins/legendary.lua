@@ -268,6 +268,9 @@ return {
           end,
           description = "[LSP] [H]over [I]nformation"
         },
+        {
+          "<F4>", description = "[LSP] Select Code Action"
+        },
 
         ---- GIT SIGNS -----
         {
