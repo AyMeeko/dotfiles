@@ -89,7 +89,6 @@ return {
           ["<C-d>"] = cmp.mapping.scroll_docs(4), -- scroll down preview
           ["<C-Space>"] = cmp.mapping.complete({}), -- show completion suggestions
           ["<C-c>"] = cmp.mapping.abort(), -- close completion window
-          ["<CR>"] = cmp.mapping.confirm({ select = true }), -- select suggestion
         }),
         -- sources for autocompletion
         sources = cmp.config.sources({
