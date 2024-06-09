@@ -19,11 +19,6 @@ return {
           fidget = true,
           gitsigns = true,
           headlines = true,
-          indent_blankline = {
-            enabled = true,
-            scope_color = "", -- catppuccin color (eg. `lavender`) Default: text
-            colored_indent_levels = false,
-          },
           mason = true,
           native_lsp = {
             enabled = true,
@@ -47,7 +42,7 @@ return {
           nvimtree = true,
           telescope = {
             enabled = true,
-             style = "nvchad"
+            style = "nvchad"
           },
           treesitter = true,
           vimwiki = true,
