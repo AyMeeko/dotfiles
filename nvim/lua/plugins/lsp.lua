@@ -19,6 +19,7 @@ return {
     },
     config = function()
       local lsp = require("lsp-zero").preset("recommended")
+      local luasnip = require("luasnip")
 
       lsp.set_preferences({
         suggest_lsp_servers = false,
