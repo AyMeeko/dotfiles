@@ -153,6 +153,7 @@ fi
 PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
 
 # Install rbenv for Ruby support
 eval "$(rbenv init - zsh)"
