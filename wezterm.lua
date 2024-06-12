@@ -17,7 +17,7 @@ config.font = wezterm.font {
   --family = 'Roboto Slab',
   harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' },
 }
-config.line_height = 1.3
+config.line_height = 1.4
 config.hide_tab_bar_if_only_one_tab = true
 config.term = "xterm-256color"
 config.automatically_reload_config = true
