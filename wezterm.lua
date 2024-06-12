@@ -9,13 +9,15 @@ if wezterm.config_builder then
 end
 
 config.color_scheme = 'Catppuccin Macchiato'
-config.font_size = 15.0
+--config.color_scheme = 'Tokyo Night'
+config.font_size = 14.0
 config.font = wezterm.font {
-  --family = 'Cascadia Code',
-  family = 'Agave',
+  --family = 'Agave',
+  family = 'MonoLisa Nerd Font Mono',
+  --family = 'Roboto Slab',
   harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' },
 }
-config.line_height = 1.2
+config.line_height = 1.3
 config.hide_tab_bar_if_only_one_tab = true
 config.term = "xterm-256color"
 config.automatically_reload_config = true

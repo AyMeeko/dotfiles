@@ -14,8 +14,8 @@ return {
       {"hrsh7th/nvim-cmp"},
       {"hrsh7th/cmp-nvim-lsp"},
       {"L3MON4D3/LuaSnip"},
-      -- Pretty icons
-      "onsails/lspkind.nvim",
+      -- nice little symbols in the auto complete menu
+      {"onsails/lspkind.nvim", event = "VeryLazy"},
     },
     config = function()
       local lsp = require("lsp-zero").preset("recommended")
@@ -38,14 +38,14 @@ return {
       require("lspconfig").pylsp.setup({
         settings = {
           pylsp = {
-            configurationSources = {"pylint", "flake8"},
+            --configurationSources = {"pylint", "flake8"},
             plugins = {
-              pylint = {enabled = true},
-              flake8 = {enabled = true},
-              isort = {enabled = true},
+              pylint = {enabled = false},
+              flake8 = {enabled = false},
+              isort = {enabled = false},
               pycodestyle = {enabled = false},
               mccabe = {enabled = false},
-              pyflakes = {enabled = true},
+              pyflakes = {enabled = false},
             }
           }
         }
