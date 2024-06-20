@@ -13,10 +13,13 @@ config.color_scheme = 'Catppuccin Macchiato'
 config.font_size = 14.0
 config.font = wezterm.font {
   --family = 'Agave',
+  --family = 'JetBrainsMono Nerd Font',
   family = 'MonoLisa Nerd Font Mono',
-  --family = 'Roboto Slab',
-  harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' },
+  --harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' },
+  harfbuzz_features = { 'liga=0' },
 }
+config.freetype_load_target = 'Normal'
+config.freetype_render_target = 'Normal'
 config.line_height = 1.4
 config.hide_tab_bar_if_only_one_tab = true
 config.term = "xterm-256color"
