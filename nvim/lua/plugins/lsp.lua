@@ -1,120 +1,122 @@
 return {
-  {
-    "VonHeikemen/lsp-zero.nvim",
-    event = {'BufReadPre', 'BufNewFile'},
-    cmd = 'Mason',
-    branch = "v2.x",
-    dependencies = {
-      -- LSP Support
-      {"neovim/nvim-lspconfig"},
-      {"williamboman/mason.nvim"},
-      {"williamboman/mason-lspconfig.nvim"},
+  "neovim/nvim-lspconfig",
+  dependencies = {
+    "williamboman/mason.nvim",
+    "williamboman/mason-lspconfig.nvim",
+    "hrsh7th/cmp-nvim-lsp",
+    "hrsh7th/nvim-cmp",
+    "L3MON4D3/LuaSnip",
+    "j-hui/fidget.nvim",
+    "onsails/lspkind.nvim",
+  },
 
-      -- Autocompletion
-      {"hrsh7th/nvim-cmp"},
-      {"hrsh7th/cmp-nvim-lsp"},
-      {"L3MON4D3/LuaSnip"},
-      -- nice little symbols in the auto complete menu
-      {"onsails/lspkind.nvim", event = "VeryLazy"},
-    },
-    config = function()
-      local lsp = require("lsp-zero").preset("recommended")
-      local luasnip = require("luasnip")
+  config = function()
+    local cmp = require('cmp')
+    local cmp_lsp = require("cmp_nvim_lsp")
+    local capabilities = vim.tbl_deep_extend(
+      "force",
+      {},
+      vim.lsp.protocol.make_client_capabilities(),
+      cmp_lsp.default_capabilities()
+    )
+    local lspkind = require("lspkind")
 
-      lsp.set_preferences({
-        suggest_lsp_servers = false,
-        sign_icons = {
-          error = "E",
-          warn = "W",
-          hint = "H",
-          info = "I"
-        }
-      })
+    require("fidget").setup({})
+    require("mason").setup()
+    require("mason-lspconfig").setup({
+      ensure_installed = {
+        "biome",
+        --"cpptools",
+        "eslint",
+        -- "java-debug-adapter",
+        -- "java-test",
+        "jdtls",
+        "lua_ls",
+        "gopls",
+        -- "prettierd",
+        "pylsp",
+        "ruff",
+        "tsserver",
+      },
+      handlers = {
+        function(server_name) -- default handler (optional)
+          require("lspconfig")[server_name].setup {
+            capabilities = capabilities
+          }
+        end,
 
-      lsp.on_attach(function(client, bufnr)
-        require("plugins.lsp.callbacks")
-      end)
-
-      require("lspconfig").pylsp.setup({
-        settings = {
-          pylsp = {
-            --configurationSources = {"pylint", "flake8"},
-            plugins = {
-              pylint = {enabled = false},
-              flake8 = {enabled = false},
-              isort = {enabled = false},
-              pycodestyle = {enabled = false},
-              mccabe = {enabled = false},
-              pyflakes = {enabled = false},
+        ["lua_ls"] = function()
+          local lspconfig = require("lspconfig")
+          lspconfig.lua_ls.setup {
+            capabilities = capabilities,
+            settings = {
+              Lua = {
+                runtime = { version = "Lua 5.1" },
+                diagnostics = {
+                  globals = { "bit", "vim", "it", "describe", "before_each", "after_each" },
+                }
+              }
             }
           }
-        }
-      })
+        end,
+      }
+    })
 
-      require("lspconfig").gopls.setup({
-        cmd = {"gopls"},
-        filetypes = { "go", "gomod", "gowork", "gotmpl" },
-        settings = {
-          gopls = {
-            completeUnimported = true,
-            usePlaceholders = true,
-            analyses = {
-              unusedparams = true,
-            },
-          },
-        },
-      })
+    local cmp_select = { behavior = cmp.SelectBehavior.Select }
 
-      lsp.setup()
-      vim.diagnostic.config({virtual_text = true})
-
-      local cmp = require("cmp")
-      local lspkind = require("lspkind")
-
-      cmp.setup({
-        snippet = {
-          expand = function(args)
-            luasnip.lsp_expand(args.body)
-          end,
-        },
-        --window = {
-          --completion = cmp.config.window.bordered(),
-          --documentation = cmp.config.window.bordered(),
-        --},
-        completion = { completeopt = "menu,menuone,noinsert" },
-        mapping = cmp.mapping.preset.insert({
-          ["<C-k>"] = cmp.mapping.select_prev_item(), -- previous suggestion
-          ["<C-j>"] = cmp.mapping.select_next_item(), -- next suggestion
-          ["<C-u>"] = cmp.mapping.scroll_docs(-4), -- scroll up preview
-          ["<C-d>"] = cmp.mapping.scroll_docs(4), -- scroll down preview
-          ["<C-Space>"] = cmp.mapping.complete({}), -- show completion suggestions
-          ["<C-c>"] = cmp.mapping.abort(), -- close completion window
+    cmp.setup({
+      completion = { completeopt = "menu,menuone,noinsert" },
+      snippet = {
+        expand = function(args)
+          require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        end,
+      },
+      mapping = cmp.mapping.preset.insert({
+        ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
+        ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+        ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+        ["<C-Space>"] = cmp.mapping.complete(),
+      }),
+      sources = cmp.config.sources({
+        { name = "nvim_lsp" }, -- lsp
+        { name = "buffer", max_item_count = 5 }, -- text within current buffer
+        { name = "path", max_item_count = 3 }, -- file system paths
+        { name = "luasnip", max_item_count = 3 }, -- snippets
+      }),
+      formatting = {
+        expandable_indicator = true,
+        format = lspkind.cmp_format({
+          mode = "symbol_text",
+          maxwidth = 50,
+          ellipsis_char = "...",
         }),
-        -- sources for autocompletion
-        sources = cmp.config.sources({
-          { name = "nvim_lsp" }, -- lsp
-          { name = "buffer", max_item_count = 5 }, -- text within current buffer
-          { name = "path", max_item_count = 3 }, -- file system paths
-          { name = "luasnip", max_item_count = 3 }, -- snippets
-        }),
-        -- Enable pictogram icons for lsp/autocompletion
-        formatting = {
-          expandable_indicator = true,
-          format = lspkind.cmp_format({
-            mode = "symbol_text",
-            maxwidth = 50,
-            ellipsis_char = "...",
-          }),
-        },
-        experimental = {
-          ghost_text = true,
-        },
-      })
-    end,
+      },
+      experimental = {
+        ghost_text = true,
+      },
+    })
 
-  },
-  {
-    "williamboman/mason.nvim",
-    cmd = "Mason",
-  },
+    vim.diagnostic.config({virtual_text = true})
+
+    -- Executes the callback function every time a
+    -- language server is attached to a buffer.
+    vim.api.nvim_create_autocmd('LspAttach', {
+      desc = 'LSP actions',
+      callback = function(event)
+        require("plugins.lsp.callbacks")
+        local opts = {buffer = event.buf}
+
+        vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
+        vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
+        vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
+        vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
+        vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
+        vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
+        vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
+        vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
+        vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+        vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+      end,
+    })
+  end
 }
