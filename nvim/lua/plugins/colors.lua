@@ -1,8 +1,7 @@
 return {
   {
     "folke/tokyonight.nvim",
-    lazy = false,
-    priority = 1000,
+    event = "VeryLazy",
     opts = {},
   },
   {
@@ -59,6 +58,7 @@ return {
   },
   {
     "navarasu/onedark.nvim",
+    event = "VeryLazy",
     config = function()
       require("onedark").setup({
         transparent = true,

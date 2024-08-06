@@ -1,15 +1,14 @@
 return {
   "neovim/nvim-lspconfig",
   dependencies = {
-    "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim",
-    "hrsh7th/cmp-nvim-lsp",
-    "hrsh7th/nvim-cmp",
-    "L3MON4D3/LuaSnip",
-    "j-hui/fidget.nvim",
-    "onsails/lspkind.nvim",
+    {"williamboman/mason.nvim", event = "VeryLazy"},
+    {"williamboman/mason-lspconfig.nvim", event = "VeryLazy"},
+    {"hrsh7th/cmp-nvim-lsp", event = "VeryLazy"},
+    {"hrsh7th/nvim-cmp", event = "VeryLazy"},
+    {"L3MON4D3/LuaSnip", event = "VeryLazy"},
+    {"j-hui/fidget.nvim", event = "VeryLazy"},
+    {"onsails/lspkind.nvim", event = "VeryLazy"},
   },
-
   config = function()
     local cmp = require('cmp')
     local cmp_lsp = require("cmp_nvim_lsp")
@@ -25,18 +24,21 @@ return {
     require("mason").setup()
     require("mason-lspconfig").setup({
       ensure_installed = {
-        "biome",
+        -- "biome",
         --"cpptools",
-        "eslint",
+        -- "eslint",
+        "graphql",
+        "helm_ls",
         -- "java-debug-adapter",
         -- "java-test",
-        "jdtls",
+        -- "jdtls",
         "lua_ls",
-        "gopls",
+        -- "gopls",
         -- "prettierd",
         "pylsp",
-        "ruff",
-        "tsserver",
+        -- "ruff",
+        "terraformls",
+        -- "tsserver",
       },
       handlers = {
         function(server_name) -- default handler (optional)

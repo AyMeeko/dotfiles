@@ -8,6 +8,7 @@ return {
 
   {
     "folke/todo-comments.nvim",
+    event = "VeryLazy",
     dependencies = { "nvim-lua/plenary.nvim" },
     opts = {
       -- your configuration comes here
@@ -18,13 +19,17 @@ return {
 
   {
     "j-hui/fidget.nvim",
+    event = "VeryLazy",
     config = function()
       require("fidget").setup({})
     end,
   },
 
   --{"dstein64/vim-startuptime"},
-  {"norcalli/nvim-colorizer.lua"},
+  {
+    "norcalli/nvim-colorizer.lua",
+    event = "VeryLazy"
+  },
 
   -- better status line
   {
@@ -89,10 +94,13 @@ return {
   },
 
   -- easy commenting/uncommenting
-  {"scrooloose/nerdcommenter"},
+  --{"scrooloose/nerdcommenter"},
 
   -- multiple cursors
-  {"mg979/vim-visual-multi"},
+  {
+    "mg979/vim-visual-multi",
+    event = "VeryLazy",
+  },
 
   -- git integration
   {"tpope/vim-fugitive"},
@@ -120,26 +128,34 @@ return {
   -- open current file in GHE
   {"almo7aya/openingh.nvim", event = "VeryLazy"},
 
-   -- better quickfix?
-   {"kevinhwang91/nvim-bqf", ft = "qf", event = "VeryLazy"},
+  -- better quickfix?
+  {
+    "kevinhwang91/nvim-bqf",
+    ft = "qf",
+    event = "VeryLazy"
+  },
 
-   {
-     "lukas-reineke/indent-blankline.nvim",
-     event = "VeryLazy",
-     main = "ibl",
-     opts = {},
-     config = function()
-       require("ibl").setup({enabled = false})
-     end,
-   },
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    event = "VeryLazy",
+    main = "ibl",
+    opts = {},
+    config = function()
+      require("ibl").setup({enabled = false})
+    end,
+  },
 
-   -- syntax highlighting for helm
-   {'towolf/vim-helm'},
+  -- syntax highlighting for helm
+  -- cant lazy load or ft load
+  {'towolf/vim-helm'},
 
-   -- syntax highlighting for mustache/handlebars
-   {"mustache/vim-mustache-handlebars"},
+  -- syntax highlighting for mustache/handlebars
+  {
+    "mustache/vim-mustache-handlebars",
+    ft = {"yml", "mustache"}
+  },
 
-   -- UML diagrams
-   {"scrooloose/vim-slumlord", ft = "plantuml", event = "VeryLazy"},
-   {"aklt/plantuml-syntax", ft = "plantuml", event = "VeryLazy"},
+  -- UML diagrams
+  {"scrooloose/vim-slumlord", ft = "plantuml", event = "VeryLazy"},
+  {"aklt/plantuml-syntax", ft = "plantuml", event = "VeryLazy"},
 }

@@ -29,6 +29,7 @@ return {
         end, description = "[T]race [r]eturn"},
 
         -- General vim keymaps --
+        {"gcc", description = "Toggle comment line"},
         {"<C-l>", vim.cmd.tabn, description = "Tab next"},
         {"<C-h>", vim.cmd.tabp, description = "Tab previous"},
         {"<leader>/", vim.cmd.nohlsearch, description = "Clear last search"},
@@ -57,6 +58,7 @@ return {
         },
         {"<leader>gl", vim.cmd.OpenInGHFileLines, description = "Open [g]ithub file at [l]ine"},
         {"<leader>gf", vim.cmd.OpenInGHFile, description = "Open [g]ithub [f]ile"},
+        {"<leader>ct", ":ColorizerToggle<CR>", description = "[C]olorizer [t]oggle"},
 
         ---- VIMWIKI ----
         {"<leader>ww", vim.cmd.VimwikiIndex, description = "Load Vimwiki"},
