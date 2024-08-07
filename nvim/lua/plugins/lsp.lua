@@ -38,7 +38,7 @@ return {
         "pylsp",
         -- "ruff",
         "terraformls",
-        -- "tsserver",
+        "tsserver",
       },
       handlers = {
         function(server_name) -- default handler (optional)
@@ -47,9 +47,17 @@ return {
           }
         end,
 
+        graphql = function()
+          local lspconfig = require('lspconfig')
+          lspconfig.graphql.setup({
+            filetypes = { 'graphql' },
+            root_dir = lspconfig.util.root_pattern('.git', '.graphqlrc*', '.graphql.config.*', 'graphql.config.*')
+          })
+        end,
+
         ["lua_ls"] = function()
           local lspconfig = require("lspconfig")
-          lspconfig.lua_ls.setup {
+          lspconfig.lua_ls.setup({
             capabilities = capabilities,
             settings = {
               Lua = {
@@ -59,7 +67,7 @@ return {
                 }
               }
             }
-          }
+          })
         end,
       }
     })
