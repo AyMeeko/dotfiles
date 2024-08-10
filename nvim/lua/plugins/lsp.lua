@@ -55,6 +55,14 @@ return {
           })
         end,
 
+        ["omnisharp"] = function()
+          local lspconfig = require('lspconfig')
+          lspconfig.omnisharp.setup({
+            filetypes = { 'cs' },
+            root_dir = lspconfig.util.root_pattern('.git', '*.sln', '*.csproj')
+          })
+        end,
+
         ["lua_ls"] = function()
           local lspconfig = require("lspconfig")
           lspconfig.lua_ls.setup({

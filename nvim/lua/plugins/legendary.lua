@@ -273,6 +273,40 @@ return {
         {
           "<F4>", description = "[LSP] Select Code Action"
         },
+        {
+          "gd", function()
+            vim.lsp.buf.definition()
+            vim.cmd("norm zz")
+          end,
+          description = "[LSP] [g]o to [d]efinition"
+        },
+        {
+          "gD", function()
+            vim.lsp.buf.declaration()
+            vim.cmd("norm zz")
+          end,
+          description = "[LSP] [g]o to [d]efinition"
+        },
+        {
+          "gi", function()
+            vim.lsp.buf.implementation()
+            vim.cmd("norm zz")
+          end,
+          description = "[LSP] [g]o to [i]mplementation"
+        },
+        {
+          "go", function()
+            vim.lsp.buf.type_definition()
+            vim.cmd("norm zz")
+          end,
+          description = "[LSP] [g]o to ... type definition"
+        },
+        {
+          "gr", function()
+            vim.lsp.buf.references()
+          end,
+          description = "[LSP] [g]o to [r]eferences"
+        },
 
         ---- GIT SIGNS -----
         {
