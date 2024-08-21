@@ -164,3 +164,6 @@ eval "$(rbenv init - zsh)"
 # Golang
 export GOPATH="$HOME/go"
 export PATH="$GOPATH/bin:$PATH"
+
+# direnv
+eval "$(direnv hook zsh)"
