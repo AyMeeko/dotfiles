@@ -6,12 +6,11 @@ if wezterm.config_builder then
 end
 
 config.color_scheme = 'Catppuccin Macchiato'
-config.font_size = 14.0
+config.font_size = 16.0
 config.font = wezterm.font_with_fallback({
   {
-    family = "MonoLisa custom",
-    weight = "Medium",
-    harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }
+    family = "Cascadia Code",
+    harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' },
   },
   "Symbols Nerd Font Mono"
 })
