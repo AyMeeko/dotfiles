@@ -11,6 +11,7 @@ return {
       ensure_installed = {"python", "json", "lua", "vim", "vimdoc", "query", "markdown"},
       sync_install = false,
       auto_install = true,
+      indent = true,
       highlight = {
         enable = true,
         disable = function(lang, buf)
