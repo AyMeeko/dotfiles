@@ -59,6 +59,12 @@ return {
   {
     "navarasu/onedark.nvim",
     event = "VeryLazy",
+    dependencies = {
+      {
+        "norcalli/nvim-colorizer.lua",
+        event = "VeryLazy"
+      }
+    },
     config = function()
       require("onedark").setup({
         transparent = true,
@@ -81,7 +87,9 @@ return {
       --vim.api.nvim_set_hl(0, 'Headline6', {fg = '#d3869b', bg = '#6b454f', italic = false})
       --vim.api.nvim_set_hl(0, 'CodeBlock', {bg = '#31353f'})
 
-      require('colorizer').setup()
+      require('colorizer').setup({
+        filetypes = { "*", "!TelescopeResults" },
+      })
     end
   }
 }

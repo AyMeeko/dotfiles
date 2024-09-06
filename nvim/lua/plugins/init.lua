@@ -26,10 +26,6 @@ return {
   },
 
   --{"dstein64/vim-startuptime"},
-  {
-    "norcalli/nvim-colorizer.lua",
-    event = "VeryLazy"
-  },
 
   -- better status line
   {
