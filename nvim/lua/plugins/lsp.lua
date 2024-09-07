@@ -55,6 +55,15 @@ return {
           })
         end,
 
+        biome = function()
+          local lspconfig = require('lspconfig')
+          lspconfig.biome.setup({
+            filetypes = { 'javascript', 'javascriptreact', 'javascript.jsx', 'typescript', 'typescriptreact', 'typescript.tsx' },
+            root_dir = lspconfig.util.root_pattern('.git', 'tsconfig.json')
+          })
+        end,
+
+
         ["omnisharp"] = function()
           local lspconfig = require('lspconfig')
           lspconfig.omnisharp.setup({
