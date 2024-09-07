@@ -24,19 +24,13 @@ return {
     require("mason").setup()
     require("mason-lspconfig").setup({
       ensure_installed = {
-        -- "biome",
-        --"cpptools",
-        -- "eslint",
+        "biome",
         "graphql",
         "helm_ls",
-        -- "java-debug-adapter",
-        -- "java-test",
-        -- "jdtls",
         "lua_ls",
-        -- "gopls",
-        -- "prettierd",
+        "marksman",
         "pylsp",
-        -- "ruff",
+        "ruff",
         "terraformls",
         "ts_ls",
       },
@@ -47,7 +41,7 @@ return {
           }
         end,
 
-        graphql = function()
+        ["graphql"] = function()
           local lspconfig = require('lspconfig')
           lspconfig.graphql.setup({
             filetypes = { 'graphql' },
@@ -55,14 +49,13 @@ return {
           })
         end,
 
-        biome = function()
+        ["biome"] = function()
           local lspconfig = require('lspconfig')
           lspconfig.biome.setup({
             filetypes = { 'javascript', 'javascriptreact', 'javascript.jsx', 'typescript', 'typescriptreact', 'typescript.tsx' },
             root_dir = lspconfig.util.root_pattern('.git', 'tsconfig.json')
           })
         end,
-
 
         ["omnisharp"] = function()
           local lspconfig = require('lspconfig')
