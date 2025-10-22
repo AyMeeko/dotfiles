@@ -1,0 +1,36 @@
+# Ghostty theme
+theme = Catppuccin Macchiato
+
+# Font family
+#font-family = MonoLisa custom1
+font-size = 13
+font-family = Cascadia Code
+#adjust-cell-height = 20%
+#font-size = 12
+font-feature = -calt
+
+# Set the background-opacity to be fully opaque
+background-opacity = 1.0
+
+# Cursor style
+cursor-style-blink = false
+cursor-text = 181926
+
+# Clipboard settings
+clipboard-read = allow
+clipboard-write = allow
+
+# macos options
+macos-option-as-alt = true
+macos-titlebar-proxy-icon = hidden
+
+# Always show ghostty as the title
+title = ghostty
+# Window settings
+window-width = 220
+window-height = 45
+window-colorspace = display-p3
+window-padding-color = background
+window-padding-balance = true
+window-padding-x = 0
+window-padding-y = 0
