@@ -1,7 +1,0 @@
-xargs
-find
-mv
-sed
-awk
-jq
-tr
