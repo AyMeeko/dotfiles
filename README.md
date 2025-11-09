@@ -38,3 +38,7 @@ npm install -g @github/copilot
 npm install -g @githubnext/github-copilot-cli
 curl https://cursor.com/install -fsS | bash
 ```
+
+## Logging in to everything
+
+- `gh auth login`
