@@ -5,6 +5,7 @@ FILES=(
   'karabiner'
   'nvim'
   'omz-custom'
+  'opencode'
   'tmux'
 )
 
