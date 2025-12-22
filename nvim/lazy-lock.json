@@ -1,6 +1,7 @@
 {
   "LuaSnip": { "branch": "master", "commit": "5a1e39223db9a0498024a77b8441169d260c8c25" },
   "catppuccin": { "branch": "main", "commit": "ce8d176faa4643e026e597ae3c31db59b63cef09" },
+  "cloak.nvim": { "branch": "main", "commit": "648aca6d33ec011dc3166e7af3b38820d01a71e4" },
   "cmp-nvim-lsp": { "branch": "main", "commit": "cbc7b02bb99fae35cb42f514762b89b5126651ef" },
   "cmp-nvim-lsp-signature-help": { "branch": "main", "commit": "fd3e882e56956675c620898bf1ffcf4fcbe7ec84" },
   "cmp_luasnip": { "branch": "master", "commit": "98d9cb5c2c38532bd9bdb481067b20fea8f32e90" },
