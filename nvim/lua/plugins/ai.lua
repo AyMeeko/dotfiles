@@ -49,19 +49,6 @@ return {
     },
     keys = {
       {
-        "<tab>",
-        function()
-          -- Prioritize sidekick NES, fallback to copilot inline suggestions
-          if require("sidekick").nes_jump_or_apply() then
-            return       -- NES handled the tab
-          end
-          return "<Tab>" -- fallback to normal tab (copilot will handle via its keymap)
-        end,
-        expr = true,
-        desc = "Sidekick NES or fallback to Tab",
-        mode = { "i", "n" },
-      },
-      {
         "<leader>aa",
         function() require("sidekick.cli").toggle() end,
         desc = "Toggle AI CLI",
