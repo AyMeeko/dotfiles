@@ -28,6 +28,9 @@
 - `brew install opencode`
 - `brew install gh`
 - install Node
+- install bun
+    - `brew tap oven-sh/bun`
+    - `brew install bun`
 
 ## Install other things
 ```sh
