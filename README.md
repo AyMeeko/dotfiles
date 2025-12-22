@@ -31,6 +31,8 @@
 - install bun
     - `brew tap oven-sh/bun`
     - `brew install bun`
+- `brew install docker`
+- `brew install docker-compose`
 
 ## Install other things
 ```sh
