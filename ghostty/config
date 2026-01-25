@@ -3,7 +3,7 @@ theme = Catppuccin Macchiato
 
 # Font family
 font-family = MonoLisa custom1
-font-size = 13
+font-size = 10
 #font-family = Cascadia Code
 #adjust-cell-height = 20%
 #font-size = 12
