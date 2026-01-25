@@ -6,7 +6,7 @@ COMPLETION_WAITING_DOTS="true"
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 ZSH_CUSTOM=~/.config/omz-custom
 
-plugins=(brew bundler git ruby)
+plugins=(bundler git ruby)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -30,20 +30,47 @@ source <(fzf --zsh)
 # for zsh-completions
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
-
+  
+  autoload -Uz compinit
+  compinit
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  FPATH=/usr/share/zsh/site-functions:$FPATH
+  
   autoload -Uz compinit
   compinit
 fi
 
 # for zsh-syntax-highlighting
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+if type brew &>/dev/null; then
+  source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
 ZSH_HIGHLIGHT_PATTERNS+=('rm -rf *' 'fg=white,bold,bg=red')
 
 # for zsh-autosuggestions
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+if type brew &>/dev/null; then
+  source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
 
 ## misc
+
+# SSH agent helper function
+ssh-start() {
+    # Check if ssh-agent is running
+    if [ -z "$SSH_AUTH_SOCK" ]; then
+        echo "Starting SSH agent..."
+        eval $(ssh-agent -s)
+    else
+        echo "SSH agent is already running"
+    fi
+    
+    # Add SSH key
+    ssh-add ~/.ssh/aymeeko
+}
 
 # Rspec
 export SPEC_OPTS="--format documentation --no-profile"
