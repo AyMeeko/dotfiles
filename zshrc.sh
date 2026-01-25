@@ -30,12 +30,12 @@ source <(fzf --zsh)
 # for zsh-completions
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
-  
+
   autoload -Uz compinit
   compinit
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
   FPATH=/usr/share/zsh/site-functions:$FPATH
-  
+
   autoload -Uz compinit
   compinit
 fi
@@ -67,7 +67,7 @@ ssh-start() {
     else
         echo "SSH agent is already running"
     fi
-    
+
     # Add SSH key
     ssh-add ~/.ssh/aymeeko
 }
@@ -79,8 +79,8 @@ export SPEC_OPTS="--format documentation --no-profile"
 export NODE_OPTIONS="--max-old-space-size=8192"
 
 export LESS="-F -X -R"
-export EDITOR="vim"
-export VISUAL="vim"
+export EDITOR="nvim"
+export VISUAL="nvim"
 export GIT_EDITOR=$EDITOR
 export HOMEBREW_EDITOR=$VISUAL
 export TERM="xterm-256color"
