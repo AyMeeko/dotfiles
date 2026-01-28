@@ -1,6 +1,6 @@
 return {
   {
-    "rafcamlet/tabline-framework.nvim",
+    "aymeeko/tabline-framework.nvim",
     dependencies = "nvim-tree/nvim-web-devicons",
     config = function()
       local colors = require("catppuccin.palettes").get_palette("macchiato")
@@ -32,7 +32,7 @@ return {
         f.add_spacer()
       end
 
-      require("tabline_framework").setup { render = render }
+      require("tabline_framework").setup({ render = render })
     end,
   }
 }
