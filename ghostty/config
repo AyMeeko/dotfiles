@@ -2,12 +2,20 @@
 theme = Catppuccin Macchiato
 
 # Font family
-font-family = MonoLisa custom1
-font-size = 10
+font-feature = -calt
+font-thicken = true
+# font-thicken-strength = 0
+
+# font-family = MonoLisa custom1
+# font-size = 10
+
 # font-family = Cascadia Code
 #adjust-cell-height = 20%
 #font-size = 12
-font-feature = -calt
+
+# font-family = JetBrainsMono
+font-size = 13
+adjust-cell-height = 10%
 
 # Set the background-opacity to be fully opaque
 background-opacity = 1.0
