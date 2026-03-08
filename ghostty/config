@@ -42,3 +42,6 @@ window-padding-color = background
 window-padding-balance = true
 window-padding-x = 0
 window-padding-y = 0
+
+# Fix general slowness on hyprland (https://github.com/ghostty-org/ghostty/discussions/3224)
+async-backend = epoll
