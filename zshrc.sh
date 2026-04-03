@@ -92,5 +92,8 @@ export NVM_DIR="$HOME/.nvm"
 # direnv
 eval "$(direnv hook zsh)"
 
+# mise
+eval "$(mise activate zsh)"
+
 # cursor CLI
 export PATH="$HOME/.local/bin:$PATH"

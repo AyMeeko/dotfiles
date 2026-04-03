@@ -54,26 +54,26 @@ return {
         },
         marksman = {},
         rubocop = {
-          manual_install = true,
-          cmd = { "bundle", "exec", "rubocop", "--lsp", "--no-server" },
-          filetypes = { "ruby" },
-          root_dir = function(bufnr, on_dir)
-            on_dir(vim.fs.root(bufnr, {
-              "Gemfile",
-              ".git",
-            }))
-          end
+          -- manual_install = true,
+          -- cmd = { "bundle", "exec", "rubocop", "--lsp", "--no-server" },
+          -- filetypes = { "ruby" },
+          -- root_dir = function(bufnr, on_dir)
+          --   on_dir(vim.fs.root(bufnr, {
+          --     "Gemfile",
+          --     ".git",
+          --   }))
+          -- end
         },
         sorbet = {
-          manual_install = true,
-          cmd = { "bundle", "exec", "srb", "tc", "--lsp" },
-          filetypes = { "ruby" },
-          root_dir = function(bufnr, on_dir)
-            on_dir(vim.fs.root(bufnr, {
-              "Gemfile",
-              ".git",
-            }))
-          end
+          -- manual_install = true,
+          -- cmd = { "bundle", "exec", "srb", "tc", "--lsp" },
+          -- filetypes = { "ruby" },
+          -- root_dir = function(bufnr, on_dir)
+          --   on_dir(vim.fs.root(bufnr, {
+          --     "Gemfile",
+          --     ".git",
+          --   }))
+          -- end
         },
       }
 
