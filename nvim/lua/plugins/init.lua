@@ -1,21 +1,21 @@
 return {
-  {
-    "apaslak/factory_finder.nvim",
-    version = "v1.2.0", -- Use for stability; omit to use `main` branch for the latest features
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "nvim-treesitter/nvim-treesitter-textobjects",
-    },
-    config = function()
-      require("factory_finder").setup({
-        open_in_new_tab = true,
-      })
-    end,
-    event = "VeryLazy",
-    keys = {
-      { "<leader>fd", ":SmartGoToDefinition<CR>", desc = "[F]ind [d]efinition" },
-    },
-  },
+  -- {
+  --   "apaslak/factory_finder.nvim",
+  --   version = "v1.2.0", -- Use for stability; omit to use `main` branch for the latest features
+  --   dependencies = {
+  --     "nvim-treesitter/nvim-treesitter",
+  --     "nvim-treesitter/nvim-treesitter-textobjects",
+  --   },
+  --   config = function()
+  --     require("factory_finder").setup({
+  --       open_in_new_tab = true,
+  --     })
+  --   end,
+  --   event = "VeryLazy",
+  --   keys = {
+  --     { "<leader>fd", ":SmartGoToDefinition<CR>", desc = "[F]ind [d]efinition" },
+  --   },
+  -- },
 
   {
     "folke/todo-comments.nvim",

@@ -1,5 +1,5 @@
 return {
-  {"Vimjas/vim-python-pep8-indent", ft = "python"},
+  { "Vimjas/vim-python-pep8-indent", ft = "python" },
   {
     "nvim-treesitter/nvim-treesitter",
     version = "*",
@@ -7,10 +7,10 @@ return {
       "nvim-treesitter/nvim-treesitter-textobjects",
     },
     build = ":TSUpdate",
-    event = {"BufEnter"},
+    event = { "BufEnter" },
     config = function()
       require("nvim-treesitter.configs").setup({
-        ensure_installed = {"python", "ruby", "json", "lua", "vim", "vimdoc", "query", "markdown"},
+        ensure_installed = { "python", "ruby", "json", "lua", "vim", "vimdoc", "query", "markdown" },
         sync_install = false,
         auto_install = true,
         indent = true,
@@ -22,7 +22,7 @@ return {
             node_incremental = "<C-space>",
             node_decremental = "<bs>",
             scope_incremental = false,
-          }
+          },
         },
         textobjects = {
           select = {
@@ -90,10 +90,10 @@ return {
           -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
           -- Using this option may slow down your editor, and you may see some duplicate highlights.
           -- Instead of true it can also be a list of languages
-          additional_vim_regex_highlighting = {"python"},
+          additional_vim_regex_highlighting = { "python" },
         },
       })
-      local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
+      local ts_repeat_move = require("nvim-treesitter-textobjects.repeatable_move")
 
       -- vim way: ; goes to the direction you were moving.
       vim.keymap.set({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move)
@@ -105,5 +105,5 @@ return {
       vim.keymap.set({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t_expr, { expr = true })
       vim.keymap.set({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T_expr, { expr = true })
     end,
-  }
+  },
 }
