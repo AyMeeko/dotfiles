@@ -94,4 +94,13 @@ return {
       vim.api.nvim_set_hl(0, 'RenderMarkdownH1Bg', { fg = '#e695ad', bg = '#6b454f', italic = false })
     end
   },
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    build = "cd app && yarn install",
+    init = function()
+      vim.g.mkdp_filetypes = { "markdown" }
+    end,
+    ft = { "markdown" },
+  },
 }

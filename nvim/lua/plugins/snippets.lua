@@ -2,20 +2,20 @@ return {
   {
     "hrsh7th/nvim-cmp",
     event = "VeryLazy",
-    dependencies = {"L3MON4D3/LuaSnip"},
-    config = function ()
+    dependencies = { "L3MON4D3/LuaSnip" },
+    config = function()
       local cmp = require('cmp')
       local luasnip = require('luasnip')
 
       cmp.setup({
         sources = cmp.config.sources(
-        {
-          { name = 'nvim_lsp' },
-          { name = 'luasnip' },
-        },
-        {
-          { name = 'buffer' },
-        }),
+          {
+            { name = 'nvim_lsp' },
+            { name = 'luasnip' },
+          },
+          {
+            { name = 'buffer' },
+          }),
         mapping = {
           ["<C-y>"] = cmp.mapping.confirm { select = true },
           ["<C-n>"] = cmp.mapping(function(fallback)
@@ -46,16 +46,15 @@ return {
           end,
         },
       })
-
     end,
   },
-  {"saadparwaiz1/cmp_luasnip", event = "VeryLazy"},
+  { "saadparwaiz1/cmp_luasnip", event = "VeryLazy" },
   {
     "L3MON4D3/LuaSnip",
     event = "VeryLazy",
     version = "2.*",
     build = "make install_jsregexp",
-    dependencies = {"rafamadriz/friendly-snippets"},
+    dependencies = { "rafamadriz/friendly-snippets" },
     config = function()
       local luasnip = require("luasnip")
       luasnip.config.set_config({
@@ -73,57 +72,60 @@ return {
         return os.date("%m" .. delimiter .. "%d" .. delimiter .. "%y")
       end
 
-      -- https://sbulav.github.io/vim/neovim-setting-up-luasnip/
-      luasnip.add_snippets(nil, {
-        vimwiki = {
-          snip({
+      local markdown_snippets = {
+        snip({
             trig = "meta",
             namr = "Metadata",
             dscr = "Yaml metadata format for markdown"
           },
           {
-            text({"---", "tags: :"}), insert(1, "tag"),
-            text({":", "---", ""}),
+            text({ "---", "tags: :" }), insert(1, "tag"),
+            text({ ":", "---", "" }),
             insert(0)
           }),
-          snip({
+        snip({
             trig = "note",
             namr = "Note Template",
             dscr = "new vimwiki note template"
           },
           {
-            func(get_today_date, {}, {user_args = {"_"}}),
+            func(get_today_date, {}, { user_args = { "_" } }),
             text("_"),
             insert(1, "placeholder"),
             text(".md")
           }),
-          snip({
+        snip({
             trig = "sync",
             namr = "Daily Sync Template",
             dscr = "new daily sync template"
           },
           {
             text("#### "),
-            func(get_today_date, {}, {user_args = {"/"}}),
-            text({"", "Y:", "- "}),
+            func(get_today_date, {}, { user_args = { "/" } }),
+            text({ "", "Y:", "- " }),
             insert(1, "yesterday placeholder"),
-            text({"", "T:", "- "}),
+            text({ "", "T:", "- " }),
             insert(2, "today placeholder"),
-            text({"", ""}),
+            text({ "", "" }),
           }),
-        },
+      }
+
+      -- https://sbulav.github.io/vim/neovim-setting-up-luasnip/
+      luasnip.add_snippets(nil, {
+        vimwiki = markdown_snippets,
+        markdown = markdown_snippets,
       })
       require("luasnip.loaders.from_vscode").lazy_load()
-      require("luasnip.loaders.from_lua").load({paths = "~/src/personal/private-snippets"})
+      require("luasnip.loaders.from_lua").load({ paths = "~/src/personal/private-snippets" })
 
-      vim.keymap.set({"i", "s"}, "<C-L>", function() luasnip.jump( 1) end, {silent = true})
-      vim.keymap.set({"i", "s"}, "<C-J>", function() luasnip.jump(-1) end, {silent = true})
+      vim.keymap.set({ "i", "s" }, "<C-L>", function() luasnip.jump(1) end, { silent = true })
+      vim.keymap.set({ "i", "s" }, "<C-J>", function() luasnip.jump(-1) end, { silent = true })
 
-      vim.keymap.set({"i", "s"}, "<C-E>", function()
+      vim.keymap.set({ "i", "s" }, "<C-E>", function()
         if luasnip.choice_active() then
           luasnip.change_choice(1)
         end
-      end, {silent = true})
+      end, { silent = true })
     end,
   }
 }

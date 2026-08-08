@@ -1,21 +1,4 @@
-return {
-  -- {
-  --   "apaslak/factory_finder.nvim",
-  --   version = "v1.2.0", -- Use for stability; omit to use `main` branch for the latest features
-  --   dependencies = {
-  --     "nvim-treesitter/nvim-treesitter",
-  --     "nvim-treesitter/nvim-treesitter-textobjects",
-  --   },
-  --   config = function()
-  --     require("factory_finder").setup({
-  --       open_in_new_tab = true,
-  --     })
-  --   end,
-  --   event = "VeryLazy",
-  --   keys = {
-  --     { "<leader>fd", ":SmartGoToDefinition<CR>", desc = "[F]ind [d]efinition" },
-  --   },
-  -- },
+local plugins = {
 
   {
     "folke/todo-comments.nvim",
@@ -25,7 +8,7 @@ return {
       -- your configuration comes here
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
-    },
+    }
   },
 
   {
@@ -47,8 +30,8 @@ return {
         options = {
           icons_enabled = true,
           theme = "catppuccin-macchiato",
-          component_separators = "",
-          section_separators = { left = "", right = "" },
+          component_separators = '',
+          section_separators = { left = '', right = '' },
         },
         sections = {
           lualine_a = { "mode" },
@@ -58,11 +41,11 @@ return {
             { "diagnostics", sources = { "nvim_lsp" } },
             "encoding",
             "fileformat",
-            "filetype",
+            "filetype"
           },
           lualine_y = { "progress" },
-          lualine_z = { "location" },
-        },
+          lualine_z = { "location" }
+        }
       })
       vim.opt.showmode = false -- hide status bar so there aren't two
     end,
@@ -77,17 +60,19 @@ return {
       vim.g["test#python#pytest#executable"] = "pytest"
       vim.g["test#ruby#rspec#executable"] = "bundle exec rspec"
 
-      vim.keymap.set("n", "<leader>rt", function()
-        vim.cmd.TestNearest()
-      end, { desc = "[Test] [R]un [T]est" })
-      vim.keymap.set("n", "<leader>rf", function()
-        vim.cmd.TestFile()
-      end, { desc = "[Test] [R]un [F]ile" })
+      vim.keymap.set("n", "<leader>rt", function() vim.cmd.TestNearest() end, { desc = "[Test] [R]un [T]est" })
+      vim.keymap.set("n", "<leader>rf", function() vim.cmd.TestFile() end, { desc = "[Test] [R]un [F]ile" })
     end,
   },
 
   ---- Allow vim to send commands to tmux
-  { "preservim/vimux", event = "VeryLazy" },
+  {
+    "preservim/vimux",
+    event = "VeryLazy",
+    config = function()
+      vim.g["VimuxUseNearest"] = 1
+    end
+  },
 
   -- window zoom
   {
@@ -95,12 +80,12 @@ return {
     event = "VeryLazy",
     dependencies = "anuvyklack/middleclass",
     config = function()
-      require("windows").setup()
+      require('windows').setup()
 
       vim.keymap.set("n", "<leader>zw", function()
         vim.cmd.WindowsMaximize()
       end, { desc = "[Z]oom into [W]indow" })
-    end,
+    end
   },
 
   -- easily add/delete/change "surroundings"
@@ -110,7 +95,7 @@ return {
     version = "*", -- Use for stability; omit to use `main` branch for the latest features
     config = function()
       require("nvim-surround").setup({})
-    end,
+    end
   },
 
   -- multiple cursors
@@ -123,16 +108,11 @@ return {
   {
     "tpope/vim-fugitive",
     config = function()
-      vim.keymap.set("n", "<leader>gs", function()
-        vim.cmd("Git")
-      end, { desc = "[Git] [G]it [S]tatus" })
-      vim.keymap.set("n", "<leader>gd", function()
-        vim.cmd("Gvdiffsplit")
-      end, { desc = "[Git] [G]it [D]iff" })
-      vim.keymap.set("n", "<leader>gb", function()
-        vim.cmd("Git blame")
-      end, { desc = "[Git] [G]it [B]lame" })
-    end,
+      vim.keymap.set("n", "<leader>gs", function() vim.cmd('Git') end, { desc = "[Git] [G]it [S]tatus" })
+      vim.keymap.set("n", "<leader>gd", function() vim.cmd('Gvdiffsplit') end, { desc = "[Git] [G]it [D]iff" })
+      vim.keymap.set("n", "<leader>gb", function() vim.cmd('Git blame') end, { desc = "[Git] [G]it [B]lame" })
+      vim.keymap.set("n", "<leader>fa", function() vim.cmd('Git add %') end, { desc = "[Git] [G]it [F]ile add" })
+    end
   },
 
   -- repeat motions
@@ -147,7 +127,7 @@ return {
       vim.g.ctrlsf_winsize = "25%"
       vim.g.ctrlsf_case_sensitive = "smart"
       vim.g.ctrlsf_default_root = "project"
-      vim.g.ctrlsf_ackprg = "/opt/homebrew/bin/rg"
+      vim.g.ctrlsf_ackprg = vim.fn.exepath("rg")
       vim.g.ctrlsf_search_mode = "async"
 
       vim.keymap.set("n", "<C-f>f", ":CtrlSF ", { desc = "Launch CtrlSF" })
@@ -158,33 +138,55 @@ return {
   {
     "kevinhwang91/nvim-bqf",
     ft = "qf",
-    event = "VeryLazy",
+    event = "VeryLazy"
   },
 
   -- syntax highlighting for helm
   -- cant lazy load or ft load
-  { "towolf/vim-helm" },
+  { 'towolf/vim-helm' },
 
   -- syntax highlighting for mustache/handlebars
   {
     "mustache/vim-mustache-handlebars",
-    ft = { "yml", "mustache" },
+    ft = { "yml", "mustache" }
   },
 
   -- UML diagrams
   { "scrooloose/vim-slumlord", ft = "plantuml", event = "VeryLazy" },
-  { "aklt/plantuml-syntax", ft = "plantuml", event = "VeryLazy" },
+  { "aklt/plantuml-syntax",    ft = "plantuml", event = "VeryLazy" },
 
   -- smarter intend settings
-  { "tpope/vim-sleuth" },
+  { 'tpope/vim-sleuth' },
 
   {
-    "wassimk/gh-navigator.nvim",
+    'wassimk/gh-navigator.nvim',
     version = "v0.1.3",
     event = "VeryLazy",
     config = true,
     keys = {
       { "<leader>or", ":GH pr<CR>", desc = "[O]pen P[R]" },
-    },
+    }
   },
 }
+
+if vim.fn.isdirectory(vim.fn.expand("~/workspace/factory_finder.nvim")) == 1 then
+  table.insert(plugins, 1, {
+    "apaslak/factory_finder.nvim",
+    dir = "~/workspace/factory_finder.nvim",
+    -- version = "v1.2.0", -- Use for stability; omit to use `main` branch for the latest features
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+    },
+    config = function()
+      require("factory_finder").setup({
+        open_in_new_tab = true
+      })
+    end,
+    event = 'VeryLazy',
+    keys = {
+      { "<leader>fd", ":SmartGoToDefinition<CR>", desc = "[F]ind [d]efinition" },
+    }
+  })
+end
+
+return plugins

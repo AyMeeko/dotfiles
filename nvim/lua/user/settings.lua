@@ -29,7 +29,7 @@ vim.opt.colorcolumn = "100"
 vim.opt.signcolumn = "yes"
 
 -- Folding :)
-vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.foldmethod = "expr"
 vim.opt.foldlevel = 99
 

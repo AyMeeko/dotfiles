@@ -2,7 +2,7 @@ return {
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPost" },
-    cmd = { "LspInfo", "LspInstall", "LspUninstall", "Mason" },
+    cmd = { "LspInstall", "LspUninstall", "Mason" },
     dependencies = {
       { "folke/lazydev.nvim",                       ft = "lua" },
       { "williamboman/mason.nvim",                  event = "VeryLazy" },
@@ -23,6 +23,28 @@ return {
     config = function()
       -- Set border for LSPInfo window
       require('lspconfig.ui.windows').default_options = { border = "rounded" }
+
+      --- Find project root only if a gem is present in Gemfile.lock.
+      --- Not calling on_dir prevents the LSP from starting.
+      --- @param bufnr integer
+      --- @param gem_pattern string lua pattern to match in Gemfile.lock
+      --- @param extra_check? fun(root: string): boolean additional predicate on root
+      --- @return string? root directory, or nil to skip LSP activation
+      local function bundled_gem_root(bufnr, gem_pattern, extra_check)
+        local root = vim.fs.root(bufnr, { 'Gemfile', '.git' })
+        if not root then return nil end
+        if extra_check and not extra_check(root) then return nil end
+
+        local lockfile = root .. '/Gemfile.lock'
+        if not vim.uv.fs_stat(lockfile) then return nil end
+
+        for line in io.lines(lockfile) do
+          if line:find(gem_pattern) then
+            return root
+          end
+        end
+        return nil
+      end
 
       local servers = {
         eslint = {
@@ -54,32 +76,28 @@ return {
         },
         marksman = {},
         rubocop = {
-          -- manual_install = true,
-          -- cmd = { "bundle", "exec", "rubocop", "--lsp", "--no-server" },
-          -- filetypes = { "ruby" },
-          -- root_dir = function(bufnr, on_dir)
-          --   on_dir(vim.fs.root(bufnr, {
-          --     "Gemfile",
-          --     ".git",
-          --   }))
-          -- end
+          manual_install = true,
+          cmd = { "bundle", "exec", "rubocop", "--lsp", "--no-server" },
+          filetypes = { "ruby" },
+          root_dir = function(bufnr, on_dir)
+            local root = bundled_gem_root(bufnr, '%s+rubocop %b()')
+            if root then on_dir(root) end
+          end
         },
         sorbet = {
-          -- manual_install = true,
-          -- cmd = { "bundle", "exec", "srb", "tc", "--lsp" },
-          -- filetypes = { "ruby" },
-          -- root_dir = function(bufnr, on_dir)
-          --   on_dir(vim.fs.root(bufnr, {
-          --     "Gemfile",
-          --     ".git",
-          --   }))
-          -- end
+          manual_install = true,
+          cmd = { "bundle", "exec", "srb", "tc", "--lsp" },
+          filetypes = { "ruby" },
+          root_dir = function(bufnr, on_dir)
+            local root = bundled_gem_root(bufnr, '%s+sorbet %b()', function(r)
+              return vim.uv.fs_stat(r .. '/sorbet') ~= nil
+            end)
+            if root then on_dir(root) end
+          end
         },
       }
 
-      local formatters = {
-        prettierd = {},
-      }
+      local formatters = {}
 
       local mason_tools_to_install = vim.tbl_keys(vim.tbl_deep_extend("force", {}, servers, formatters))
 
@@ -242,18 +260,35 @@ return {
         default_format_opts = {
           async = true,
           timeout_ms = 500,
-          lsp_format = "fallback",
+          lsp_format = "never",
         },
-        -- format_after_save = {
-        --   async = true,
-        --   timeout_ms = 500,
-        --   lsp_format = "fallback",
-        -- },
+        formatters = {
+          oxfmt = {
+            cwd = require("conform.util").root_file({
+              "oxfmt.config.mts",
+              "oxfmt.config.ts",
+              ".oxfmtrc.json",
+              ".oxfmtrc.jsonc",
+            }),
+            prepend_args = function(self, ctx)
+              local root = self.cwd and self.cwd(self, ctx)
+              if root then
+                local mts = root .. "/oxfmt.config.mts"
+                local f = io.open(mts, "r")
+                if f then
+                  f:close()
+                  return { "--config=" .. mts }
+                end
+              end
+              return {}
+            end,
+          },
+        },
         formatters_by_ft = {
-          javascript = { "prettier", "prettierd" },
-          typescript = { "prettier", "prettierd" },
-          typescriptreact = { "prettier", "prettierd" },
-          svelte = { "prettier", "prettierd" },
+          javascript = { "oxfmt" },
+          typescript = { "oxfmt" },
+          typescriptreact = { "oxfmt" },
+          svelte = { "oxfmt" },
           lua = { "stylua" },
         },
         format_after_save = function(bufnr)
@@ -261,7 +296,7 @@ return {
           if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
             return
           end
-          return { async = true, timeout_ms = 500, lsp_format = "fallback" }
+          return { async = true, timeout_ms = 500, lsp_format = "never" }
         end,
       })
 

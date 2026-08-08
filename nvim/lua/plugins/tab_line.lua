@@ -32,7 +32,7 @@ return {
         f.add_spacer()
       end
 
-      require("tabline_framework").setup({ render = render })
+      require("tabline_framework").setup { render = render }
     end,
   }
 }

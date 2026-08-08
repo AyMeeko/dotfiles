@@ -37,7 +37,7 @@ return {
           opencode = {
             cmd = { "opencode" },
             -- this is a hack. Setting it to another theme wont work
-            env = { OPENCODE_THEME = "system" },
+            env = { OPENCODE_THEME = "system", AWS_PROFILE = "bedrock-users" },
           },
         },
         win = {
@@ -47,7 +47,7 @@ return {
         }
       },
       nes = {
-        enabled = false,
+        enabled = false
       },
     },
     keys = {

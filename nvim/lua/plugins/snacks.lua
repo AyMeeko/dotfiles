@@ -40,11 +40,11 @@ return {
         frecency = true,
         history_bonus = true
       },
-      -- previewers = {
-      --   diff = {
-      --     cmd = { "delta" }
-      --   }
-      -- },
+      previewers = {
+        diff = {
+          style = "fancy",
+        }
+      },
       win = {
         -- input = {keys = {["<Esc>"] = {"close", mode = {"n", "i"}}}}
         input = {
@@ -68,6 +68,17 @@ return {
             ["<a-o>"] = "cycle_win",
           }
         }
+      },
+      sources = {
+        smart = {
+          filter = { cwd = true },
+          multi = {
+            "buffers",
+            "recent",
+            "files",
+            { source = "files", dirs = { ".opencode" }, ignored = true, hidden = true },
+          },
+        },
       },
     },
     quickfile = { enabled = true },
@@ -123,7 +134,7 @@ return {
         -- find
         vim.keymap.set("n", "<leader>ff", function() snacks.picker.files() end, { desc = "[F]ind [F]iles" })
         vim.keymap.set("n", "<leader>fg", function() snacks.picker.git_files() end, { desc = "[F]ind [G]it Files" })
-        vim.keymap.set("n", "<leader>fr", function() snacks.picker.recent() end, { desc = "[F]ind [R]ecent" })
+        vim.keymap.set("n", "<leader>fr", function() snacks.picker.recent({ filter = { cwd = true } }) end, { desc = "[F]ind [R]ecent" })
 
         -- Grep
         vim.keymap.set({ "n", "x" }, "<leader>sw", function()
