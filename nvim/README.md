@@ -50,10 +50,6 @@ Opening a file whose parser isn't installed but is available auto-installs it (r
 
 ### 5. Manual one-time steps
 
-```vim
-:Copilot auth
-```
-
 Formatters used by conform.nvim are NOT mason-managed; install if needed:
 
 ```sh
