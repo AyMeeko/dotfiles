@@ -21,6 +21,7 @@ alias gdc='git diff --cached --color'
 alias s='rg -S'
 alias fzf-tmux="TERM=screen-256color fzf-tmux"
 alias vim="nvim"
+alias o="opencode"
 
 bindkey -e
 
