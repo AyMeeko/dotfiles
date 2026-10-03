@@ -1,0 +1,20 @@
+{{- $role := promptChoiceOnce . "role" "Machine role" (list "omarchy" "wsl") -}}
+{{- if not (has $role (list "omarchy" "wsl")) -}}
+{{- fail "role must be omarchy or wsl" -}}
+{{- end }}
+{{- $internal := "" -}}
+{{- $external := "" -}}
+{{- if eq $role "omarchy" -}}
+{{- $internal = promptStringOnce . "kmonadInternalDevice" "Internal keyboard device (/dev/input/by-id/ or by-path/)" -}}
+{{- $external = promptStringOnce . "kmonadExternalDevice" "External keyboard device (empty to omit)" "" -}}
+{{- if not (regexMatch "^/dev/input/[^\"\\\\[:space:]]+$" $internal) -}}
+{{- fail "kmonadInternalDevice must be a /dev/input/ path without whitespace or quotes" -}}
+{{- end -}}
+{{- if and $external (not (regexMatch "^/dev/input/[^\"\\\\[:space:]]+$" $external)) -}}
+{{- fail "kmonadExternalDevice must be a /dev/input/ path without whitespace or quotes" -}}
+{{- end -}}
+{{- end }}
+[data]
+role = {{ $role | quote }}
+kmonadInternalDevice = {{ $internal | quote }}
+kmonadExternalDevice = {{ $external | quote }}

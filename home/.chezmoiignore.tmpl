@@ -1,0 +1,29 @@
+{{- $role := default "" (get . "role") -}}
+{{- if not (has $role (list "omarchy" "wsl")) -}}
+{{- fail "role must be omarchy or wsl; run chezmoi init first" -}}
+{{- end }}
+{{ if eq $role "omarchy" }}
+{{- $internal := default "" (get . "kmonadInternalDevice") -}}
+{{- $external := default "" (get . "kmonadExternalDevice") -}}
+{{- if not (regexMatch "^/dev/input/[^\"\\\\[:space:]]+$" $internal) -}}
+{{- fail "kmonadInternalDevice must be configured; run chezmoi init" -}}
+{{- end -}}
+{{- if and $external (not (regexMatch "^/dev/input/[^\"\\\\[:space:]]+$" $external)) -}}
+{{- fail "kmonadExternalDevice must be a /dev/input/ path without whitespace or quotes" -}}
+{{- end }}
+{{ if not $external }}
+.config/kmonad/kmonad-external.kbd
+.config/systemd/user/kmonad-external.service
+{{ end }}
+{{ end }}
+{{ if eq $role "wsl" }}
+.config/ghostty
+.config/ghostty/**
+.config/xdg-terminals.list
+.config/omarchy
+.config/omarchy/**
+.config/kmonad
+.config/kmonad/**
+.config/systemd/user/kmonad.service
+.config/systemd/user/kmonad-external.service
+{{ end }}

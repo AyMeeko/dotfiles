@@ -4,12 +4,14 @@ Personal Neovim config. Plugins managed by [lazy.nvim](https://github.com/folke/
 
 ## New machine setup
 
-### 1. Get this directory to `~/.config/nvim`
+### 1. Deploy with chezmoi
 
-On this Arch/Omarchy machine, the deployed config is this repository's `nvim` directory:
+Follow the [repository setup and migration guide](README.md). The managed source
+is `home/dot_config/nvim`; chezmoi deploys regular files to `~/.config/nvim`:
 
 ```sh
-ln -s /home/aymeeko/src/dotfiles/nvim ~/.config/nvim
+chezmoi diff
+chezmoi apply --interactive
 ```
 
 ### 2. Install required binaries

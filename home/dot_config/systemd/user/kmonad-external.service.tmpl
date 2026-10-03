@@ -1,0 +1,13 @@
+[Unit]
+Description=KMonad keyboard remapper (external keyboard)
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecCondition=/usr/bin/test -e {{ .kmonadExternalDevice | replace "%" "%%" | quote }}
+ExecStart=/usr/bin/kmonad %h/.config/kmonad/kmonad-external.kbd
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
