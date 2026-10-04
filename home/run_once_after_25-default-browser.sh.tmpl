@@ -1,0 +1,7 @@
+{{ if and (eq .role "omarchy") (default false (get . "setupEnabled")) -}}
+#!/usr/bin/env bash
+set -euo pipefail
+# Omarchy's Browser and Browser (private) hotkeys use this XDG preference.
+# Ignore a shell override, just as omarchy-launch-browser does.
+env -u BROWSER xdg-settings set default-web-browser vivaldi-stable.desktop
+{{ end -}}

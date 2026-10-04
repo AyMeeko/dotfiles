@@ -97,6 +97,8 @@ Setup phases:
    installations are respected rather than replaced with conflicting packages.
 3. `run_once_after_20-*`: install shell/tmux dependencies, Ruby as needed, and
    pinned Neovim plugins/parsers/LSPs. The bootstrap Lua files wait for completion.
+   `run_once_after_25-*` sets Vivaldi as the default browser for Omarchy's browser
+   hotkeys and web links.
 4. `run_onchange_after_30-*`: validate and activate configured KMonad services.
    Template hashes make keymap/unit changes trigger a service update.
 5. `run_once_after_40-*`: configure the user-manager SSH agent environment and

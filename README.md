@@ -45,7 +45,9 @@ downloaded bootstraps use `~/.local/share/chezmoi`.
 The setup automatically:
 
 - Installs chezmoi and the required Arch packages, including Zsh enhancements,
-  Ghostty, tmux, Neovim/build tools, KMonad, direnv, and a Nerd Font.
+  Ghostty, Vivaldi, tmux, Neovim/build tools, KMonad, direnv, and a Nerd Font.
+- Sets Vivaldi as the default web browser, used by Omarchy's Browser and
+  Browser (private) hotkeys and when opening web links.
 - Detects stable keyboard paths: Dygma first, then a platform/laptop keyboard,
   then USB. The next distinct USB keyboard becomes the external keyboard.
 - Saves these paths, the `omarchy` role, and `setupEnabled = true` in local
@@ -134,6 +136,8 @@ Bindings live in `home/dot_config/hypr/bindings.lua`. To tune sizes, edit
 `run_onchange_before_10-*` installs system dependencies and permissions when that
 script or its rendered device inputs change. `run_once_after_20-*` installs user
 dependencies once; a failed run is retried by `chezmoi apply`.
+`run_once_after_25-*` selects Vivaldi as the default browser once, preserving
+later manual browser preferences on routine repeat applies.
 `run_onchange_after_30-*` validates and restarts keyboard services when their
 keymap, units, or device paths change. A routine repeat apply does not reinstall
 plugins or restart services. Changing a run-once script causes its new content
