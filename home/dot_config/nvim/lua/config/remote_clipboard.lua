@@ -1,9 +1,8 @@
--- Clipboard for sessions whose yanks may need to reach another machine:
--- every copy is emitted as OSC 52 (inside tmux this becomes a tmux buffer,
--- rebroadcast to every attached client, local or SSH). Paste prefers the
--- local Wayland clipboard when one is available, so content copied in other
--- apps remains pasteable; without a display, paste is an OSC 52 query that
--- tmux (or the terminal) answers.
+-- Both * and + address the ordinary system clipboard, matching macOS muscle
+-- memory: "*y must be pasteable with Ctrl+V, not just middle-click.
+-- Local Wayland sessions use wl-clipboard directly, including inside tmux.
+-- SSH/herdr sessions additionally emit OSC 52 to reach the client clipboard;
+-- without a local display, paste queries the terminal's clipboard via OSC 52.
 local M = {}
 
 local function proc_lines(pid, file)
@@ -44,25 +43,37 @@ function M.setup()
   local in_tmux = vim.env.TMUX ~= nil
   local in_ssh = vim.env.SSH_TTY ~= nil or vim.env.SSH_CONNECTION ~= nil
   local in_herdr = vim.env.HERDR_PANE_ID ~= nil or ancestor_process_named("herdr")
+  local has_wayland = vim.env.WAYLAND_DISPLAY ~= nil
+    and vim.fn.executable("wl-copy") == 1
+    and vim.fn.executable("wl-paste") == 1
+
+  if has_wayland and not (in_ssh or in_herdr) then
+    vim.g.clipboard = {
+      name = "WaylandSystemClipboard",
+      copy = {
+        ["+"] = { "wl-copy", "--type", "text/plain" },
+        ["*"] = { "wl-copy", "--type", "text/plain" },
+      },
+      paste = {
+        ["+"] = { "wl-paste", "--no-newline" },
+        ["*"] = { "wl-paste", "--no-newline" },
+      },
+      cache_enabled = 0,
+    }
+    return
+  end
 
   if not (in_tmux or in_ssh or in_herdr) then
     return
   end
 
   local osc52 = require("vim.ui.clipboard.osc52")
-  local has_wayland = vim.env.WAYLAND_DISPLAY ~= nil
-    and vim.fn.executable("wl-copy") == 1
-    and vim.fn.executable("wl-paste") == 1
-
-  local function copy(register)
-    local emit = osc52.copy(register)
+  local function copy()
+    local emit = osc52.copy("+")
 
     return function(lines)
       if has_wayland then
-        local cmd = { "wl-copy", "--sensitive", "--type", "text/plain" }
-        if register == "*" then
-          cmd[#cmd + 1] = "--primary"
-        end
+        local cmd = { "wl-copy", "--type", "text/plain" }
         vim.fn.system(cmd, lines)
       end
 
@@ -72,17 +83,13 @@ function M.setup()
     end
   end
 
-  local function paste(register)
+  local function paste()
     if not has_wayland then
-      return osc52.paste(register)
+      return osc52.paste("+")
     end
 
     return function()
       local cmd = { "wl-paste", "--no-newline" }
-      if register == "*" then
-        cmd[#cmd + 1] = "--primary"
-      end
-
       local lines = vim.fn.systemlist(cmd, "", 1)
       return vim.v.shell_error == 0 and lines or {}
     end
@@ -90,8 +97,8 @@ function M.setup()
 
   vim.g.clipboard = {
     name = "OmarchyRemoteClipboard",
-    copy = { ["+"] = copy("+"), ["*"] = copy("*") },
-    paste = { ["+"] = paste("+"), ["*"] = paste("*") },
+    copy = { ["+"] = copy(), ["*"] = copy() },
+    paste = { ["+"] = paste(), ["*"] = paste() },
     cache_enabled = 0,
   }
 end

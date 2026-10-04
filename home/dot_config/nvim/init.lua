@@ -13,6 +13,7 @@ vim.opt.rtp:prepend(lazypath)
 
 vim.loader.enable()
 
+require("config.remote_clipboard").setup()
 require("user.settings")
 require("user.commands")
 require("user.keymaps")

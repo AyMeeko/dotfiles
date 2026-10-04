@@ -67,6 +67,17 @@ Ruby LSPs (rubocop, sorbet) run via `bundle exec` per-project — nothing global
 
 ### 6. Verify
 
+On local Wayland desktops, both `"*y` and `"+y` copy to the ordinary system
+clipboard (paste outside Neovim with Ctrl+V); both `"*p` and `"+p` read it.
+This deliberately aliases the primary-selection register to the normal clipboard.
+Local tmux sessions also use `wl-copy`/`wl-paste` directly. SSH/herdr sessions use
+the OSC 52 remote clipboard helper, which is loaded early in `init.lua`.
+
+After applying, run `python tests/nvim-clipboard-smoke.py` from the repo on the
+Wayland desktop to verify actual visual yanks, external clipboard reads, and
+clipboard persistence, both outside and inside tmux. It restores the previous
+clipboard content after testing.
+
 ```vim
 :checkhealth nvim-treesitter
 :checkhealth vim.treesitter
