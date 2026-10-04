@@ -1,0 +1,8 @@
+# Put host-specific overrides here; SSH uses the first value it encounters.
+Include ~/.ssh/config.d/*.conf
+
+Host github.com
+  User git
+
+Host *
+  IdentityAgent ~/.1password/agent.sock

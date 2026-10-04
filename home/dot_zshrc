@@ -59,8 +59,23 @@ fi
 
 ## misc
 
-# SSH agent helper function
+# Use the desktop 1Password agent for SSH and agent-aware command-line tools.
+if [[ "$OSTYPE" == "linux-gnu"* ]] && command -v 1password >/dev/null 2>&1; then
+    export SSH_AUTH_SOCK="$HOME/.1password/agent.sock"
+fi
+command -v op >/dev/null 2>&1 && export OP_BIOMETRIC_UNLOCK_ENABLED=true
+
+# Keep the existing helper name; no private key file is needed with 1Password.
 ssh-start() {
+    if command -v 1password >/dev/null 2>&1; then
+        export SSH_AUTH_SOCK="$HOME/.1password/agent.sock"
+        if [[ ! -S "$SSH_AUTH_SOCK" ]]; then
+            print -r -- 'Open 1Password, sign in, and enable Settings > Developer > Use the SSH Agent.'
+            return 1
+        fi
+        ssh-add -l
+        return $?
+    fi
     # Check if ssh-agent is running
     if [ -z "$SSH_AUTH_SOCK" ]; then
         echo "Starting SSH agent..."

@@ -19,6 +19,7 @@ reference-only. The active screensaver lives at
 | Ghostty, terminal preference, screensaver branding | Yes | Excluded |
 | Internal KMonad keymap and user service | Required device path | Excluded |
 | External KMonad keymap and user service | If external device path supplied | Excluded |
+| 1Password SSH client, agent environment, desktop autostart | Yes | Excluded |
 
 Other files in `~/.config`, including Omarchy branding and systemd user units,
 are preserved. With `setupEnabled = true`, chezmoi also installs dependencies,
@@ -58,11 +59,15 @@ The setup automatically:
 - Sets Zsh as the login shell, configures `/etc` uinput rules/module loading and
   `input` group membership, validates keymaps/units, and enables both configured
   KMonad services. Caps Lock becomes tap-Escape/hold-Control.
+- Installs the 1Password desktop app, `op` CLI and OpenSSH, configures SSH to use
+  the 1Password agent, starts the app at login, and opens its Developer settings
+  if the agent isn't enabled yet.
 
 Authenticate when sudo requests your password. Log out and back in after setup,
 and restart OpenCode to load its configuration. This restores your configured
 user environment on top of Omarchy; OS installation, hardware-specific drivers,
-SSH private keys, account logins, and project repositories/data remain separate.
+account logins and project repositories/data remain separate. SSH keys stored
+in 1Password become available after authorizing its agent as described below.
 GitHub/OpenCode authentication cannot be reconstructed from public dotfiles.
 
 For different keyboards, override detection on the second command:
@@ -92,6 +97,55 @@ dependencies once; a failed run is retried by `chezmoi apply`.
 keymap, units, or device paths change. A routine repeat apply does not reinstall
 plugins or restart services. Changing a run-once script causes its new content
 to run once again.
+
+## SSH keys through 1Password
+
+The bootstrap installs everything needed; it does not require `op` or 1Password
+to be installed or signed in beforehand. `~/.ssh/config` points OpenSSH at
+`~/.1password/agent.sock`, and Zsh plus the systemd user environment set
+`SSH_AUTH_SOCK` for tools such as `ssh-add`. 1Password starts at desktop login.
+`ssh-start` now lists the agent's keys instead of loading `~/.ssh/aymeeko`.
+
+On each fresh machine, complete the account authorization in the 1Password app:
+
+1. Sign in to your existing 1Password account.
+2. In **Settings > Developer**, enable **Use the SSH Agent**.
+3. To use `op` with desktop authentication, enable **Unlock using system
+   authentication** under **Security**, and **Integrate with 1Password CLI**
+   under **Developer**.
+
+These are 1Password's required app authorization steps; its CLI does not provide
+a supported command to turn those settings on. The bootstrap opens the Developer
+settings if the socket is absent and continues applying the rest of the setup.
+Private keys stay in 1Password rather than being exported into files or Git.
+All active **SSH Key** items in your Personal, Private, or Employee vaults are
+available by default. Existing keys must be saved as SSH Key items, not just
+text fields or attachments. Their public keys must already be authorized on
+GitHub or the servers you connect to.
+
+In a fresh terminal, verify:
+
+```sh
+ssh-start                  # list available key fingerprints
+op signin                  # connect the CLI to your desktop account
+op vault list              # authenticate the CLI through the desktop app
+ssh -T git@github.com       # authorize the request in 1Password
+```
+
+GitHub's successful SSH test prints an authentication greeting and exits with
+status 1 because it doesn't provide shell access. HTTPS Git remotes still use
+HTTPS authentication; use an SSH remote (e.g. `git@github.com:AyMeeko/dotfiles.git`)
+when you want Git to authenticate through this agent. The initial public dotfiles
+clone uses HTTPS so setup works before you've signed in to 1Password.
+
+Put host-specific overrides in `~/.ssh/config.d/*.conf`, which is included before
+the default agent setting. For multiple keys/accounts or more than six keys,
+select a host's key with a **public** `IdentityFile` and `IdentitiesOnly yes`.
+Custom/shared vaults can be selected later using
+`~/.config/1Password/ssh/agent.toml`; your Personal/Private vaults need no such file.
+
+References: [SSH agent](https://developer.1password.com/docs/ssh/agent/) and
+[CLI app integration](https://developer.1password.com/docs/cli/app-integration/).
 
 The `wsl` role only establishes an exclusion boundary today; it is not a finished
 Ubuntu setup recipe. Its package, shell and clipboard integration will follow.

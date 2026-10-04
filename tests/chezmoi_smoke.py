@@ -50,6 +50,9 @@ def deploy(role, internal, external):
         unit = home / ".config/systemd/user/unrelated.service"
         unit.parent.mkdir(parents=True)
         unit.write_text("keep service")
+        known_hosts = home / ".ssh/known_hosts"
+        known_hosts.parent.mkdir(mode=0o700)
+        known_hosts.write_text("existing known hosts")
         run("apply", "--dry-run", "--verbose")
         run("apply", "--no-tty")
         check(not run("diff").stdout, "fresh apply left a diff")
@@ -58,6 +61,18 @@ def deploy(role, internal, external):
         check(other.read_text() == "local state", "unrelated config changed")
         check(branding.read_text() == "keep branding", "unrelated branding changed")
         check(unit.read_text() == "keep service", "unrelated service changed")
+        check(known_hosts.read_text() == "existing known hosts", "SSH host history changed")
+        for path in [".ssh/config", ".config/autostart/com.onepassword.OnePassword.desktop",
+                     ".config/environment.d/10-1password.conf"]:
+            check((home / path).is_file() == (role == "omarchy"), f"wrong SSH role: {path}")
+        if role == "omarchy":
+            check((home / ".ssh").stat().st_mode & 0o777 == 0o700, "SSH directory permissions")
+            check((home / ".ssh/config").stat().st_mode & 0o777 == 0o600, "SSH config permissions")
+            result = subprocess.run(["ssh", "-G", "-F", str(home / ".ssh/config"), "github.com"],
+                                    capture_output=True, text=True)
+            check(result.returncode == 0, result.stderr)
+            check(f"identityagent {Path.home()}/.1password/agent.sock\n" in result.stdout, "wrong SSH agent")
+            check("user git\n" in result.stdout, "wrong GitHub SSH user")
         for path in [".zshrc", ".config/nvim/init.lua", ".config/nvim/lazy-lock.json",
                      ".config/tmux/tmux.conf", ".config/tmux/cht.sh",
                      ".config/tmux/new_workspace.sh", ".config/opencode/opencode.json",
