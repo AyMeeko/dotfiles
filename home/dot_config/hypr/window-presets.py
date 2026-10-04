@@ -77,9 +77,15 @@ def place(window, rectangle):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("preset", choices=("large", "small", "left", "right"))
+    parser.add_argument("--address", help="Place this window instead of the focused one")
     parser.add_argument("--dry-run", action="store_true", help="Print geometry without moving a window")
     args = parser.parse_args()
-    window = query("activewindow")
+    if args.address:
+        if not re.fullmatch(r"0x[0-9a-fA-F]+", args.address):
+            raise ValueError("Invalid window address")
+        window = next((item for item in query("clients") if item["address"] == args.address), {})
+    else:
+        window = query("activewindow")
     if not window.get("address") or not window.get("mapped", False):
         return
     monitor = next((item for item in query("monitors") if item["id"] == window["monitor"]), None)

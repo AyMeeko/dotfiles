@@ -91,6 +91,11 @@ Then inspect `chezmoi diff` and `chezmoi apply --dry-run --verbose` before apply
 
 ## Ultrawide window presets
 
+New normal application windows open floating in the **large center** preset.
+Already-floating dialogs/utilities and fullscreen apps keep their normal rules.
+The default lives in `home/dot_config/hypr/windows.lua` and uses the same
+monitor-aware geometry as the shortcuts below.
+
 These shortcuts match the physical macOS modifier keys, using the KMonad swap
 (Option = Super, Command = Alt):
 
