@@ -55,6 +55,8 @@ The setup automatically:
   config is moved into that backup so its auto-loaded plugins cannot conflict.
 - Applies the dotfiles, installs oh-my-zsh and Catppuccin tmux v2.1.3, and installs
   Ruby 3.4.10 via mise if no Ruby is configured already.
+- Configures your global Git commit identity and routes GitHub HTTPS pushes
+  through the 1Password-backed SSH client.
 - Installs/restores the Neovim plugins from `lazy-lock.json`, baseline Treesitter
   parsers, and the four Mason-managed LSP servers, waiting for completion.
 - Sets Zsh as the login shell, configures `/etc` uinput rules/module loading and
@@ -172,10 +174,11 @@ ssh -T git@github.com       # authorize the request in 1Password
 ```
 
 GitHub's successful SSH test prints an authentication greeting and exits with
-status 1 because it doesn't provide shell access. HTTPS Git remotes still use
-HTTPS authentication; use an SSH remote (e.g. `git@github.com:AyMeeko/dotfiles.git`)
-when you want Git to authenticate through this agent. The initial public dotfiles
-clone uses HTTPS so setup works before you've signed in to 1Password.
+status 1 because it doesn't provide shell access. On Omarchy, the managed global
+Git config automatically pushes `https://github.com/` remotes over SSH through
+1Password. Clones and pulls still use HTTPS so the public bootstrap works before
+sign-in. Explicit SSH remotes also work normally. Other hosts keep their original
+authentication method.
 
 Put host-specific overrides in `~/.ssh/config.d/*.conf`, which is included before
 the default agent setting. For multiple keys/accounts or more than six keys,
@@ -185,6 +188,35 @@ Custom/shared vaults can be selected later using
 
 References: [SSH agent](https://developer.1password.com/docs/ssh/agent/) and
 [CLI app integration](https://developer.1password.com/docs/cli/app-integration/).
+
+## Git identity and push authentication
+
+Chezmoi deploys the global Git config at `~/.config/git/config`, including:
+
+- `user.name = AyMeeko`
+- `user.email = 87551537+AyMeeko@users.noreply.github.com`
+- Existing Omarchy Git aliases, rebase/diff/conflict-resolution preferences.
+- On Omarchy, `pushInsteadOf = https://github.com/` under `[url "git@github.com:"]`.
+
+The same bootstrap applies these settings on a fresh machine. Ordinary commits
+use the configured identity without temporary `GIT_AUTHOR_*`/`GIT_COMMITTER_*`
+environment variables, and GitHub pushes use the SSH agent after 1Password sign-in.
+The commit identity and remote authentication are separate: missing identity
+prevents creating commits; a missing/unlocked agent or unauthorized key prevents
+SSH pushes. `gh` API commands still require their own `gh auth login`.
+
+Verify from a repository:
+
+```sh
+git var GIT_AUTHOR_IDENT
+git var GIT_COMMITTER_IDENT
+git remote get-url --push origin
+```
+
+Machine-specific Git settings can go in `~/.config/git/local.conf`, included last
+and preserved by chezmoi. An existing `~/.gitconfig` or repository-local config
+can also override these global defaults. The bootstrap backs up an existing
+`~/.config/git/config` before replacing it.
 
 The `wsl` role only establishes an exclusion boundary today; it is not a finished
 Ubuntu setup recipe. Its package, shell and clipboard integration will follow.

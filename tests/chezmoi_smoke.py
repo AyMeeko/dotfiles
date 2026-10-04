@@ -62,6 +62,42 @@ def deploy(role, internal, external):
         check(branding.read_text() == "keep branding", "unrelated branding changed")
         check(unit.read_text() == "keep service", "unrelated service changed")
         check(known_hosts.read_text() == "existing known hosts", "SSH host history changed")
+        git_env = dict(os.environ, HOME=str(home), XDG_CONFIG_HOME=str(home / ".config"),
+                       GIT_CONFIG_GLOBAL=str(home / ".config/git/config"), GIT_CONFIG_NOSYSTEM="1")
+        for key in ["GIT_AUTHOR_NAME", "GIT_AUTHOR_EMAIL", "GIT_COMMITTER_NAME", "GIT_COMMITTER_EMAIL"]:
+            git_env.pop(key, None)
+        git_repo = root / "git-check"
+        subprocess.run(["git", "init", str(git_repo)], env=git_env, check=True, capture_output=True)
+
+        def git(*args):
+            return subprocess.run(["git", "-C", str(git_repo), *args], env=git_env,
+                                  check=True, capture_output=True, text=True).stdout.strip()
+
+        repo_config = git_repo / ".git/config"
+        initial_config = repo_config.read_text()
+
+        def remote_url(url, push=False):
+            repo_config.write_text(initial_config + f"\n[remote \"origin\"]\n\turl = {url}\n")
+            return git("remote", "get-url", *(["--push"] if push else []), "origin")
+
+        for identity in ["GIT_AUTHOR_IDENT", "GIT_COMMITTER_IDENT"]:
+            check(git("var", identity).startswith("AyMeeko <87551537+AyMeeko@users.noreply.github.com> "),
+                  "Git identity requires a manual override")
+        github = "https://github.com/AyMeeko/dotfiles.git"
+        check(remote_url(github) == github,
+              "public bootstrap fetch now requires SSH authentication")
+        expected_push = "git@github.com:AyMeeko/dotfiles.git" if role == "omarchy" else github
+        check(remote_url(github, push=True) == expected_push,
+              "wrong GitHub push authentication for role")
+        other_git = "https://gitlab.com/example/project.git"
+        check(remote_url(other_git, push=True) == other_git,
+              "non-GitHub authentication changed")
+        # Local overrides survive repeat applies and are actually read by Git.
+        local_git = home / ".config/git/local.conf"
+        local_git.write_text("[user]\n\tname = Local Override\n")
+        run("apply", "--no-tty")
+        check(git("config", "user.name") == "Local Override", "Git local override lost or ignored")
+        check(not run("diff").stdout, "unmanaged Git override left a deployment diff")
         for path in [".ssh/config", ".config/autostart/com.onepassword.OnePassword.desktop",
                      ".config/environment.d/10-1password.conf"]:
             check((home / path).is_file() == (role == "omarchy"), f"wrong SSH role: {path}")
@@ -76,7 +112,7 @@ def deploy(role, internal, external):
         for path in [".zshrc", ".config/nvim/init.lua", ".config/nvim/lazy-lock.json",
                      ".config/tmux/tmux.conf", ".config/tmux/cht.sh",
                      ".config/tmux/new_workspace.sh", ".config/opencode/opencode.json",
-                     ".config/omz-custom/themes/my-theme.zsh-theme"]:
+                      ".config/omz-custom/themes/my-theme.zsh-theme", ".config/git/config"]:
             target = home / path
             check(target.is_file() and not target.is_symlink(), f"not a regular file: {path}")
         check(os.access(home / ".config/tmux/new_workspace.sh", os.X_OK), "helper not executable")

@@ -1,0 +1,40 @@
+# See https://git-scm.com/docs/git-config
+
+[user]
+	name = AyMeeko
+	email = 87551537+AyMeeko@users.noreply.github.com
+[alias]
+	co = checkout
+	br = branch
+	ci = commit
+	st = status
+[init]
+	defaultBranch = master
+[pull]
+	rebase = true             # Rebase (instead of merge) on pull
+[push]
+	autoSetupRemote = true    # Automatically set upstream branch on push
+[diff]
+	algorithm = histogram    # Clearer diffs on moved/edited lines
+	colorMoved = plain       # Highlight moved blocks in diffs
+	mnemonicPrefix = true    # More intuitive refs in diff output
+[commit]
+	verbose = true           # Include diff comment in commit message template
+[column]
+	ui = auto                # Output in columns when possible
+[branch]
+	sort = -committerdate    # Sort branches by most recent commit first
+[tag]
+	sort = -version:refname  # Sort version numbers as you would expect
+[rerere]
+	enabled = true           # Record and reuse conflict resolutions
+	autoupdate = true        # Apply stored conflict resolutions automatically
+{{ if eq .role "omarchy" }}
+# Push GitHub HTTPS remotes through the 1Password-backed SSH client.
+# Clones/fetches stay on HTTPS so bootstrap works before account sign-in.
+[url "git@github.com:"]
+	pushInsteadOf = https://github.com/
+{{ end }}
+# Optional machine-local overrides; this file isn't managed by chezmoi.
+[include]
+	path = ~/.config/git/local.conf

@@ -28,6 +28,8 @@ Git status before changing them; another session may have made newer changes.
   plugin specs. Keep personal specs here so leftover stock LazyVim specs in
   `lua/plugins/` cannot get imported into this standalone config.
 - `home/private_dot_ssh/private_config` manages the SSH client configuration.
+- `home/dot_config/git/config.tmpl` manages global Git identity/preferences and
+  GitHub HTTPS-to-SSH push routing. Local overrides go in `~/.config/git/local.conf`.
 - `home/dot_zshrc` manages the shell configuration.
 - `home/run_*.sh.tmpl` contains chezmoi setup scripts; `bootstrap.sh` is the entrypoint.
 - `tests/` holds deployment, bootstrap, window-preset and Neovim checks.
@@ -121,8 +123,11 @@ only the secret fields actually needed for a requested task; SSH needs no export
 
 Useful checks: `ssh-add -l`, `op signin`, `op whoami`, `ssh -T git@github.com`.
 GitHub's successful SSH greeting exits with status 1; that is not an auth failure.
-HTTPS Git remotes do not use SSH keys. The public bootstrap clone uses HTTPS so
-it works before 1Password sign-in; authenticated Git operations can use SSH.
+The Omarchy global Git config routes GitHub HTTPS pushes over SSH using
+`pushInsteadOf`. Public clones/fetches still use HTTPS so bootstrap works before
+1Password sign-in. Commit identity is configured globally with AyMeeko's GitHub
+noreply email; agents should not need temporary author/committer environment values.
+GitHub CLI API authentication still requires `gh auth login` separately.
 Host-specific SSH overrides go in `~/.ssh/config.d/*.conf`.
 
 ## Desktop and application considerations
