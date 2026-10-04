@@ -96,6 +96,9 @@ Already-floating dialogs/utilities and fullscreen apps keep their normal rules.
 The default lives in `home/dot_config/hypr/windows.lua` and uses the same
 monitor-aware geometry as the shortcuts below.
 
+Window outlines use muted blue-gray (`#585b70` active, `#313244` inactive),
+with 8-pixel rounded corners. Customize these in `home/dot_config/hypr/looknfeel.lua`.
+
 These shortcuts match the physical macOS modifier keys, using the KMonad swap
 (Option = Super, Command = Alt):
 
