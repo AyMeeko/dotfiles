@@ -8,6 +8,15 @@ The [Omarchy bootstrap](README.md#new-omarchy-machine) automates the package,
 Ruby, plugin, parser and LSP setup below. These steps are also available manually
 when deploying with `setupEnabled = false`.
 
+This is a standalone Neovim configuration. `lua/user/plugins.lua` automatically
+discovers specs in `lua/personal_plugins`, a separate namespace from Omarchy's
+stock `lua/plugins`. Add new plugin specs under `lua/personal_plugins`; no module
+list needs updating, and stock LazyVim specs are not imported.
+
+After plugins are installed, `python tests/nvim-startup-smoke.py` verifies startup
+in an isolated config containing conflicting stock LazyVim specs, verifies that
+a new personal spec is discovered, and checks that plugin pins remain unchanged.
+
 ### 1. Deploy with chezmoi
 
 Follow the [repository setup and migration guide](README.md). The managed source
@@ -96,12 +105,12 @@ test -n "$(command -v rg)"
 Confirm that the optional `factory_finder` integration safely falls back to the built-in LSP definition when its local checkout is absent:
 
 ```sh
-test ! -d "$HOME/workspace/factory_finder.nvim" && rg -n "pcall\(require, 'factory_finder'\)|vim\.lsp\.buf\.definition" lua/plugins/lsp/go_to.lua
+test ! -d "$HOME/workspace/factory_finder.nvim" && rg -n "pcall\(require, 'factory_finder'\)|vim\.lsp\.buf\.definition" lua/personal_plugins/lsp/go_to.lua
 ```
 
 ## Treesitter notes (post-archive migration)
 
-- nvim-treesitter `main` has no `nvim-treesitter.configs`; highlight/indent are enabled per-buffer by a `FileType` autocmd in `lua/plugins/syntax.lua`
+- nvim-treesitter `main` has no `nvim-treesitter.configs`; highlight/indent are enabled per-buffer by a `FileType` autocmd in `lua/personal_plugins/syntax.lua`
 - Folds use the built-in `v:lua.vim.treesitter.foldexpr()` (`lua/user/settings.lua`)
 - Incremental selection (`<C-space>` grow / `<bs>` shrink) was removed upstream; custom reimplementation lives in `lua/user/incremental_selection.lua`
 - Textobjects (`vam`, `]m`, `;`/`,` repeat, etc.) use nvim-treesitter-textobjects `main` branch APIs

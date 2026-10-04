@@ -190,7 +190,7 @@ return {
 					vim.keymap.set(
 						"n",
 						"gd",
-						'<cmd>lua require("plugins.lsp.go_to").definition()<cr><cmd>norm zz<cr>',
+						'<cmd>lua require("personal_plugins.lsp.go_to").definition()<cr><cmd>norm zz<cr>',
 						opts("[LSP] [g]o to [d]efinition")
 					)
 					vim.keymap.set(

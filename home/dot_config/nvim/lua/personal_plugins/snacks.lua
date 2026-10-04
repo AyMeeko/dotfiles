@@ -150,7 +150,7 @@ return {
           snacks.picker.git_log({ layout = { preview = true, fullscreen = true } })
         end, { desc = "[Git] [G]it [L]og" })
         vim.keymap.set("n", "<leader>ft", function()
-          require("plugins.snacks.custom_pickers").vimwiki_tags()
+          require("personal_plugins.snacks.custom_pickers").vimwiki_tags()
         end, { desc = "[Vimwiki] [F]ind [T]ags" })
         vim.keymap.set("n", "<leader>bd", function() snacks.bufdelete() end, { desc = "[D]elete current [b]uffer" })
       end,

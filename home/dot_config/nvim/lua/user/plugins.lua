@@ -41,4 +41,5 @@ lazy.opts = {
   }
 }
 
-lazy.setup('plugins')
+-- Auto-discover our specs without importing Omarchy's stock lua/plugins files.
+lazy.setup('personal_plugins')
