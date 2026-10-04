@@ -20,6 +20,7 @@ reference-only. The active screensaver lives at
 | Internal KMonad keymap and user service | Required device path | Excluded |
 | External KMonad keymap and user service | If external device path supplied | Excluded |
 | 1Password SSH client, agent environment, desktop autostart | Yes | Excluded |
+| Hyprland pointer settings and ultrawide window presets | Yes | Excluded |
 
 Other files in `~/.config`, including Omarchy branding and systemd user units,
 are preserved. With `setupEnabled = true`, chezmoi also installs dependencies,
@@ -87,6 +88,31 @@ To deploy files without installing packages/changing system settings, initialize
 manually with `chezmoi init https://github.com/AyMeeko/dotfiles.git`, supply the
 keyboard paths, and answer **no** to “Install dependencies and activate services”.
 Then inspect `chezmoi diff` and `chezmoi apply --dry-run --verbose` before applying.
+
+## Ultrawide window presets
+
+These shortcuts match the physical macOS modifier keys, using the KMonad swap
+(Option = Super, Command = Alt):
+
+| Physical shortcut | Preset |
+| --- | --- |
+| Shift + Option + Command + H | Large left half |
+| Control + Option + Command + F | Small center |
+| Shift + Option + Command + K | Large center |
+| Shift + Option + Command + L | Large right half |
+
+On a 3840×1600 monitor with the top bar, the large center is approximately
+2250×1542, the small center 1620×1156, and each half 1125×1542. The large presets
+leave 16-pixel margins above/below the usable area. Left/right halves
+occupy the two halves of the **centered large region**, not halves of the screen.
+The presets use the active window's monitor, respect display scaling and panel
+reservations, and scale to fit other monitor sizes. Applying one exits fullscreen
+and makes the window floating. Use Super+T (physical Option+T) to return to tiling.
+
+Bindings live in `home/dot_config/hypr/bindings.lua`. To tune sizes, edit
+`LARGE_HEIGHT_FRACTION`, `LARGE_ASPECT_RATIO`, `SMALL_WIDTH_SCALE`, and
+`SMALL_HEIGHT_SCALE` in
+`home/dot_config/hypr/window-presets.py`, then run `chezmoi apply`.
 
 ## Setup lifecycle
 
@@ -213,6 +239,7 @@ manually and archive/remove its old keymap/unit if retiring that keyboard.
 ```sh
 bash tests/chezmoi-smoke.sh kmonad
 python tests/bootstrap-smoke.py
+python -B tests/window-presets.py
 ```
 
 Requires chezmoi, Python 3.11+, and KMonad. Tests exercise both desktop device
