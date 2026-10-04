@@ -58,7 +58,8 @@ The setup automatically:
   parsers, and the four Mason-managed LSP servers, waiting for completion.
 - Sets Zsh as the login shell, configures `/etc` uinput rules/module loading and
   `input` group membership, validates keymaps/units, and enables both configured
-  KMonad services. Caps Lock becomes tap-Escape/hold-Control.
+  KMonad services. Caps Lock becomes tap-Escape/hold-Control; Command/Super and
+  Option/Alt are swapped on both the left and right sides of both keyboards.
 - Installs the 1Password desktop app, `op` CLI and OpenSSH, configures SSH to use
   the 1Password agent, starts the app at login, and opens its Developer settings
   if the agent isn't enabled yet.

@@ -4,7 +4,12 @@ Both Omarchy machines use the shared keymap in
 `home/.chezmoitemplates/kmonad-config`. Chezmoi deploys its rendered configuration
 to `~/.config/kmonad/kmonad.kbd` and the user unit to
 `~/.config/systemd/user/kmonad.service`. Caps Lock is tap-Escape/hold-Control;
-Right Alt remains the compose-sequence key.
+Command/Super and Option/Alt are swapped on both sides of both keyboards:
+physical Command acts as Alt, and physical Option acts as Super. The source
+keycodes stay unchanged; only the output layer is swapped.
+
+`cmp-seq ralt` specifies the output key used by KMonad's Unicode macros; it does
+not itself enable a desktop Compose key. The current keymap has no such macros.
 
 ## Machine-specific input
 
