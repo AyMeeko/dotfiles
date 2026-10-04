@@ -30,6 +30,7 @@ end
 
 lazy.path = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 lazy.opts = {
+  install = { missing = os.getenv("DOTFILES_BOOTSTRAP") ~= "1" },
   change_detection = {enabled = false},
   performance = {
     rtp = {

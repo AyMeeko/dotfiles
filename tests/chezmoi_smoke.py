@@ -22,7 +22,7 @@ def profile(root, role="omarchy", internal="/dev/input/by-path/test-internal", e
                XDG_DATA_HOME=str(home / ".local/share"), XDG_CACHE_HOME=str(home / ".cache"))
     config = root / "chezmoi.toml"
     config.write_text(f'[data]\nrole = "{role}"\nkmonadInternalDevice = "{internal}"\n'
-                      f'kmonadExternalDevice = "{external}"\n')
+                       f'kmonadExternalDevice = "{external}"\nsetupEnabled = false\n')
     args = ["chezmoi", "--source", str(REPO), "--destination", str(home),
             "--config", str(config), "--persistent-state", str(root / "state.boltdb"),
             "--cache", str(root / "cache"), "--no-pager"]
@@ -108,9 +108,12 @@ def test_init():
             # Start with no config so prompt flags must supply first-init values.
             (root / "chezmoi.toml").unlink()
             run("init", "--promptChoice", f"Machine role={role}",
+                "--promptBool", "Install dependencies and activate services=false",
                 "--promptString", "Internal keyboard device (/dev/input/by-id/ or by-path/)=/dev/input/by-path/init-test,External keyboard device (empty to omit)=")
             import tomllib
-            data = tomllib.loads((root / "chezmoi.toml").read_text())["data"]
+            config = tomllib.loads((root / "chezmoi.toml").read_text())
+            check(config["sourceDir"] == str(REPO), "init recorded managed subtree instead of checkout")
+            data = config["data"]
             check(data["role"] == role, "init lost role")
             if role == "omarchy":
                 check(data["kmonadInternalDevice"] == "/dev/input/by-path/init-test", "init lost device")
@@ -146,7 +149,20 @@ def test_legacy_migration():
         check((link / "init.lua").read_text() == "conflicting user edit", "conflict destroyed edit")
 
 
+def test_setup_scripts():
+    for role in ("omarchy", "wsl"):
+        with tempfile.TemporaryDirectory(prefix="dotfiles-scripts-") as directory:
+            _, run = profile(Path(directory), role=role)
+            for source in sorted((REPO / "home").glob("run_*.tmpl")):
+                script = run("execute-template", "--override-data", '{"setupEnabled":true}',
+                             "--file", str(source)).stdout
+                check(bool(script.strip()) == (role == "omarchy"), "script crossed role boundary")
+                result = subprocess.run(["bash", "-n"], input=script, capture_output=True, text=True)
+                check(result.returncode == 0, f"{source}: {result.stderr}")
+
+
 check((REPO / ".chezmoiroot").is_file(), "chezmoi source root is missing")
+test_setup_scripts()
 deploy("omarchy", "/dev/input/by-path/test-internal", "")
 deploy("omarchy", "/dev/input/by-id/another-machine", "/dev/input/by-id/test-external")
 deploy("wsl", "", "")

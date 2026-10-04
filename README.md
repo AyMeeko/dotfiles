@@ -21,49 +21,77 @@ reference-only. The active screensaver lives at
 | External KMonad keymap and user service | If external device path supplied | Excluded |
 
 Other files in `~/.config`, including Omarchy branding and systemd user units,
-are preserved. Chezmoi does not automatically install packages, change `/etc`,
-or enable/restart services.
+are preserved. With `setupEnabled = true`, chezmoi also installs dependencies,
+configures the login shell and KMonad permissions, and enables keyboard services.
 
 ## New Omarchy machine
 
-1. Install `chezmoi` using your package manager, plus the programs you want to use.
-   The shell uses Zsh, oh-my-zsh, fzf, optional mise/direnv, and optional Arch
-   Zsh completion/highlighting/autosuggestion packages. Install Git, Ghostty,
-   tmux, OpenCode, and the [Neovim prerequisites](nvim-setup.md) as needed.
-   Install KMonad at `/usr/bin/kmonad`; see the [KMonad guide](kmonad/kmonad_setup.md).
-2. Find the internal keyboard's stable `/dev/input/by-id/` or `/dev/input/by-path/`
-   path. External keyboard input is optional; leave it empty when not needed.
-3. Once the chezmoi migration is published to the default branch, initialize:
+After installing Omarchy and connecting to the internet, run these two commands
+in a terminal **as your normal user**:
 
-   ```sh
-   chezmoi init https://github.com/AyMeeko/dotfiles.git
-   ```
+```sh
+curl -fsSLo /tmp/dotfiles-bootstrap.sh https://raw.githubusercontent.com/AyMeeko/dotfiles/chezmoi-migration/bootstrap.sh
+bash /tmp/dotfiles-bootstrap.sh
+```
 
-   Choose `omarchy` and provide this machine's keyboard paths. The generated
-   `~/.config/chezmoi/chezmoi.toml` stores `role`, `kmonadInternalDevice`, and
-   `kmonadExternalDevice` under `[data]`. These values are machine-local, not
-   committed to Git. There is no default keyboard path copied from another host.
-   The default checkout is `~/.local/share/chezmoi`.
-4. Inspect and apply:
+The bootstrap uses the `chezmoi-migration` branch, where this setup currently
+lives. After merging it, update that branch default in `bootstrap.sh` and the
+download URL together. To use an existing checkout, run `bash bootstrap.sh`
+from this repository instead. It records that checkout as chezmoi's source;
+downloaded bootstraps use `~/.local/share/chezmoi`.
 
-   ```sh
-   chezmoi diff
-   chezmoi apply --dry-run --verbose
-   chezmoi apply --interactive
-   chezmoi diff
-   ```
+The setup automatically:
 
-5. Install the tmux theme dependency manually:
+- Installs chezmoi and the required Arch packages, including Zsh enhancements,
+  Ghostty, tmux, Neovim/build tools, KMonad, direnv, and a Nerd Font.
+- Detects stable keyboard paths: Dygma first, then a platform/laptop keyboard,
+  then USB. The next distinct USB keyboard becomes the external keyboard.
+- Saves these paths, the `omarchy` role, and `setupEnabled = true` in local
+  `~/.config/chezmoi/chezmoi.toml`; no device identity is committed.
+- Backs up existing application configs to
+  `~/.local/share/dotfiles-backups/<timestamp>/configs.tar.gz`. A stock LazyVim
+  config is moved into that backup so its auto-loaded plugins cannot conflict.
+- Applies the dotfiles, installs oh-my-zsh and Catppuccin tmux v2.1.3, and installs
+  Ruby 3.4.10 via mise if no Ruby is configured already.
+- Installs/restores the Neovim plugins from `lazy-lock.json`, baseline Treesitter
+  parsers, and the four Mason-managed LSP servers, waiting for completion.
+- Sets Zsh as the login shell, configures `/etc` uinput rules/module loading and
+  `input` group membership, validates keymaps/units, and enables both configured
+  KMonad services. Caps Lock becomes tap-Escape/hold-Control.
 
-   ```sh
-   mkdir -p ~/.config/tmux-plugins/catppuccin
-   git clone -b v2.1.3 https://github.com/catppuccin/tmux.git ~/.config/tmux-plugins/catppuccin/tmux
-   ```
+Authenticate when sudo requests your password. Log out and back in after setup,
+and restart OpenCode to load its configuration. This restores your configured
+user environment on top of Omarchy; OS installation, hardware-specific drivers,
+SSH private keys, account logins, and project repositories/data remain separate.
+GitHub/OpenCode authentication cannot be reconstructed from public dotfiles.
 
-6. Configure uinput permissions and enable KMonad deliberately using its guide.
-   Open a fresh terminal; restart OpenCode to load its deployed configuration.
-   SSH keys, application authentication (`gh auth login`, etc.), runtime installs,
-   and fonts remain manual setup tasks.
+For different keyboards, override detection on the second command:
+
+```sh
+KMONAD_PRIMARY=/dev/input/by-path/platform-i8042-serio-0-event-kbd \
+KMONAD_SECONDARY=/dev/input/by-id/your-keyboard-event-kbd \
+bash /tmp/dotfiles-bootstrap.sh
+```
+
+On subsequent runs, existing local values are retained; use `chezmoi edit-config`
+to change them. Only two keyboards are configured. If no physical keyboard can
+be detected, bootstrap stops and asks for `KMONAD_PRIMARY`.
+
+To deploy files without installing packages/changing system settings, initialize
+manually with `chezmoi init https://github.com/AyMeeko/dotfiles.git`, supply the
+keyboard paths, and answer **no** to “Install dependencies and activate services”.
+Then inspect `chezmoi diff` and `chezmoi apply --dry-run --verbose` before applying.
+
+## Setup lifecycle
+
+`run_once_before_05-*` backs up existing config before deployment.
+`run_onchange_before_10-*` installs system dependencies and permissions when that
+script or its rendered device inputs change. `run_once_after_20-*` installs user
+dependencies once; a failed run is retried by `chezmoi apply`.
+`run_onchange_after_30-*` validates and restarts keyboard services when their
+keymap, units, or device paths change. A routine repeat apply does not reinstall
+plugins or restart services. Changing a run-once script causes its new content
+to run once again.
 
 The `wsl` role only establishes an exclusion boundary today; it is not a finished
 Ubuntu setup recipe. Its package, shell and clipboard integration will follow.
@@ -129,13 +157,16 @@ manually and archive/remove its old keymap/unit if retiring that keyboard.
 
 ```sh
 bash tests/chezmoi-smoke.sh kmonad
+python tests/bootstrap-smoke.py
 ```
 
 Requires chezmoi, Python 3.11+, and KMonad. Tests exercise both desktop device
 profiles, the WSL exclusion boundary, init/re-init, copied-file deployment,
 permissions, repeat apply, conflict handling and backup/unlink migration, all in
-temporary homes with isolated config/state/cache. KMonad runs in parsing-only
-`--dry-run` mode; no keyboard is grabbed and no service is restarted.
+temporary homes with isolated config/state/cache and `setupEnabled = false`.
+Enabled setup scripts are rendered and syntax-checked without execution; bootstrap
+wiring uses mocked commands. KMonad runs in parsing-only `--dry-run` mode; no
+keyboard is grabbed and no service is restarted by the tests.
 
 For a local unpublished checkout, use `chezmoi --source "$PWD" init` and continue
 passing `--source "$PWD"` for diff/apply (prefer a temporary config/destination

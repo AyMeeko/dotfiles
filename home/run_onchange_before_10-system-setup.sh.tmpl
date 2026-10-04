@@ -1,0 +1,41 @@
+{{ if and (eq .role "omarchy") (default false (get . "setupEnabled")) -}}
+#!/usr/bin/env bash
+set -euo pipefail
+as_root() {
+  if [[ $EUID -eq 0 ]]; then "$@"
+  elif sudo -n true 2>/dev/null || [[ -t 0 ]]; then sudo "$@"
+  else pkexec "$@"
+  fi
+}
+packages=(chezmoi git curl tar base-devel zsh zsh-completions zsh-syntax-highlighting
+  zsh-autosuggestions ghostty tmux neovim fzf kmonad tree-sitter-cli ripgrep jq
+  github-cli nodejs npm yarn stylua direnv wl-clipboard bat ttf-jetbrains-mono-nerd
+  libyaml openssl readline gmp libffi libxcrypt zlib acl)
+# Omarchy can supply mise-bin instead of mise and OpenCode through mise.
+command -v mise >/dev/null || packages+=(mise)
+command -v opencode >/dev/null || packages+=(opencode)
+missing=()
+for package in "${packages[@]}"; do
+  pacman -Q "$package" >/dev/null 2>&1 || missing+=("$package")
+done
+if ((${#missing[@]})); then as_root /usr/bin/pacman -S --needed --noconfirm "${missing[@]}"; fi
+
+temp=$(mktemp -d)
+trap 'rm -rf "$temp"' EXIT
+printf '%s\n' 'KERNEL=="uinput", GROUP="input", MODE="0660"' > "$temp/99-uinput.rules"
+printf '%s\n' uinput > "$temp/uinput.conf"
+as_root /usr/bin/install -m 644 "$temp/99-uinput.rules" /etc/udev/rules.d/99-uinput.rules
+as_root /usr/bin/install -m 644 "$temp/uinput.conf" /etc/modules-load.d/uinput.conf
+as_root /usr/bin/usermod -aG input -s /usr/bin/zsh "$(id -un)"
+as_root /usr/bin/modprobe uinput
+as_root /usr/bin/udevadm control --reload-rules
+as_root /usr/bin/udevadm trigger --action=change --sysname-match=uinput
+# The running user manager retains its original groups until the next login.
+# ACLs let services start immediately; persistent access comes from the input group.
+devices=(/dev/uinput {{ .kmonadInternalDevice | quote }} {{ if .kmonadExternalDevice }}{{ .kmonadExternalDevice | quote }}{{ end }})
+for device in "${devices[@]}"; do
+  if [[ -e $device ]]; then
+    as_root /usr/bin/setfacl -m "u:$(id -un):rw" "$(readlink -f "$device")"
+  fi
+done
+{{ end -}}

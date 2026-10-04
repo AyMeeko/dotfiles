@@ -1,0 +1,19 @@
+{{ if and (eq .role "omarchy") (default false (get . "setupEnabled")) -}}
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ ! -f $HOME/.oh-my-zsh/oh-my-zsh.sh ]]; then
+  git clone --depth 1 https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"
+fi
+theme="$HOME/.config/tmux-plugins/catppuccin/tmux"
+if [[ ! -f $theme/catppuccin.tmux ]]; then
+  mkdir -p "$(dirname "$theme")"
+  git clone --depth 1 --branch v2.1.3 https://github.com/catppuccin/tmux.git "$theme"
+fi
+if ! mise which ruby >/dev/null 2>&1; then
+  mise use --global ruby@3.4.10
+fi
+# Restore pinned plugins, rather than updating the tracked lazy-lock.json.
+DOTFILES_BOOTSTRAP=1 nvim --headless '+lua local ok, err = pcall(dofile, vim.fn.stdpath("config") .. "/bootstrap-plugins.lua"); if not ok then vim.api.nvim_err_writeln(tostring(err)); vim.cmd("cquit 1") end' +qa
+# Finish baseline parser/LSP installation before exiting the initial bootstrap.
+DOTFILES_BOOTSTRAP=1 nvim --headless '+lua local ok, err = pcall(dofile, vim.fn.stdpath("config") .. "/bootstrap.lua"); if not ok then vim.api.nvim_err_writeln(tostring(err)); vim.cmd("cquit 1") end' +qa
+{{ end -}}

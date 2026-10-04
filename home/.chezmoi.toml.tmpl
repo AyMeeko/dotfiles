@@ -14,7 +14,10 @@
 {{- fail "kmonadExternalDevice must be a /dev/input/ path without whitespace or quotes" -}}
 {{- end -}}
 {{- end }}
+sourceDir = {{ .chezmoi.workingTree | quote }}
+
 [data]
 role = {{ $role | quote }}
 kmonadInternalDevice = {{ $internal | quote }}
 kmonadExternalDevice = {{ $external | quote }}
+setupEnabled = {{ promptBoolOnce . "setupEnabled" "Install dependencies and activate services" true }}

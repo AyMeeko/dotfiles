@@ -1,0 +1,22 @@
+{{ if and (eq .role "omarchy") (default false (get . "setupEnabled")) -}}
+#!/usr/bin/env bash
+set -euo pipefail
+# Restart when device paths, keymap, or service definitions change.
+# {{ includeTemplate "kmonad-config" (dict "device" .kmonadInternalDevice "sink" "KMonad output") | sha256sum }}
+# {{ include "dot_config/systemd/user/kmonad.service" | sha256sum }}
+# {{ include "dot_config/systemd/user/kmonad-external.service.tmpl" | sha256sum }}
+services=(kmonad)
+{{ if .kmonadExternalDevice -}}
+# External device: {{ .kmonadExternalDevice }}
+services+=(kmonad-external)
+{{ end -}}
+for service in "${services[@]}"; do
+  kmonad --dry-run "$HOME/.config/kmonad/$service.kbd"
+  systemd-analyze --user verify "$HOME/.config/systemd/user/$service.service"
+done
+systemctl --user daemon-reload
+for service in "${services[@]}"; do
+  systemctl --user enable "$service.service"
+  systemctl --user restart "$service.service"
+done
+{{ end -}}

@@ -4,6 +4,10 @@ Personal Neovim config. Plugins managed by [lazy.nvim](https://github.com/folke/
 
 ## New machine setup
 
+The [Omarchy bootstrap](README.md#new-omarchy-machine) automates the package,
+Ruby, plugin, parser and LSP setup below. These steps are also available manually
+when deploying with `setupEnabled = false`.
+
 ### 1. Deploy with chezmoi
 
 Follow the [repository setup and migration guide](README.md). The managed source

@@ -1,0 +1,16 @@
+{{ if and (eq .role "omarchy") (default false (get . "setupEnabled")) -}}
+#!/usr/bin/env bash
+set -euo pipefail
+backup="$HOME/.local/share/dotfiles-backups/$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$backup"
+paths=()
+for path in .zshrc .config/nvim .config/tmux .config/ghostty .config/opencode .config/omarchy/branding .config/systemd/user/kmonad.service .config/systemd/user/kmonad-external.service; do
+  [[ -e $HOME/$path || -L $HOME/$path ]] && paths+=("$path")
+done
+if ((${#paths[@]})); then tar -czf "$backup/configs.tar.gz" -C "$HOME" "${paths[@]}"; fi
+# Stock LazyVim has auto-loaded plugins which conflict with this Neovim config.
+if [[ -f $HOME/.config/nvim/lazyvim.json ]]; then
+  mv "$HOME/.config/nvim" "$backup/stock-nvim"
+fi
+printf 'Previous configuration saved to %s\n' "$backup"
+{{ end -}}

@@ -121,8 +121,8 @@ return {
 			end, mason_tools_to_install)
 
 			require("mason-tool-installer").setup({
-				auto_update = true,
-				run_on_start = true,
+				auto_update = os.getenv("DOTFILES_BOOTSTRAP") ~= "1",
+				run_on_start = os.getenv("DOTFILES_BOOTSTRAP") ~= "1",
 				start_delay = 3000,
 				debounce_hours = 12,
 				ensure_installed = ensure_installed,

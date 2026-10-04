@@ -27,6 +27,14 @@ The two device paths are local `[data]` values `kmonadInternalDevice` and
 `chezmoi edit-config`, inspect the diff and apply. Empty internal input is rejected
 for Omarchy. External input controls both its keymap and its unit.
 
+## Automatic setup
+
+The [bootstrap](../README.md#new-omarchy-machine) enables `setupEnabled` and lets
+chezmoi install KMonad, configure uinput rules/module loading, add your user to
+`input`, validate the deployed keymaps, and enable/restart the configured units.
+It grants temporary device ACLs for the current session; log out/in to pick up
+persistent group membership. The steps below are for file-only/manual setup.
+
 ## Permissions (manual privileged setup)
 
 Check group membership and `/dev/uinput` access:
@@ -40,8 +48,8 @@ If needed, add your user to `input` (then log out/in), load `uinput`, and config
 the system rules explicitly. For example, create `/etc/udev/rules.d/99-uinput.rules`
 with `KERNEL=="uinput", GROUP="input", MODE="0660"`, and
 `/etc/modules-load.d/uinput.conf` containing `uinput`. Then reload udev rules and
-load the module with the appropriate privileged command. Chezmoi does not perform
-these steps or modify `/etc`.
+load the module with the appropriate privileged command. Chezmoi only performs
+these steps when `setupEnabled = true`.
 
 ## Validate and activate manually
 
@@ -69,7 +77,8 @@ Use the same commands for `kmonad-external.service` only if its device is presen
 An `ExecCondition` checks for that device before starting, so a missing keyboard
 skips startup rather than entering a five-second failure loop. After reconnecting
 it, start/restart the external unit manually; this setup does not install a
-hotplug activator. Chezmoi never enables or restarts these units automatically.
+hotplug activator. With `setupEnabled = true`, chezmoi enables/restarts these units
+when the service setup script or its rendered inputs change.
 
 The units use systemd `%h` for the home directory and no longer depend on the Git
 checkout. Existing service files must be backed up before accepting replacements.
