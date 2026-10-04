@@ -99,6 +99,10 @@ monitor-aware geometry as the shortcuts below.
 Window outlines use muted blue-gray (`#585b70` active, `#313244` inactive),
 with 8-pixel rounded corners. Customize these in `home/dot_config/hypr/looknfeel.lua`.
 
+The screensaver starts after 10 minutes idle, and the screen locks after
+15 minutes. These delays are configured in `home/dot_config/omarchy/shell.json`
+under `idle`, in seconds; Omarchy hot-reloads the file after `chezmoi apply`.
+
 These shortcuts match the physical macOS modifier keys, using the KMonad swap
 (Option = Super, Command = Alt):
 
