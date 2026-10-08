@@ -1,0 +1,68 @@
+{{ if and (eq .role "omarchy") (default false (get . "setupEnabled")) -}}
+#!/usr/bin/env bash
+set -euo pipefail
+
+clone_if_missing() {
+  local name=$1 target=$2 origin
+  if [[ -e $target || -L $target ]]; then
+    if [[ ! -e $target/.git ]]; then
+      printf 'Cannot clone %s: %s already exists and is not a Git checkout.\n' "$name" "$target" >&2
+      return 1
+    fi
+    origin=$(git -C "$target" remote get-url origin)
+    case "$origin" in
+      "https://github.com/AyMeeko/$name"|"https://github.com/AyMeeko/$name.git"|"git@github.com:AyMeeko/$name"|"git@github.com:AyMeeko/$name.git") ;;
+      *) printf 'Cannot reuse %s: origin is %s.\n' "$target" "$origin" >&2; return 1 ;;
+    esac
+    return
+  fi
+  mkdir -p "$(dirname "$target")"
+  if ! git clone "git@github.com:AyMeeko/$name.git" "$target"; then
+    printf 'Personal repositories need GitHub SSH access. Sign in to 1Password, enable its SSH agent, then rerun chezmoi apply.\n' >&2
+    return 1
+  fi
+}
+
+# Keep full checkouts and leave existing local work untouched.
+clone_if_missing fonts "$HOME/src/fonts"
+python - <<'PY'
+import filecmp
+import os
+from pathlib import Path
+import shutil
+import subprocess
+
+source = Path.home() / "src/fonts"
+destination = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share") / "fonts/aymeeko"
+# PostScript names identify individual faces, so an installed regular face does
+# not suppress missing bold/italic faces. This also deduplicates OTF/TTF copies.
+format_string = "%{postscriptname}\n"
+installed = set(subprocess.check_output(["fc-list", "--format", format_string], text=True).splitlines())
+added = 0
+for font in sorted(source.rglob("*")):
+    if ".git" in font.relative_to(source).parts or not font.is_file():
+        continue
+    if font.suffix.lower() not in {".ttf", ".otf", ".ttc", ".otc"}:
+        continue
+    faces = set(subprocess.check_output(["fc-scan", "--format", format_string, str(font)], text=True).splitlines()) - {""}
+    if not faces:
+        raise SystemExit(f"Cannot identify font faces in {font}")
+    if faces <= installed:
+        continue
+    target = destination / font.relative_to(source)
+    if target.exists() or target.is_symlink():
+        # A failed cache refresh may leave our copy present but not registered.
+        if target.is_symlink() or not target.is_file() or not filecmp.cmp(font, target, shallow=False):
+            raise SystemExit(f"Refusing to overwrite existing font: {target}")
+    else:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(font, target)
+        target.chmod(0o644)
+    installed.update(faces)
+    added += 1
+if added:
+    subprocess.run(["fc-cache", "-f", str(destination)], check=True)
+print(f"Installed {added} missing font files from {source}")
+PY
+clone_if_missing notes "$HOME/notes"
+{{ end -}}

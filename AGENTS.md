@@ -103,6 +103,10 @@ Setup phases:
    Template hashes make keymap/unit changes trigger a service update.
 5. `run_once_after_40-*`: configure the user-manager SSH agent environment and
    open 1Password settings when its agent is not available.
+6. `run_once_after_50-*`: clone private fonts to `~/src/fonts`, install missing
+   font faces in the user font directory, and clone notes to `~/notes`. Requires
+   authorized GitHub SSH access; failed runs are retried after sign-in. Existing
+   checkouts are preserved without automatic pulls.
 
 Run-once scripts are tracked by their content; changed content runs again and
 failed runs are retried. Run-onchange scripts also depend on rendered content.
@@ -158,6 +162,7 @@ Run checks relevant to the change from the repository root:
 ```sh
 bash tests/chezmoi-smoke.sh kmonad
 python tests/bootstrap-smoke.py
+python -B tests/personal-repositories-smoke.py
 python -B tests/window-presets.py
 git diff --check
 ```

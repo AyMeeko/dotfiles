@@ -68,11 +68,17 @@ The setup automatically:
 - Installs the 1Password desktop app, `op` CLI and OpenSSH, configures SSH to use
   the 1Password agent, starts the app at login, and opens its Developer settings
   if the agent isn't enabled yet.
+- Clones `AyMeeko/fonts` to `~/src/fonts` and installs missing font faces into
+  `${XDG_DATA_HOME:-~/.local/share}/fonts/aymeeko`, refreshing the font cache.
+  Existing system/user font faces are skipped, including duplicate OTF/TTF copies.
+- Clones `AyMeeko/notes` to `~/notes`. Both personal repositories use SSH and
+  require GitHub access through your 1Password SSH agent. If authentication fails,
+  finish the 1Password steps below and rerun `chezmoi apply` to retry.
 
 Authenticate when sudo requests your password. Log out and back in after setup,
 and restart OpenCode to load its configuration. This restores your configured
 user environment on top of Omarchy; OS installation, hardware-specific drivers,
-account logins and project repositories/data remain separate. SSH keys stored
+account logins and other project repositories/data remain separate. SSH keys stored
 in 1Password become available after authorizing its agent as described below.
 GitHub/OpenCode authentication cannot be reconstructed from public dotfiles.
 
@@ -142,6 +148,12 @@ later manual browser preferences on routine repeat applies.
 keymap, units, or device paths change. A routine repeat apply does not reinstall
 plugins or restart services. Changing a run-once script causes its new content
 to run once again.
+
+`run_once_after_50-*` clones the fonts and notes repositories after the 1Password
+setup. Existing checkouts are reused without pulling or changing local work;
+unrelated paths are never overwritten. Font installation checks individual
+PostScript face names rather than only family names. Failed clones/installations
+are retried on the next apply.
 
 ## SSH keys through 1Password
 
@@ -287,6 +299,7 @@ manually and archive/remove its old keymap/unit if retiring that keyboard.
 ```sh
 bash tests/chezmoi-smoke.sh kmonad
 python tests/bootstrap-smoke.py
+python -B tests/personal-repositories-smoke.py
 python -B tests/window-presets.py
 ```
 
