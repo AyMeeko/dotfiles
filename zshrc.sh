@@ -22,6 +22,7 @@ alias s='rg -S'
 alias fzf-tmux="TERM=screen-256color fzf-tmux"
 alias vim="nvim"
 alias o="opencode"
+alias weylus-fixed="weylus --wayland-support --custom-lib-js ~/.config/weylus/lib.js"
 
 bindkey -e
 
