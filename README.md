@@ -45,7 +45,7 @@ downloaded bootstraps use `~/.local/share/chezmoi`.
 The setup automatically:
 
 - Installs chezmoi and the required Arch packages, including Zsh enhancements,
-  Ghostty, Vivaldi, tmux, Neovim/build tools, KMonad, direnv, and a Nerd Font.
+  Ghostty, Vivaldi, Krita, tmux, Neovim/build tools, KMonad, direnv, and a Nerd Font.
 - Sets Vivaldi as the default web browser, used by Omarchy's Browser and
   Browser (private) hotkeys and when opening web links.
 - Detects stable keyboard paths: Dygma first, then a platform/laptop keyboard,
@@ -175,6 +175,10 @@ saved settings without command-line overrides.
 3. Select the PipeWire capture source and approve the desktop screen-sharing
    picker. Test pen pressure in an application that supports it, such as Krita.
 4. Stop Weylus when finished. It does not autostart or run a background service.
+
+Krita is installed by the Omarchy bootstrap for drawing and pen-pressure testing.
+Launch it from the application menu or run `krita`. Artwork, brushes and Krita
+preferences remain local; chezmoi manages only its package installation.
 
 Wayland support is experimental; per-window input mapping and cursor capture
 have upstream limitations. Connections are **unencrypted**, even with an access

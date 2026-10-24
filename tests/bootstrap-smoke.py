@@ -50,4 +50,42 @@ with tempfile.TemporaryDirectory(prefix="dotfiles-bootstrap-") as directory:
     env["KMONAD_PRIMARY"] = str(root / "missing")
     result = subprocess.run(["bash", str(downloaded)], env=env, capture_output=True)
     assert result.returncode != 0 and not log.exists()
-print("PASS: local/downloaded bootstrap, machine-local inputs and missing-device guard")
+
+    # Exercise the actual system setup with only package/privileged commands
+    # replaced. Removing Krita from the package list must fail this check.
+    config = root / "chezmoi.toml"
+    config.write_text('[data]\nrole="omarchy"\nsetupEnabled=true\n'
+                      'kmonadInternalDevice="/dev/input/test-keyboard"\n'
+                      'kmonadExternalDevice=""\n')
+    template = REPO / "home/run_onchange_before_10-system-setup.sh.tmpl"
+    render_command = [shutil.which("chezmoi"), "--source", str(REPO), "--config", str(config),
+                      "execute-template", "--file", str(template)]
+    script = subprocess.check_output(render_command, env=env, text=True)
+    installed = root / "krita-installed"
+    for name, contents in {
+        "pacman": '#!/bin/sh\nif [ "$*" = "-Q krita" ]; then test -e "$KRITA_INSTALLED"; fi\n',
+        "sudo": "#!/bin/sh\nexit 1\n",
+        "pkexec": '''#!/usr/bin/env python3
+import json, os, pathlib, sys
+with open(os.environ["BOOTSTRAP_LOG"], "a") as log:
+    log.write(json.dumps(sys.argv[1:]) + "\\n")
+if sys.argv[1:3] == ["/usr/bin/pacman", "-S"]:
+    pathlib.Path(os.environ["KRITA_INSTALLED"]).touch()
+''',
+    }.items():
+        path = bin_dir / name
+        path.write_text(contents)
+        path.chmod(0o755)
+    env["KRITA_INSTALLED"] = str(installed)
+    subprocess.run(["bash"], input=script, env=env, text=True, check=True, capture_output=True)
+    commands = [json.loads(line) for line in log.read_text().splitlines()]
+    assert ["/usr/bin/pacman", "-S", "--needed", "--noconfirm", "krita"] in commands, commands
+    assert installed.exists()
+    log.unlink()
+    subprocess.run(["bash"], input=script, env=env, text=True, check=True, capture_output=True)
+    commands = [json.loads(line) for line in log.read_text().splitlines()]
+    assert not any(command[:2] == ["/usr/bin/pacman", "-S"] for command in commands), commands
+    for overrides in ['{"setupEnabled":false}', '{"role":"wsl"}']:
+        assert not subprocess.check_output(render_command + ["--override-data", overrides],
+                                           env=env, text=True).strip()
+print("PASS: bootstrap wiring, machine-local inputs, role guards and idempotent Krita installation")
