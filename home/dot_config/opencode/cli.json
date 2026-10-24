@@ -9,5 +9,6 @@
     "new_location": "launch"
   },
   "animations": true,
-  "tabs": { "mode": "off" }
+  "tabs": { "mode": "off" },
+  "attention": { "sound": false }
 }

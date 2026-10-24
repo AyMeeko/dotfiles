@@ -16,7 +16,7 @@ assert not (SOURCE / "tui.json").exists()
 assert not (SOURCE / "skills/git-dance/SKILL.md").exists()
 json.loads((SOURCE / "cli.json").read_text())
 for path in SOURCE.rglob("*"):
-    if path.is_file():
+    if path.is_file() and path.suffix != ".mp3":
         text = path.read_text()
         for unwanted in ["/Users/", "gusto", "zenpayroll", "notes/ai/tickets/", "acli", "bktide"]:
             assert unwanted not in text, (path, unwanted)

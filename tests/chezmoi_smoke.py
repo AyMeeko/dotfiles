@@ -115,12 +115,21 @@ def deploy(role, internal, external):
                       ".config/opencode/cli.json", ".config/opencode/AGENTS.md",
                       ".config/opencode/agents/betterplan.md",
                       ".config/opencode/plugins/superpowers-write-guard.ts",
-                      ".config/opencode/lib/superpowers-write-guard.ts",
+                       ".config/opencode/lib/superpowers-write-guard.ts",
+                       ".config/opencode/plugins/notification.ts",
+                       ".config/opencode/lib/notification.ts",
+                       ".config/opencode/lib/notification-playback.ts",
+                       ".config/opencode/sounds/jobs_done.mp3",
+                       ".config/opencode/sounds/question.mp3",
                       ".config/opencode/skills/feature-dossier/SKILL.md",
                       ".config/opencode/commands/plannotator-review.md",
                       ".config/omz-custom/themes/my-theme.zsh-theme", ".config/git/config"]:
             target = home / path
             check(target.is_file() and not target.is_symlink(), f"not a regular file: {path}")
+        for sound in ["jobs_done.mp3", "question.mp3"]:
+            check((home / f".config/opencode/sounds/{sound}").read_bytes() ==
+                  (REPO / f"home/dot_config/opencode/sounds/{sound}").read_bytes(),
+                  f"sound deployment changed bytes: {sound}")
         check(os.access(home / ".config/tmux/new_workspace.sh", os.X_OK), "helper not executable")
         check(not (home / "README.md").exists(), "repo docs deployed")
         check(not (home / ".config/nvim/README.md").exists(), "Neovim docs deployed")

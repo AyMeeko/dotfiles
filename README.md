@@ -157,7 +157,7 @@ Existing OpenCode installations are respected; upgrading a V1 binary is separate
   rewrite chezmoi-managed configs or add integrations. OpenCode installs package
   plugins on first load; network access is required. No separate runtime npm/Bun
   dependency installation is needed for the local plugins.
-- Work MCP servers, corporate tools/rules, Jira routing, sounds, Herdr/sesh, and
+- Work MCP servers, corporate tools/rules, Jira routing, Herdr/sesh, and
   `git-dance` are intentionally excluded. Provider/account sign-in remains local.
 
 ### Work dossiers
@@ -184,18 +184,54 @@ direct `.superpowers` writes and best-effort literal shell mutations. This is a
 guardrail, **not a sandbox**: computed shell paths and symlinks can bypass it.
 Preserve unique evidence/reusable tooling before cleaning up reviewed scratch.
 
+### Sound notifications
+
+The server-side `notification` plugin plays the same managed clips as the work
+setup, using Linux `ffplay` from the bootstrap's `ffmpeg` dependency:
+
+| Event | Sound |
+| --- | --- |
+| Main-session completion | `~/.config/opencode/sounds/jobs_done.mp3` |
+| Main-session question | `~/.config/opencode/sounds/question.mp3` |
+| Permission request, including child sessions | `question.mp3` |
+
+Child completions/questions, failed turns, and interrupted turns stay silent.
+Native CLI sounds are disabled in `cli.json` so multiple panes on the same shared
+service do not echo the same event. Desktop-notification preferences are unchanged.
+Locationless completions are resolved to their owning session; if session metadata
+cannot be read, that cue is skipped rather than played by unrelated locations or
+mistakenly treated as a main-session cue. Audio errors are logged without stopping
+subsequent notifications. Reload/unload cancels the subscription and active playback.
+
+Replay memory retains the last 1,024 eligible event IDs per live subscription;
+new events in the same session still sound. A reload creates fresh replay memory.
+Sounds play on the **service host**, including background sessions without an
+attached pane. A remote/headless server cannot play them on your local machine,
+and separate service processes have independent playback. Paths honor
+`XDG_CONFIG_HOME` when set. No native fallback sounds are enabled.
+
+To check local audio (these commands make sound):
+
+```sh
+ffplay -nodisp -autoexit -loglevel error -nostats ~/.config/opencode/sounds/jobs_done.mp3
+ffplay -nodisp -autoexit -loglevel error -nostats ~/.config/opencode/sounds/question.mp3
+```
+
 Verification (no live service restarts, model prompts, or GUI reviews):
 
 ```sh
 python -B tests/opencode-setup-smoke.py
-bun test tests/opencode-behavior.test.ts
+bun test
 python -B tests/opencode-runtime-smoke.py
 ```
 
 The runtime smoke test requires installed OpenCode V2 and network access for the
 pinned packages. It copies configuration to an isolated home and starts only its
 own authenticated loopback server. It checks agent/skill/command discovery and
-plugin activation without touching the shared service.
+plugin activation without touching the shared service. It also sends a real
+child-session permission event to a fake audio executable, so automated checks
+remain silent and require no model prompt. The Bun tests cover event filtering,
+deduplication, process arguments, playback failures, and cancellation.
 
 ## Setup lifecycle
 

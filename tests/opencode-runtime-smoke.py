@@ -6,6 +6,7 @@ import secrets
 import selectors
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 from urllib.parse import urlparse
@@ -24,11 +25,20 @@ with tempfile.TemporaryDirectory(prefix="dotfiles-runtime-", dir=temporary) as d
     settings["update"] = "disable"
     (config / "opencode.json").write_text(json.dumps(settings))
     (root / "tmp").mkdir()
+    # Capture audio subprocesses so integration tests can never play live sounds.
+    (root / "bin").mkdir()
+    player = root / "bin/ffplay"
+    player.write_text(f"#!{sys.executable}\nimport json,os,sys\n"
+                      "with open(os.environ['NOTIFICATION_TEST_LOG'], 'a') as log:\n"
+                      "    log.write(json.dumps(sys.argv[1:]) + '\\n')\n")
+    player.chmod(0o755)
+    sound_log = root / "sounds.jsonl"
     env = {
-        "PATH": os.environ["PATH"], "HOME": str(home),
+        "PATH": f'{root / "bin"}:{os.environ["PATH"]}', "HOME": str(home),
         "XDG_CONFIG_HOME": str(root / "config"), "XDG_DATA_HOME": str(root / "data"),
         "XDG_CACHE_HOME": str(root / "cache"), "XDG_STATE_HOME": str(root / "state"),
         "TMPDIR": str(root / "tmp"), "OPENCODE_PASSWORD": secrets.token_urlsafe(32),
+        "NOTIFICATION_TEST_LOG": str(sound_log),
     }
 
     def command(*args, timeout=30):
@@ -57,7 +67,7 @@ with tempfile.TemporaryDirectory(prefix="dotfiles-runtime-", dir=temporary) as d
                 return json.loads(command(*args))
 
             deadline = time.monotonic() + 180
-            expected = {"betterplan-build-switch", "superpowers-write-guard", "superpowers", "plannotator"}
+            expected = {"betterplan-build-switch", "superpowers-write-guard", "superpowers", "plannotator", "notification"}
             while True:
                 response = api("/api/plugin")
                 entries = response["data"]
@@ -109,13 +119,30 @@ with tempfile.TemporaryDirectory(prefix="dotfiles-runtime-", dir=temporary) as d
                     "action": "shell", "resources": [resource], "agent": "code-reviewer",
                 })["data"]
                 assert permission["effect"] == expected_effect, (resource, permission)
+            # Verify the host's real permission event reaches the Linux playback
+            # adapter for a child session, without submitting a model prompt.
+            parent = api("/api/session", {"agent": "build", "location": {"directory": str(project)}})["data"]
+            child = api("/api/session", {"parentID": parent["id"], "agent": "build", "permissions": [
+                {"action": "shell", "resource": "sound-smoke", "effect": "ask"},
+            ]})["data"]
+            permission = api(f'/api/session/{child["id"]}/permission', {
+                "action": "shell", "resources": ["sound-smoke"], "agent": "build",
+            })["data"]
+            assert permission["effect"] == "ask", permission
+            deadline = time.monotonic() + 10
+            while not sound_log.exists() or not sound_log.read_text().strip():
+                assert time.monotonic() < deadline, "permission event did not reach playback"
+                time.sleep(0.05)
+            played = [json.loads(line) for line in sound_log.read_text().splitlines()]
+            assert played == [["-nodisp", "-autoexit", "-loglevel", "error", "-nostats",
+                               str(config / "sounds/question.mp3")]], played
             skills = definitions("/api/skill")
             assert {"feature-dossier", "session-routing", "save-plans-to-notes", "using-superpowers"} <= {s["id"] for s in skills}, skills
             assert "git-dance" not in {s["id"] for s in skills}
             commands = definitions("/api/command")
             assert {"plannotator-review", "plannotator-annotate", "plannotator-last"} <= {c["name"] for c in commands}, commands
             assert not (config / "node_modules").exists(), "plugins require deployed dependency install"
-            print("PASS: copied agents/skills/commands and all four plugins active on isolated OpenCode V2")
+            print("PASS: copied config, all five plugins active, and real child-permission event reaches silent test player")
         except BaseException:
             logs.flush()
             logs.seek(0)
