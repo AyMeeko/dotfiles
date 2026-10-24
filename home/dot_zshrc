@@ -108,6 +108,9 @@ export NVM_DIR="$HOME/.nvm"
 # direnv
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 
+# Track visited directories for sesh's zoxide source and the z/zi commands.
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+
 # mise
 command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
 

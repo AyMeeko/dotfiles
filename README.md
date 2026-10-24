@@ -137,6 +137,94 @@ Bindings live in `home/dot_config/hypr/bindings.lua`. To tune sizes, edit
 `SMALL_HEIGHT_SCALE` in
 `home/dot_config/hypr/window-presets.py`, then run `chezmoi apply`.
 
+## Sesh / tmux session switching
+
+This restores the upstream sesh setup from the work dotfiles immediately before
+commit `c30155c` introduced the personal fork. Bootstrap installs the normal AUR
+`sesh-bin` package through `omarchy pkg aur add`; `zoxide` and `fd` are included in
+the system dependencies. No fork, OpenCode plugin, or work-specific path is used.
+The AUR installation runs as the normal user and can request sudo authorization;
+failed setup is retried on the next apply. The reserved WSL role only deploys the
+shared config; it does not install Arch packages.
+
+| tmux shortcut | Action |
+| --- | --- |
+| Prefix + `t` | Open the fzf session picker (80% × 70%, preview at right) |
+| Prefix + `K` | Return to the previous session with `sesh last` |
+| Prefix + `J` | Toggle between notes and the previous session |
+| Prefix + Shift + `R` | Rename the current session (prompt prefilled with its name) |
+
+The picker initially lists unattached tmux sessions. Ctrl+A lists all sources,
+Ctrl+T tmux, Ctrl+G configured sessions, Ctrl+X zoxide directories, and Ctrl+F
+searches directories under home (two levels deep). Tab/Shift+Tab move selection.
+**Ctrl+D kills the highlighted tmux session**, after revalidating it against the
+live tmux source and using its exact name rather than prefix matching. Directory,
+zoxide, and configured-session rows cannot be mistaken for a session to kill.
+Escape/cancellation never connects to an empty selection.
+
+`home/dot_config/sesh/sesh.toml` explicitly maps `notes` to `~/notes`, which the
+personal-repositories setup clones. Zsh initializes zoxide so visited directories
+populate its source; existing zoxide history is preserved. The helper lives at
+`~/.config/tmux/sesh-picker.sh`. Existing shell and tmux workspace helpers remain.
+Closing a session keeps the client in tmux when another session is available.
+The left status bar displays the current session in a rounded Catppuccin segment;
+the existing window list and right-side clock remain in place.
+
+After applying, use Prefix + `r` to reload tmux and start a new shell (or source
+`~/.zshrc`) to activate zoxide. Verify without opening a live picker or changing
+user sessions:
+
+```sh
+python -B tests/sesh-smoke.py
+```
+
+The test mocks external picker/install actions, exercises real fzf placeholder
+expansion on an isolated pseudo-terminal, and loads the real tmux config on a
+disposable socket. It never kills or switches sessions on the user's server.
+
+### Session persistence
+
+Bootstrap installs **TPM**, **tmux-resurrect**, and **tmux-continuum** under
+`~/.tmux/plugins/`. New clones start at pinned revisions; existing installations
+and local edits are preserved, never automatically pulled or reset. TPM can
+install/update plugins interactively with Prefix + Shift+I / Prefix + Shift+U.
+Catppuccin remains separately pinned under `~/.config/tmux-plugins/`.
+
+- **Prefix + Ctrl+S** saves the tmux environment manually.
+- **Prefix + Ctrl+R** restores the last saved environment manually.
+- Continuum saves every **15 minutes** and automatically restores on **tmux server
+  startup**, not on an ordinary config reload. Keep the status line enabled:
+  Continuum's save trigger is part of `status-right`. It loads last so the theme
+  and clock do not overwrite that trigger.
+- Login-time tmux autostart and pane-content capture are explicitly disabled.
+  Resurrect restores layouts, working directories and its conservative supported
+  program list—not arbitrary processes, unsaved application data, or account state.
+
+Snapshots are machine-local and **not managed by chezmoi or committed to Git**.
+Resurrect reuses `~/.tmux/resurrect/` when it already exists; otherwise it uses
+`${XDG_DATA_HOME:-~/.local/share}/tmux/resurrect/`. Preserve those files separately
+if moving machines. They can contain working paths and command arguments even
+with pane capture disabled. Continuum avoids automatic saving/restoring when it
+detects another tmux server, to keep distinct environments from overwriting saves.
+
+Configuration-only deployments still work when plugins have not been installed.
+Full Omarchy bootstrap installs them without launching/stopping a tmux server or
+running a restore. Verify with:
+
+```sh
+python -B tests/tmux-plugins-setup.py
+python -B tests/tmux-plugins-runtime.py
+```
+
+The setup test mocks Git and checks failed installs, repeat runs, conflicts and
+state preservation. The runtime test requires the installed plugins and theme;
+it copies them to a disposable home, directs all plugin tmux calls to its own
+socket, and tests real save/autosave/startup-restore behavior. Continuum's
+process-inventory query is simulated as a sole-server environment, and service
+management calls are captured rather than sent to the live user manager. The test
+also isolates the runtime directory/session bus. Actual process inspection and
+persistence run normally. User sessions, services and snapshots are untouched.
+
 ## OpenCode
 
 Chezmoi manages `home/dot_config/opencode/` as ordinary files, independent of any
@@ -242,6 +330,9 @@ dependencies once; a failed run is retried by `chezmoi apply`.
 `run_once_after_25-*` selects Vivaldi as the default browser once, preserving
 later manual browser preferences on routine repeat applies.
 `run_once_after_22-*` installs the missing Plannotator CLI without changing configs.
+`run_once_after_21-*` installs the upstream sesh AUR package if it is missing.
+`run_once_after_23-*` installs missing TPM/persistence plugin clones, preserving
+existing checkouts and snapshots without loading plugins into a live server.
 `run_onchange_after_30-*` validates and restarts keyboard services when their
 keymap, units, or device paths change. A routine repeat apply does not reinstall
 plugins or restart services. Changing a run-once script causes its new content

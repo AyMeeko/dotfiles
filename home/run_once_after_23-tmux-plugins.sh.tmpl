@@ -1,0 +1,31 @@
+{{ if and (eq .role "omarchy") (default false (get . "setupEnabled")) -}}
+#!/usr/bin/env bash
+set -euo pipefail
+base="$HOME/.tmux/plugins"
+mkdir -p "$base"
+staging=""
+trap 'if [[ -n $staging ]]; then rm -rf -- "$staging"; fi' EXIT
+
+# Publish complete pinned clones only. Existing installations/local edits belong
+# to the user: bootstrap never pulls, checks them out, or removes their state.
+install_plugin() {
+  local name=$1 revision=$2 entry=$3 target="$base/$1"
+  if [[ -f $target/$entry ]]; then return; fi
+  if [[ -e $target || -L $target ]]; then
+    printf 'Cannot install %s: existing path %s needs review\n' "$name" "$target" >&2
+    return 1
+  fi
+  staging=$(mktemp -d "$base/.install-$name.XXXXXX")
+  git clone --quiet --no-checkout "https://github.com/tmux-plugins/$name.git" "$staging/repo"
+  git -C "$staging/repo" checkout --quiet --detach "$revision"
+  [[ -f $staging/repo/$entry ]] || { printf 'Missing plugin entrypoint: %s\n' "$entry" >&2; return 1; }
+  mv -T --no-clobber "$staging/repo" "$target"
+  [[ ! -e $staging/repo ]] || { printf 'Install path appeared during clone: %s\n' "$target" >&2; return 1; }
+  rmdir "$staging"
+  staging=""
+}
+
+install_plugin tpm e261deb1b47614eed3400089ce7197dc68acc4eb tpm
+install_plugin tmux-resurrect cff343cf9e81983d3da0c8562b01616f12e8d548 resurrect.tmux
+install_plugin tmux-continuum 0698e8f4b17d6454c71bf5212895ec055c578da0 continuum.tmux
+{{ end -}}

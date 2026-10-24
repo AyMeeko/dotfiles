@@ -112,6 +112,7 @@ def deploy(role, internal, external):
         for path in [".zshrc", ".config/nvim/init.lua", ".config/nvim/lazy-lock.json",
                      ".config/tmux/tmux.conf", ".config/tmux/cht.sh",
                       ".config/tmux/new_workspace.sh", ".config/opencode/opencode.json",
+                      ".config/tmux/sesh-picker.sh", ".config/sesh/sesh.toml",
                       ".config/opencode/cli.json", ".config/opencode/AGENTS.md",
                       ".config/opencode/agents/betterplan.md",
                       ".config/opencode/plugins/superpowers-write-guard.ts",
@@ -131,6 +132,7 @@ def deploy(role, internal, external):
                   (REPO / f"home/dot_config/opencode/sounds/{sound}").read_bytes(),
                   f"sound deployment changed bytes: {sound}")
         check(os.access(home / ".config/tmux/new_workspace.sh", os.X_OK), "helper not executable")
+        check(os.access(home / ".config/tmux/sesh-picker.sh", os.X_OK), "sesh helper not executable")
         check(not (home / "README.md").exists(), "repo docs deployed")
         check(not (home / ".config/nvim/README.md").exists(), "Neovim docs deployed")
         check(not (home / ".config/karabiner").exists(), "macOS files deployed")

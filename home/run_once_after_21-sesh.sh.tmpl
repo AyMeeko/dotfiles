@@ -1,0 +1,8 @@
+{{ if and (eq .role "omarchy") (default false (get . "setupEnabled")) -}}
+#!/usr/bin/env bash
+set -euo pipefail
+# The normal upstream package; never build or run the personal sesh fork.
+if ! pacman -Q sesh-bin >/dev/null 2>&1; then
+  omarchy pkg aur add sesh-bin
+fi
+{{ end -}}
