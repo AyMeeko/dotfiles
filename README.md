@@ -75,8 +75,9 @@ The setup automatically:
   require GitHub access through your 1Password SSH agent. If authentication fails,
   finish the 1Password steps below and rerun `chezmoi apply` to retry.
 
-Authenticate when sudo requests your password. Log out and back in after setup,
-and restart OpenCode to load its configuration. This restores your configured
+Authenticate when sudo requests your password. Log out and back in after setup.
+OpenCode V2 reloads configuration automatically; `/reload` forces a full reload.
+This restores your configured
 user environment on top of Omarchy; OS installation, hardware-specific drivers,
 account logins and other project repositories/data remain separate. SSH keys stored
 in 1Password become available after authorizing its agent as described below.
@@ -136,6 +137,66 @@ Bindings live in `home/dot_config/hypr/bindings.lua`. To tune sizes, edit
 `SMALL_HEIGHT_SCALE` in
 `home/dot_config/hypr/window-presets.py`, then run `chezmoi apply`.
 
+## OpenCode
+
+Chezmoi manages `home/dot_config/opencode/` as ordinary files, independent of any
+work-dotfiles checkout. This setup targets **OpenCode V2**. Server configuration
+lives in `opencode.json`; terminal preferences live in `cli.json` (not `tui.json`).
+Existing OpenCode installations are respected; upgrading a V1 binary is separate.
+
+- **BetterPlan** is the default planning-only agent; the built-in Plan is disabled.
+  It can write notes under `~/notes/ai/`, not project code. Switch to **Build** to
+  implement. **Investigate** is for research; Oracle, Librarian, code-reviewer, and
+  OpenCode expert are supporting read-only agents.
+- **Superpowers 6.4.2** is pinned to its release commit; **Plannotator 0.28.7** uses
+  manual workflow. `/plannotator-review`, `/plannotator-annotate <path>`, and
+  `/plannotator-last` open review only when requested. Review approval does not
+  authorize implementation, commits, or pushes.
+- Omarchy bootstrap installs the pinned Plannotator CLI with a verified release
+  checksum if none exists. It downloads only the binary: no vendor installer may
+  rewrite chezmoi-managed configs or add integrations. OpenCode installs package
+  plugins on first load; network access is required. No separate runtime npm/Bun
+  dependency installation is needed for the local plugins.
+- Work MCP servers, corporate tools/rules, Jira routing, sounds, Herdr/sesh, and
+  `git-dance` are intentionally excluded. Provider/account sign-in remains local.
+
+### Work dossiers
+
+Say **"start the opencode-port work"** or **"pick up opencode-port"** to select
+`~/notes/ai/work/opencode-port/`. Dossiers use explicit descriptive slugs, not
+ticket IDs or branch conventions, and may span repositories and sessions.
+
+```text
+~/notes/ai/work/<slug>/
+  resume.md       # last-verified state, scope, next steps, durable pointers
+  plan.md         # current plan, when needed
+  research.md     # findings/evidence, when needed
+  decisions.md    # decisions/rationale, when needed
+  transient/sdd/  # disposable task/review packaging and recovery ledger
+  archive/        # completed/superseded plans
+```
+
+Files are created lazily. Standalone plans without an active dossier go in
+`~/notes/ai/plans/YYYY-MM-DD-<slug>.md`. No notes, account state, or dossier contents
+are deployed by chezmoi. The notes repository is cloned separately during setup.
+Superpowers artifacts are redirected outside project repos; a local plugin blocks
+direct `.superpowers` writes and best-effort literal shell mutations. This is a
+guardrail, **not a sandbox**: computed shell paths and symlinks can bypass it.
+Preserve unique evidence/reusable tooling before cleaning up reviewed scratch.
+
+Verification (no live service restarts, model prompts, or GUI reviews):
+
+```sh
+python -B tests/opencode-setup-smoke.py
+bun test tests/opencode-behavior.test.ts
+python -B tests/opencode-runtime-smoke.py
+```
+
+The runtime smoke test requires installed OpenCode V2 and network access for the
+pinned packages. It copies configuration to an isolated home and starts only its
+own authenticated loopback server. It checks agent/skill/command discovery and
+plugin activation without touching the shared service.
+
 ## Setup lifecycle
 
 `run_once_before_05-*` backs up existing config before deployment.
@@ -144,6 +205,7 @@ script or its rendered device inputs change. `run_once_after_20-*` installs user
 dependencies once; a failed run is retried by `chezmoi apply`.
 `run_once_after_25-*` selects Vivaldi as the default browser once, preserving
 later manual browser preferences on routine repeat applies.
+`run_once_after_22-*` installs the missing Plannotator CLI without changing configs.
 `run_onchange_after_30-*` validates and restarts keyboard services when their
 keymap, units, or device paths change. A routine repeat apply does not reinstall
 plugins or restart services. Changing a run-once script causes its new content

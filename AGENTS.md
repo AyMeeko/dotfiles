@@ -150,8 +150,13 @@ Host-specific SSH overrides go in `~/.ssh/config.d/*.conf`.
 - Neovim is standalone, not LazyVim. Preserve `lazy-lock.json` pins unless a plugin
   update is requested. `DOTFILES_BOOTSTRAP=1` suppresses normal automatic installs/
   updates while the bootstrap explicitly restores plugins and installs tools.
-- OpenCode's theme belongs in `tui.json`, not `opencode.json`. Validate config
-  changes against current schemas and tell the user to restart OpenCode afterward.
+- OpenCode targets V2: terminal preferences/theme belong in `cli.json`, not
+  `opencode.json`. Validate against current V2 contracts. Config hot-reloads;
+  use `/reload` for a full reload rather than restarting a healthy shared service.
+- OpenCode work dossiers live at `~/notes/ai/work/<explicit-slug>/`, with no ticket
+  service dependency. Keep durable context separate from `transient/sdd/` scratch.
+  Local plugin runtime imports use only host-supplied `@opencode/plugin`, Node
+  built-ins, and local helpers; development tests do not require deployed packages.
 - Use terminal `sudo` for interactive privileged setup and desktop `pkexec` where
   there is no usable terminal prompt, following the existing setup-script pattern.
 
