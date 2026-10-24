@@ -1,0 +1,61 @@
+{{ if and (eq .role "omarchy") (default false (get . "setupEnabled")) -}}
+#!/usr/bin/env bash
+set -euo pipefail
+# Rerun after either input changes. Bump the recipe release and version below
+# together when changing the package, so an installed older build is replaced.
+# recipe: {{ include "dot_local/share/dotfiles/weylus/PKGBUILD" | sha256sum }}
+# regression: {{ include "dot_local/share/dotfiles/weylus/pointer-regression.rs" | sha256sum }}
+as_root() {
+  if [[ $EUID -eq 0 ]]; then "$@"
+  elif sudo -n true 2>/dev/null || [[ -t 0 ]]; then sudo "$@"
+  else pkexec "$@"
+  fi
+}
+version=0.11.4.38a01a8-1
+if [[ $(pacman -Q weylus-pinned 2>/dev/null || true) != "weylus-pinned $version" ]]; then
+  [[ $EUID -ne 0 ]] || { echo 'Build Weylus as a normal user, not root' >&2; exit 1; }
+  packages=(rust typescript gcc libx11 pkgconf git make cmake cairo dbus
+    gst-plugins-base-libs libdrm libva libxcomposite libxcursor libxinerama
+    libxkbcommon libxrandr libxtst pango ffmpeg x264)
+  missing=()
+  for package in "${packages[@]}"; do
+    pacman -Q "$package" >/dev/null 2>&1 || missing+=("$package")
+  done
+  if ((${#missing[@]})); then
+    as_root /usr/bin/pacman -S --needed --noconfirm "${missing[@]}"
+  fi
+  # This is chezmoi's fixed deployment path, independent of XDG_DATA_HOME.
+  inputs="$HOME/.local/share/dotfiles/weylus"
+  cache="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/weylus"
+  mkdir -p "$cache"
+  build_dir=$(mktemp -d "$cache/build.XXXXXX")
+  # Retain failed builds for diagnosis; only remove our successful staging dir.
+  trap 'status=$?; if ((status)); then printf "Weylus build retained at %s\n" "$build_dir" >&2; else rm -rf -- "$build_dir"; fi' EXIT
+  cp "$inputs/PKGBUILD" "$inputs/pointer-regression.rs" "$build_dir/"
+  (
+    cd "$build_dir"
+    makepkg --cleanbuild --check --nodeps --noconfirm
+    mapfile -t archives < <(makepkg --packagelist)
+    [[ ${#archives[@]} -eq 1 && -f ${archives[0]} ]] || exit 1
+    # --ask 4 approves replacing the explicitly conflicting old Weylus package.
+    as_root /usr/bin/pacman -U --needed --noconfirm --ask 4 "${archives[0]}"
+  )
+  [[ $(pacman -Q weylus-pinned) == "weylus-pinned $version" ]]
+fi
+
+# Seed Wayland defaults once, leaving access codes and subsequent GUI changes local.
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/weylus"
+if [[ ! -e "$config_dir/weylus.toml" ]]; then
+  umask 077
+  mkdir -p "$config_dir"
+  cat > "$config_dir/weylus.toml" <<'TOML'
+bind_address = "0.0.0.0"
+web_port = 1701
+try_vaapi = false
+try_nvenc = false
+auto_start = false
+no_gui = false
+wayland_support = true
+TOML
+fi
+{{ end -}}

@@ -137,6 +137,77 @@ Bindings live in `home/dot_config/hypr/bindings.lua`. To tune sizes, edit
 `SMALL_HEIGHT_SCALE` in
 `home/dot_config/hypr/window-presets.py`, then run `chezmoi apply`.
 
+## Weylus tablet/stylus mirroring
+
+Omarchy bootstrap builds and installs the local `weylus-pinned` Arch package
+from upstream commit `38a01a8f8e429500c7e9f67fc1c88ca37a4d1e93` (verified source
+archive checksum). This includes upstream's iPadOS fractional-pointer fix
+`69b4941`; the old AUR `weylus-bin` release rejects modern iPad input with
+"Failed to parse message". The pinned package replaces conflicting Weylus
+packages only after the build and regression test succeed.
+
+Setup installs missing build/runtime dependencies, including Rust and TypeScript,
+and uses Arch's shared FFmpeg rather than compiling a separate copy. The package
+recipe and regression test live under `home/dot_local/share/dotfiles/weylus/`
+and deploy to `~/.local/share/dotfiles/weylus/`. Builds run as your normal user;
+only dependency/package installation requests sudo or graphical authorization.
+Failed builds are retained under `~/.cache/dotfiles/weylus/` for diagnosis and
+retried on the next apply. An already-installed matching version is skipped.
+When updating the recipe, bump its package version/release and the expected
+version in `run_once_after_24-weylus.sh.tmpl` together. As with other locally
+built Arch packages, shared-library upgrades can require rebuilding the package.
+
+Bootstrap also installs Wayland/PipeWire capture dependencies. The existing KMonad uinput rule and
+`input` group membership also allow Weylus to generate pen/touch events; no
+second, conflicting udev rule is installed. Log out and back in after a fresh
+bootstrap to activate group membership.
+
+Launch **Weylus** from the application launcher (or run `weylus`). Setup seeds
+`~/.config/weylus/weylus.toml` with Wayland support enabled only if the file does
+not exist. Existing settings are preserved; for an existing config, enable
+Wayland/PipeWire support in Weylus yourself. The config, including any access
+code, stays machine-local and is not deployed or committed. The launcher uses
+saved settings without command-line overrides.
+
+1. Set an **access code** in Weylus, then click **Start**.
+2. On your tablet, open the displayed URL/QR code in a modern browser (Safari
+   on iPad), with both devices on the same trusted network.
+3. Select the PipeWire capture source and approve the desktop screen-sharing
+   picker. Test pen pressure in an application that supports it, such as Krita.
+4. Stop Weylus when finished. It does not autostart or run a background service.
+
+Wayland support is experimental; per-window input mapping and cursor capture
+have upstream limitations. Connections are **unencrypted**, even with an access
+code. No firewall rules are changed automatically. If a firewall blocks the
+tablet, allow TCP **1701** (both web and WebSocket) only from your trusted
+tablet/network; do not expose these ports to the internet. This setup mirrors
+an existing display, not a new virtual monitor.
+
+### Optional UFW access from a trusted LAN
+
+If the tablet's browser hangs before displaying Weylus, check `sudo ufw status
+verbose`. With UFW active and incoming connections denied, explicitly opt in to
+LAN access below. First use `ip -brief address` to identify the interface and
+trusted subnet; **replace these example values for each machine/network**:
+
+```sh
+sudo ufw allow in on wlp3s0 from 192.168.0.0/24 to any port 1701 proto tcp comment 'Weylus web trusted LAN'
+sudo ufw status verbose
+```
+
+These persistent rules allow only the specified source subnet on the specified
+interface, not arbitrary internet clients. They are machine-local firewall state,
+not automatically applied by chezmoi. Remove them with the same commands prefixed
+with `sudo ufw delete allow` instead of `sudo ufw allow` when no longer needed.
+The old 0.11.4 binary used a separate WebSocket port (9001); the pinned build
+does not need that legacy rule.
+
+Verify the setup logic without installing packages or starting a server:
+
+```sh
+python -B tests/weylus-smoke.py
+```
+
 ## Sesh / tmux session switching
 
 This restores the upstream sesh setup from the work dotfiles immediately before
@@ -333,6 +404,8 @@ later manual browser preferences on routine repeat applies.
 `run_once_after_21-*` installs the upstream sesh AUR package if it is missing.
 `run_once_after_23-*` installs missing TPM/persistence plugin clones, preserving
 existing checkouts and snapshots without loading plugins into a live server.
+`run_once_after_24-*` builds/installs pinned Weylus and seeds missing machine-local Wayland
+settings without replacing saved settings or access codes.
 `run_onchange_after_30-*` validates and restarts keyboard services when their
 keymap, units, or device paths change. A routine repeat apply does not reinstall
 plugins or restart services. Changing a run-once script causes its new content

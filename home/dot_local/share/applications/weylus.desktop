@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Weylus
+Comment=Mirror the desktop with tablet and stylus input
+Exec=weylus
+Icon=input-tablet
+Terminal=false
+Categories=Graphics;Network;

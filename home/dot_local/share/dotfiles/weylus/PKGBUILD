@@ -1,0 +1,50 @@
+# Pinned upstream build: includes the iPadOS fractional-pointer fix (69b4941).
+# Based on the upstream/AUR dependency list; no moving git branch or local fork.
+pkgname=weylus-pinned
+pkgver=0.11.4.38a01a8
+pkgrel=1
+pkgdesc='Tablet/stylus screen mirroring with the upstream iPadOS pointer fix'
+arch=('x86_64')
+url='https://github.com/H-M-H/Weylus'
+license=('AGPL-3.0-or-later')
+provides=('weylus=0.11.4')
+conflicts=('weylus' 'weylus-bin' 'weylus-git')
+options=('!debug' '!lto')
+depends=(cairo dbus gst-plugins-base-libs libdrm libva libxcomposite libxcursor
+  libxinerama libxkbcommon libxrandr libxtst pango ffmpeg x264)
+makedepends=(rust typescript gcc libx11 pkgconf git make cmake)
+optdepends=('gst-plugin-pipewire: Wayland support')
+_commit=38a01a8f8e429500c7e9f67fc1c88ca37a4d1e93
+source=("weylus-$_commit.tar.gz::https://codeload.github.com/H-M-H/Weylus/tar.gz/$_commit"
+  'pointer-regression.rs')
+sha256sums=('918c63d1b8459d84860d9b5700e9f3301133ba46046ba8fdbb1dc281a21ac089'
+  '7953b5372b6044d28ec7e405fbded8ed278593856f82a1ff56b64b045d11c82b')
+
+prepare() {
+  cd "$srcdir/Weylus-$_commit"
+  # Preserve upstream's TypeScript 5 defaults under TypeScript 6, which now
+  # defaults to strict checking and requires an explicit source root.
+  sed -i '/"outDir":/a\    "rootDir": "ts",\n    "strict": false,' tsconfig.json
+  cat "$srcdir/pointer-regression.rs" >> src/protocol.rs
+  cargo fetch --locked
+}
+
+build() {
+  cd "$srcdir/Weylus-$_commit"
+  # Use Arch's shared FFmpeg rather than downloading/building another copy.
+  export CARGO_TARGET_DIR=target
+  cargo build --frozen --release --features ffmpeg-system
+}
+
+check() {
+  cd "$srcdir/Weylus-$_commit"
+  export CARGO_TARGET_DIR=target
+  cargo test --frozen --release --features ffmpeg-system
+}
+
+package() {
+  cd "$srcdir/Weylus-$_commit"
+  install -Dm755 target/release/weylus "$pkgdir/usr/bin/weylus"
+  install -Dm644 weylus.desktop "$pkgdir/usr/share/applications/weylus.desktop"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
