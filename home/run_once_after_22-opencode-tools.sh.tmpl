@@ -1,0 +1,29 @@
+{{ if and (eq .role "omarchy") (default false (get . "setupEnabled")) -}}
+#!/usr/bin/env bash
+set -euo pipefail
+# Install only the CLI. Chezmoi owns all OpenCode integration/config files.
+# Respect an existing installation instead of replacing the user's chosen version.
+if command -v plannotator >/dev/null 2>&1 || [[ -x $HOME/.local/bin/plannotator ]]; then
+  exit 0
+fi
+case "$(uname -m)" in
+  x86_64|amd64) arch=x64 ;;
+  aarch64|arm64) arch=arm64 ;;
+  *) printf 'Unsupported Plannotator architecture: %s\n' "$(uname -m)" >&2; exit 1 ;;
+esac
+version=0.28.7
+asset="plannotator-linux-$arch"
+url="https://github.com/backnotprop/plannotator/releases/download/v$version/$asset"
+mkdir -p "$HOME/.local/bin"
+download=$(mktemp -d "$HOME/.local/bin/.plannotator-install.XXXXXX")
+trap 'rm -f "$download/$asset" "$download/$asset.sha256"; rmdir "$download"' EXIT
+curl --fail --location --silent --show-error --connect-timeout 15 --max-time 180 \
+  "$url" -o "$download/$asset"
+curl --fail --location --silent --show-error --connect-timeout 15 --max-time 60 \
+  "$url.sha256" -o "$download/$asset.sha256"
+expected=$(awk 'NR == 1 { print $1 }' "$download/$asset.sha256")
+[[ $expected =~ ^[[:xdigit:]]{64}$ ]] || { echo 'Invalid Plannotator checksum' >&2; exit 1; }
+printf '%s  %s\n' "$expected" "$download/$asset" | sha256sum --check --status
+chmod 755 "$download/$asset"
+mv "$download/$asset" "$HOME/.local/bin/plannotator"
+{{ end -}}

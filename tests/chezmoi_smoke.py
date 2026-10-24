@@ -111,7 +111,13 @@ def deploy(role, internal, external):
             check("user git\n" in result.stdout, "wrong GitHub SSH user")
         for path in [".zshrc", ".config/nvim/init.lua", ".config/nvim/lazy-lock.json",
                      ".config/tmux/tmux.conf", ".config/tmux/cht.sh",
-                     ".config/tmux/new_workspace.sh", ".config/opencode/opencode.json",
+                      ".config/tmux/new_workspace.sh", ".config/opencode/opencode.json",
+                      ".config/opencode/cli.json", ".config/opencode/AGENTS.md",
+                      ".config/opencode/agents/betterplan.md",
+                      ".config/opencode/plugins/superpowers-write-guard.ts",
+                      ".config/opencode/lib/superpowers-write-guard.ts",
+                      ".config/opencode/skills/feature-dossier/SKILL.md",
+                      ".config/opencode/commands/plannotator-review.md",
                       ".config/omz-custom/themes/my-theme.zsh-theme", ".config/git/config"]:
             target = home / path
             check(target.is_file() and not target.is_symlink(), f"not a regular file: {path}")
